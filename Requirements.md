@@ -103,85 +103,9 @@ SSD 파일 입출력은 명령어 실행 시 전체 데이터 읽기/쓰기 방�
 Test Script 실행 시 성능 저하가 없도록 최적화
 
 ## 4. 프로젝트 산출물
-SSD 소프트웨어(예: ssd.py, ssd.exe, ssd.jar)
-Test Shell 프로그램
-Test Script 코드
-ssd_nand.txt, ssd_output.txt 파일
-사용자 매뉴얼 및 개발 문서
-
-## 5. 기타
-모든 소스코드 및 문서는 버전 관리 시스템(Git 등)으로 관리
-프로젝트 일정 및 마일스톤은 별도 문서로 관리
-
-문의 및 피드백:
-민코딩 프로젝트 담당자
-(팀명, 팀원명, 연락처 등 기재)
-
-이 명세서는 프로젝트의 모든 개발 및 테스트 단계에서 기준 문서로 활용됩니다. 추가 요구사항이나 변경사항은 별도 협의 후 반영합니다.
-
-
-# 🧑‍💻 SSD 프로젝트 역할 분배 
-
----
-
-## ✅ 역할 요약표
-
-| 역할 번호 | 세부 역할 | 담당자 (예시) | 주요 책임 |
-|-----------|-----------|----------------|-----------|
-| **1A** | SSD Core - Write 처리 | ✍ A번 개발자 | `W` 명령 처리, `ssd_nand.txt`에 데이터 저장 |
-| **1B** | SSD Core - Read 처리 | 👓 B번 개발자 | `R` 명령 처리, `ssd_output.txt`에 덮어쓰기 |
-| **2A** | Shell 명령어 파서 | 🎮 C번 개발자 | 사용자 입력 파싱 및 명령 디스패치 (`write`, `read`, `exit`, `help`) |
-| **2B** | Shell - system call 처리 | 🔁 D번 개발자 | `ssd.exe`를 호출하는 system() 로직 작성 및 연결 |
-| **3**  | Test Script 구현 | 🧪 E번 개발자 | Test Script 1~3 자동 실행 루틴 및 ReadCompare 기반 PASS/FAIL 구현 |
-
----
-
-## ✅ 각 역할 세부 설명
-
-### ✍ 1A. SSD Core - Write 처리 담당
-- `ssd W <LBA> <VALUE>` 명령 처리
-- `ssd_nand.txt`에 데이터 저장 (기록 방식 설계 포함)
-- 유효하지 않은 LBA 처리 시 `"ERROR"` 출력
-
-### 👓 1B. SSD Core - Read 처리 담당
-- `ssd R <LBA>` 명령 처리
-- `ssd_output.txt`에 덮어쓰기
-- 기록된 값이 없으면 `0x00000000`, 오류 시 `"ERROR"` 출력
-
-### 🎮 2A. Test Shell - 명령어 파싱 담당
-- 사용자로부터 입력을 받고 명령어 파싱
-- 유효성 검사 전 단계 처리
-- `write`, `read`, `fullwrite`, `fullread`, `exit`, `help` 명령 처리
-
-### 🔁 2B. Test Shell - SSD 호출 처리 담당
-- `system("ssd W ...")`, `system("ssd R ...")` 호출 담당
-- Shell에서 SSD와 연결되는 통신 구조 담당
-
-### 🧪 3. Test Script 담당
-- Test Script 1~3 (`1_`, `2_`, `3_`) 명령어 등록 및 처리
-- 각 Script 내 반복 루프 및 ReadCompare 구현
-- `PASS` / `FAIL` 판단 및 출력 구현
-
----
-
-## ✅ 작업 흐름 요약
-
-```
-[사용자 입력] ─▶ Shell 명령 파싱 (2A)
-                      └▶ system call (2B)
-                             └▶ ssd.exe
-                                  ├▶ Write (1A)
-                                  └▶ Read (1B)
-[자동화 실행] ─▶ Test Script (3)
+SSD 소프트웨어작
 ```
 
 ---
 
-## ✅ 추천 작업 순서
-
-1. 1A/1B 개발자가 `ssd.exe` 기본 동작 완성
-2. 2A/2B 개발자가 Shell 명령어 구조와 system 연동 구현
-3. 3번 개발자가 자동화 스크립트 구현 및 검증 구조 작성
-
-> 이후 역할 4(유효성 검사), 5(문서화/리팩토링/TDD)는 후속 작업으로 추가 가능합니다.
 
