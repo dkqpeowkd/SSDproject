@@ -32,6 +32,15 @@ void SsdInterface::recordErrorPatternToOutputFile() {
   }
 }
 
+void SsdInterface::recordSuccessPatternToOutputFile(const std::string & value) {
+  output = value;
+
+  std::ofstream file(OUTPUT_FILE_NAME, std::ios::trunc);
+  if (file.is_open()) {
+    file << output << "\n";
+  }
+}
+
 bool SsdInterface::isValidNumberZeroToNintyNine(const std::string& str) {
   // 모든 문자가 숫자인지 확인
   for (char ch : str) {
