@@ -5,26 +5,26 @@
 
 ## 2. 기능적 요구사항
 ### 2.1. SSD 소프트웨어 구현
-  - 가상 SSD 구현
-  - LBA(Logical Block Address) 0~99까지 총 100개 블록 지원
-  - 각 LBA는 4 Byte(32bit) 크기, 총 400 Byte 저장 가능
-  - 저장 단위는 4 Byte, 미기록 LBA는 0x00000000으로 간주
-  - 명령어 지원
+  - 프로그램명 SSD
+    - LBA(Logical Block Address) 0~99까지 총 100개 블록 지원
+    - 각 LBA는 4 Byte(32bit) 크기, 총 400 Byte 저장 가능
+    - 저장 단위는 4 Byte, 미기록 LBA는 0x00000000으로 간주
   - Write: ssd W [LBA] [Value]
-  - LBA 범위: 0~99, 10진수
-  - Value: 0x로 시작하는 8자리 16진수(총 10글자, 예: 0x1234ABCD)
-  - ssd_nand.txt 파일에 해당 LBA 위치에 값 저장
-  - 잘못된 LBA/Value 입력 시 ssd_output.txt에 "ERROR" 기록
-  - 콘솔 출력 없음
+    - Value: 0x로 시작하는 8자리 16진수(총 10글자, 예: 0x1234ABCD)
+    - ssd_nand.txt 파일에 해당 LBA 위치에 값 저장
+    - 잘못된 LBA/Value 입력 시 ssd_output.txt에 "ERROR" 기록
   - Read: ssd R [LBA]
-  - LBA 범위: 0~99
-  - ssd_nand.txt에서 해당 LBA 값 읽어 ssd_output.txt에 기록
-  - 미기록 LBA는 0x00000000 기록
-  - 잘못된 LBA 입력 시 ssd_output.txt에 "ERROR" 기록
-  - 콘솔 출력 없음
+    - LBA 범위: 0~99
+    - ssd_nand.txt에서 해당 LBA 값 읽어 ssd_output.txt에 기록
+    - 미기록 LBA는 0x00000000 기록
+    - 잘못된 LBA 입력 시 ssd_output.txt에 "ERROR" 기록
+    - 콘솔 출력 없음
   - 파일 입출력
-  - ssd_nand.txt: SSD 데이터 저장 파일, 없으면 생성
-  - ssd_output.txt: 마지막 Read 결과 저장, 덮어쓰기 방식
+    - ssd_nand.txt: SSD 데이터 저장 파일, 없으면 생성
+    - 매 실행마다 전체 파일을 읽은 뒤, 특정 LBA의 데이터를 수정하고 전체 다시 저장
+    - ssd_output.txt: 마지막 Read 결과 저장, 덮어쓰기 방식
+    - 기존 내용은 항상 덮어쓰기
+    - ssd_nand.txt가 없거나 해당 LBA에 기록이 없으면 → 0x00000000 반환
 
 ### 2.2. Test Shell 개발
 #### 명령어 지원
