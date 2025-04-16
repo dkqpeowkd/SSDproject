@@ -79,6 +79,8 @@ Write한 값과 Read 결과 비교
 불일치 시 즉시 FAIL 출력 후 종료
 모든 비교 통과 시 PASS 출력
 
+> test script에서 쓰는 write/read는 ssd가 아니라 test shell의 read/write를 써야 한다.
+
 ### 3. 비기능적 요구사항
 #### 3.1. 신뢰성 및 안정성
 - 모든 명령어 및 입력에 대해 런타임 에러 없이 동작해야 함
