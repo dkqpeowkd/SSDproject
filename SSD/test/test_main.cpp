@@ -1,8 +1,10 @@
 #include "gmock/gmock.h"
 #include "../src/SsdInterface.h"
-
+#include <fstream>
 #include <iostream>
+#include <filesystem>
 #include <string>
+namespace fs = std::filesystem;
 
 // - 콘솔 출력 없음
 TEST(SSD, Write_Pass) {
@@ -42,6 +44,25 @@ TEST(SSD, Read_Unmapped) {
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
+}
+
+TEST(SSD, CreateOutputFileIfNotExists) {
+  const std::string filename = "ssd_output.txt";
+
+  // 파일이 있으면 삭제
+  if (std::filesystem::exists(filename)) {
+    fs::remove(filename);
+  }
+
+  ASSERT_FALSE(fs::exists(filename)) << "파일이 이미 존재함";
+
+  SsdInterface * ssdInterface = new SsdInterface();
+  ssdInterface->Read("0");
+
+  ASSERT_TRUE(fs::exists(filename)) << "파일이 생성되지 않았음";
+
+  // cleanup
+  fs::remove(filename);
 }
 
 // - 콘솔 출력 없음
