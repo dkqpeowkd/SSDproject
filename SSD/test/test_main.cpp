@@ -10,6 +10,8 @@ TEST(SSD, Write_Pass) {
   ssdInterface->Write(lba, dataPattern);
 
   EXPECT_EQ("nothing", ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 // - ssd_nand.txt 파일에 해당 LBA 위치에 값 저장
@@ -22,14 +24,22 @@ TEST(SSD, Read_Mapped) {
   ssdInterface->Read(lba);
 
   EXPECT_EQ(dataPattern, ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 // - 미기록 LBA는 0x00000000 기록
 TEST(SSD, Read_Unmapped) {
   SsdInterface* ssdInterface = new SsdInterface();
+  
+  std::string lba = "0";
+  SsdInterface->Read(lba);
+
   std::string ZERO_PATTERN = "0x00000000";
 
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 // - 콘솔 출력 없음
@@ -45,6 +55,8 @@ TEST(SSD, Write_Pass_After_Read) {
   ssdInterface->Write(lba, dataPattern);
 
   EXPECT_EQ("nothing", ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 // - LBA 범위: 0~99, 10진수
@@ -56,6 +68,8 @@ TEST(SSD, Write_Fail_OutOfRange) {
   ssdInterface->Write(lba, dataPattern);
 
   EXPECT_EQ("ERROR", ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 // - Value: 0x로 시작하는 8자리 16진수(총 10글자, 예: 0x1234ABCD)
@@ -67,6 +81,8 @@ TEST(SSD, Write_Fail_InvalidPattern_0) {
   ssdInterface->Write(lba, dataPattern);
 
   EXPECT_EQ("ERROR", ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 TEST(SSD, Write_Fail_InvalidPattern_1) {
@@ -76,6 +92,8 @@ TEST(SSD, Write_Fail_InvalidPattern_1) {
   ssdInterface->Write(lba, dataPattern);
 
   EXPECT_EQ("ERROR", ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 // - 잘못된 LBA 입력 시 ssd_output.txt에 "ERROR" 기록
@@ -85,6 +103,8 @@ TEST(SSD, Read_Fail_OutOfRange) {
   ssdInterface->Read(lba);
 
   EXPECT_EQ("ERROR", ssdInterface->GetResult());
+
+  delete ssdInterface;
 }
 
 int main() { 
