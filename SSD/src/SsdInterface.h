@@ -6,7 +6,6 @@ class SsdInterface {
  public:
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
-  bool isValidNumberZeroToNintyNine(const std::string& str);
 
   std::string GetResult();
 
@@ -23,7 +22,7 @@ class SsdInterface {
 
   bool checkNandFileExist();
 
-
+  bool isValidNumberZeroToNintyNine(const std::string& str);
   bool isValidDataPattern(std::string dataPattern);
 
   unsigned int dataPatterToDigit(std::string dataPattern);
