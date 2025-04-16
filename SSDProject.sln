@@ -13,6 +13,14 @@ Global
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		SSD_Release|x64 = SSD_Release|x64
+		SSD_Release|x86 = SSD_Release|x86
+		SSD_Test|x64 = SSD_Test|x64
+		SSD_Test|x86 = SSD_Test|x86
+		TestShell_Release|x64 = TestShell_Release|x64
+		TestShell_Release|x86 = TestShell_Release|x86
+		TestShell_test|x64 = TestShell_test|x64
+		TestShell_test|x86 = TestShell_test|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{209277FC-65B2-47CD-9412-E991F6968D23}.Debug|x64.ActiveCfg = Debug|x64
@@ -23,6 +31,20 @@ Global
 		{209277FC-65B2-47CD-9412-E991F6968D23}.Release|x64.Build.0 = Release|x64
 		{209277FC-65B2-47CD-9412-E991F6968D23}.Release|x86.ActiveCfg = Release|Win32
 		{209277FC-65B2-47CD-9412-E991F6968D23}.Release|x86.Build.0 = Release|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Release|x64.ActiveCfg = SSD_Release|x64
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Release|x64.Build.0 = SSD_Release|x64
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Release|x86.ActiveCfg = SSD_Release|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Release|x86.Build.0 = SSD_Release|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Test|x64.ActiveCfg = Test|x64
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Test|x64.Build.0 = Test|x64
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Test|x86.ActiveCfg = Test|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.SSD_Test|x86.Build.0 = Test|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.TestShell_Release|x64.ActiveCfg = TestShell_Release|x64
+		{209277FC-65B2-47CD-9412-E991F6968D23}.TestShell_Release|x86.ActiveCfg = TestShell_Release|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.TestShell_Release|x86.Build.0 = TestShell_Release|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.TestShell_test|x64.ActiveCfg = TestShell_test|x64
+		{209277FC-65B2-47CD-9412-E991F6968D23}.TestShell_test|x86.ActiveCfg = TestShell_test|Win32
+		{209277FC-65B2-47CD-9412-E991F6968D23}.TestShell_test|x86.Build.0 = TestShell_test|Win32
 		{5A15BA05-E7F4-4163-8056-200285C6767C}.Debug|x64.ActiveCfg = Debug|x64
 		{5A15BA05-E7F4-4163-8056-200285C6767C}.Debug|x64.Build.0 = Debug|x64
 		{5A15BA05-E7F4-4163-8056-200285C6767C}.Debug|x86.ActiveCfg = Debug|Win32
@@ -31,6 +53,20 @@ Global
 		{5A15BA05-E7F4-4163-8056-200285C6767C}.Release|x64.Build.0 = Release|x64
 		{5A15BA05-E7F4-4163-8056-200285C6767C}.Release|x86.ActiveCfg = Release|Win32
 		{5A15BA05-E7F4-4163-8056-200285C6767C}.Release|x86.Build.0 = Release|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.SSD_Release|x64.ActiveCfg = SSD_Release|x64
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.SSD_Release|x86.ActiveCfg = SSD_Release|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.SSD_Release|x86.Build.0 = SSD_Release|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.SSD_Test|x64.ActiveCfg = Test|x64
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.SSD_Test|x86.ActiveCfg = Test|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.SSD_Test|x86.Build.0 = Test|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_Release|x64.ActiveCfg = TestShell_Release|x64
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_Release|x64.Build.0 = TestShell_Release|x64
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_Release|x86.ActiveCfg = TestShell_Release|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_Release|x86.Build.0 = TestShell_Release|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_test|x64.ActiveCfg = TestShell_test|x64
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_test|x64.Build.0 = TestShell_test|x64
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_test|x86.ActiveCfg = TestShell_test|Win32
+		{5A15BA05-E7F4-4163-8056-200285C6767C}.TestShell_test|x86.Build.0 = TestShell_test|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
