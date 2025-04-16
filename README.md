@@ -87,19 +87,71 @@
 
 ## ✅ 7. Test Script 상세 시나리오
 
-### ▶ `1_FullWriteAndReadCompare`
-- LBA를 5칸씩 묶어 각 블록에 다른 값 저장
-- 각 블록마다 Write 후 ReadCompare 수행
+### ▶ 1. `1_FullWriteAndReadCompare`
 
-### ▶ `2_PartialLBAWrite`
-- 30회 반복
-- LBA 4→0→3→1→2 순으로 Write
-- LBA 0~4 ReadCompare
+- **전체 LBA (0~99)** 대상, 5칸 단위로 값을 달리하여 write
+- 각 블록마다 write 후 해당 블록에 대해 ReadCompare 수행
 
-### ▶ `3_WriteReadAging`
-- 200회 반복
-- 매번 랜덤값을 생성하여 LBA 0, 99에 Write
-- LBA 0, 99 ReadCompare
+**세부 흐름:**
+
+```
+for base in [0, 5, 10, ..., 95]:
+    for lba in base ~ base+4:
+        write(lba, value)
+    for lba in base ~ base+4:
+        readCompare(lba, value)
+```
+
+- 목적: 전체 SSD 블록이 정확히 쓰이고 읽히는지 검증
+- 실행: `1_` 또는 `1_FullWriteAndReadCompare`
+
+---
+
+### ▶ 2. `2_PartialLBAWrite`
+
+- **30회 반복**
+- LBA 0~4에 대해 **순서를 섞어서 동일한 값 write**
+- 이후 LBA 0~4에 대해 ReadCompare 수행
+
+**세부 흐름:**
+
+```
+for i in 0 to 29:
+    write(4, value)
+    write(0, value)
+    write(3, value)
+    write(1, value)
+    write(2, value)
+    
+    for lba in 0 to 4:
+        readCompare(lba, value)
+```
+
+- 목적: 순서를 바꿔 write해도 정확하게 저장되는지 검증
+- 실행: `2_` 또는 `2_PartialLBAWrite`
+
+---
+
+### ▶ 3. `3_WriteReadAging`
+
+- **200회 반복**
+- 각 회마다 랜덤값을 생성
+- 해당 값을 LBA 0과 99에 저장 후 ReadCompare 수행
+
+**세부 흐름:**
+
+```
+for i in 0 to 199:
+    randVal = generate_random_32bit()
+    write(0, randVal)
+    write(99, randVal)
+
+    readCompare(0, randVal)
+    readCompare(99, randVal)
+```
+
+- 목적: 경계 LBA 영역 반복 접근 시의 신뢰성 확인
+- 실행: `3_` 또는 `3_WriteReadAging`
 
 ---
 
