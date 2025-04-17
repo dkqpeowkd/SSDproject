@@ -10,7 +10,7 @@
 
 void NandStorage::Write(const std::string& lba, const std::string& dataPattern) {
   int offset = std::stoi(lba) * LBA_SIZE;
-  unsigned int numDataPatter = dataPatternToDigit(dataPattern);
+  unsigned int numDataPattern = dataPatternToDigit(dataPattern);
 
   if (checkNandFileExist() == false) {
     std::ofstream outfile(NAND_FILE_NAME, std::ios::binary);
@@ -26,8 +26,8 @@ void NandStorage::Write(const std::string& lba, const std::string& dataPattern) 
   std::fstream nandFile(NAND_FILE_NAME,
                         std::ios::binary | std::ios::in | std::ios::out);
   nandFile.seekp(offset, std::ios::beg);
-  nandFile.write(reinterpret_cast<const char*>(&numDataPatter),
-                 sizeof(numDataPatter));
+  nandFile.write(reinterpret_cast<const char*>(&numDataPattern),
+                 sizeof(numDataPattern));
 }
 
 bool NandStorage::exists() {
