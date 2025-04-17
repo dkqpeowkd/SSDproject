@@ -66,8 +66,10 @@ bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
 {
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
-	if (false == isValidPromptInput(foundCommand, promptInput))
+	if (false == isValidPromptInput(foundCommand, promptInput)) {
+		std::cout << "INVALID COMMAND" << std::endl;
 		return false;
+	}
 
 	foundCommand->Execute(promptInput.cmd, promptInput.args);
 
