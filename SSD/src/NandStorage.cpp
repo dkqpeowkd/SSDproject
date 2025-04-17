@@ -8,7 +8,7 @@
 #include <iomanip>
 #include "NandStorage.h"
 
-void NandStorage::Write(std::string lba, std::string dataPattern) {
+void NandStorage::Write(const std::string& lba, const std::string& dataPattern) {
   int offset = std::stoi(lba) * LBA_SIZE;
   unsigned int numDataPatter = dataPatternToDigit(dataPattern);
 
@@ -40,7 +40,7 @@ bool NandStorage::checkNandFileExist() {
   return nandFile.is_open();
 }
 
-unsigned int NandStorage::Read(std::string lba) {
+unsigned int NandStorage::Read(const std::string& lba) {
   std::ifstream file(NAND_FILE_NAME, std::ios::binary);
   int offset = std::stoi(lba) * LBA_SIZE;
   file.seekg(offset, std::ios::beg);
@@ -50,7 +50,7 @@ unsigned int NandStorage::Read(std::string lba) {
 }
 
 
-unsigned int NandStorage::dataPatternToDigit(std::string dataPattern) {
+unsigned int NandStorage::dataPatternToDigit(const std::string& dataPattern) {
   std::string dataPatterWithout0x = dataPattern.substr(2);
 
   unsigned int numUint;
