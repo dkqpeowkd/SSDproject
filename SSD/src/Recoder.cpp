@@ -15,14 +15,14 @@ void Recoder::recordZeroPatternToOutputFile() {
   }
 }
 
-void Recoder::recordErrorPatternToOutputFile() {
+void Recoder::recordErrorPatternToOutputFile(const std::string& errorMessage) {
   output = ERROR_PATTERN;
 
   std::ofstream file(OUTPUT_FILE_NAME, std::ios::trunc);
   if (file.is_open()) {
     file << output << "\n";
 #ifdef _DEBUG
-    file << validator.getErrorReason() << "\n";
+    file << errorMessage << "\n";
 #endif
   }
 }

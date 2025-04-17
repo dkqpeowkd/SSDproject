@@ -3,7 +3,7 @@
 
 class Recoder {
  public:
-  void recordErrorPatternToOutputFile();
+  void recordErrorPatternToOutputFile(const std::string& errorMessage);
   void recordZeroPatternToOutputFile();
   void recordSuccessPatternToOutputFile(const std::string& value);
   std::string getResult() { return output; };
