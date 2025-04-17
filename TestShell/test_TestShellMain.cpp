@@ -153,7 +153,7 @@ TEST_F(TestShellFixture, PromptInputTC) {
 	std::istringstream iss(input);
 	std::cin.rdbuf(iss.rdbuf());
 
-	std::cin.rdbuf(cinbuf);
+	std::cin.rdbuf(cinbuf);	
 
 	EXPECT_EQ(input, testShell.getPromptInput().cmd);
 }
