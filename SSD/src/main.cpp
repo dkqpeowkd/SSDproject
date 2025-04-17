@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <algorithm>
 
 #include "SsdInterface.h"
 
@@ -14,6 +15,8 @@ int main(int argc, char* argv[]) {
 
     std::string command = argv[1];
     std::string lbaStr = argv[2];
+
+    std::transform(command.begin(), command.end(), command.begin(), ::toupper);
 
     if (command == "R") {
       if (argc != 3) {
