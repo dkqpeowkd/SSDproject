@@ -21,11 +21,10 @@ std::vector<std::string> split(const std::string& line) {
 TestShell::TestShell()
 {
 	exitCommand = make_shared<ExitCommand>();
-	commandList.emplace_back(exitCommand);
-	shared_ptr<HelpCommand> helpCommand = make_shared<HelpCommand>();
-	commandList.emplace_back(helpCommand);
-	helpCommand->addHelp(helpCommand->getUsage());
-	helpCommand->addHelp(exitCommand->getUsage());
+	helpCommand = make_shared<HelpCommand>();
+
+	addCommand(exitCommand);
+	addCommand(helpCommand);
 }
 void TestShell::run()
 {
@@ -84,8 +83,15 @@ shared_ptr<ICommand> TestShell::findCommand(const string& command)
 	if (commandList.size() == 0)
 		return nullptr;
 
-	for (auto supported : commandList)
+	for (auto supported : commandList) {
 		if (command == supported->getCommandString())
 			return supported;
+	}
 	return nullptr;
+}
+
+void TestShell::addCommand(shared_ptr<ICommand> newCommand)
+{
+	commandList.emplace_back(newCommand);
+	helpCommand->addHelp(newCommand->getUsage());
 }

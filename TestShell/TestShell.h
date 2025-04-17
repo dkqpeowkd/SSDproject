@@ -25,9 +25,11 @@ public:
 	bool ExcutePromptInput(::TestShell::PropmtInput& promptInput);
 	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, TestShell::PropmtInput& promptInput);
 	shared_ptr<ICommand> findCommand(const string& command);
+	void addCommand(shared_ptr<ICommand> newCommand);
 
 private:
 	vector<shared_ptr<ICommand>> commandList;
 	shared_ptr<ExitCommand> exitCommand;
+	shared_ptr<HelpCommand> helpCommand;
 };
 
