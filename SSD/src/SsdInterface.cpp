@@ -42,6 +42,7 @@ void SsdInterface::InvalidCommand(std::string errorMessage) {
   recoder.recordErrorPatternToOutputFile(validator.getErrorReason());
 }
 
+void SsdInterface::ResetResult() { recoder.resetResult(); }
 std::string SsdInterface::GetResult() { return recoder.getResult(); }
 
 

@@ -12,6 +12,7 @@ class SsdInterface {
 
   void InvalidCommand(std::string errorMessage);
 
+  void ResetResult();
   std::string GetResult();
 
  private:
