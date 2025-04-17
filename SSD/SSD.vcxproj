@@ -230,6 +230,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SsdInterface.h" />
+    <ClInclude Include="SsdType.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

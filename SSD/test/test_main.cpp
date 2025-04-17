@@ -1,9 +1,12 @@
 #include "gmock/gmock.h"
+#include "../src/SsdType.h"
 #include "../src/SsdInterface.h"
+
 #include <fstream>
 #include <iostream>
 #include <filesystem>
 #include <string>
+
 namespace fs = std::filesystem;
 
 // - 콘솔 출력 없음
@@ -13,7 +16,7 @@ TEST(SSD, Write_Pass_0) {
   std::string dataPattern = "0x12345678";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_NE("nothing", ssdInterface->GetResult());
+  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
@@ -24,7 +27,7 @@ TEST(SSD, Write_Pass_1) {
   std::string dataPattern = "0x12345678";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_NE("nothing", ssdInterface->GetResult());
+  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
@@ -57,12 +60,14 @@ TEST(SSD, Read_Mapped_1) {
 
 // - 미기록 LBA는 0x00000000 기록
 TEST(SSD, Read_Unmapped) {
+  if (fs::exists(NAND_FILE_NAME)) {
+    fs::remove(NAND_FILE_NAME);
+  }
+
   SsdInterface* ssdInterface = new SsdInterface();
   
   std::string lba = "0";
   ssdInterface->Read(lba);
-
-  std::string ZERO_PATTERN = "0x00000000";
 
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
 
@@ -70,29 +75,25 @@ TEST(SSD, Read_Unmapped) {
 }
 
 TEST(SSD, CreateOutputFileIfNotExists) {
-  const std::string filename = "ssd_output.txt";
-
   // 파일이 있으면 삭제
-  if (std::filesystem::exists(filename)) {
-    fs::remove(filename);
+  if (std::filesystem::exists(OUTPUT_FILE_NAME)) {
+    fs::remove(OUTPUT_FILE_NAME);
   }
 
-  ASSERT_FALSE(fs::exists(filename)) << "파일이 이미 존재함";
+  ASSERT_FALSE(fs::exists(OUTPUT_FILE_NAME)) << "파일이 이미 존재함";
 
   SsdInterface * ssdInterface = new SsdInterface();
   ssdInterface->Read("0");
 
-  ASSERT_TRUE(fs::exists(filename)) << "파일이 생성되지 않았음";
+  ASSERT_TRUE(fs::exists(OUTPUT_FILE_NAME)) << "파일이 생성되지 않았음";
 
   // cleanup
-  fs::remove(filename);
+  fs::remove(OUTPUT_FILE_NAME);
 }
 
 // - 콘솔 출력 없음
 TEST(SSD, Write_Pass_After_Read) {
   SsdInterface* ssdInterface = new SsdInterface();
-
-  std::string ZERO_PATTERN = "0x00000000";
 
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
 
@@ -113,7 +114,7 @@ TEST(SSD, Write_Fail_OutOfRange) {
   std::string dataPattern = "0x12345678";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_EQ("ERROR", ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
@@ -126,7 +127,7 @@ TEST(SSD, Write_Fail_InvalidPattern_0) {
   std::string dataPattern = "0x1";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_EQ("ERROR", ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
@@ -137,7 +138,7 @@ TEST(SSD, Write_Fail_InvalidPattern_1) {
   std::string dataPattern = "1234567890";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_EQ("ERROR", ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
@@ -148,7 +149,7 @@ TEST(SSD, Read_Fail_OutOfRange) {
   std::string lba = "100";
   ssdInterface->Read(lba);
 
-  EXPECT_EQ("ERROR", ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
