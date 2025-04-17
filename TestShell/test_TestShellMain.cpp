@@ -59,8 +59,18 @@ TEST_F(TestShellFixture, CommandValidationPositiveTC) {
 TEST_F(TestShellFixture, CommandArgValidationNegativeTC) {
 	TestShell::PropmtInput promptInput{ "exit", {"dummyArg"}};
 
-	bool status = testShell.ExcutePromptInput(promptInput);
+	shared_ptr<ICommand> foundCommand = testShell.findCommand("exit");
+	bool status = testShell.isValidPromptInput(foundCommand, promptInput);
 	bool expected = false;
+	EXPECT_EQ(expected, status);
+}
+
+TEST_F(TestShellFixture, CommandArgValidationPositiveTC) {
+	TestShell::PropmtInput promptInput{ "exit", {} };
+
+	shared_ptr<ICommand> foundCommand = testShell.findCommand("exit");
+	bool status = testShell.isValidPromptInput(foundCommand, promptInput);
+	bool expected = true;
 	EXPECT_EQ(expected, status);
 }
 /*
