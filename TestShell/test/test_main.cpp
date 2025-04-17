@@ -1,7 +1,17 @@
+#pragma once
 #include "gmock/gmock.h"
-#include <iostream>
+#include "gtest/gtest.h"
+#include "../ReadCommand.h"
 
-TEST(TS, TC) { EXPECT_EQ(1, 1); }
+
+using ::testing::Return;
+using ::testing::_;
+
+class MockReadCommand : public ReadCommand {
+public:
+    MOCK_METHOD(int, callSystem, (const std::string&), (override));
+    MOCK_METHOD(std::string, readOutput, (), (override));
+};
 
 int main() { 
 	testing::InitGoogleMock();
