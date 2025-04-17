@@ -7,6 +7,8 @@ class SsdInterface {
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
 
+  void InvalidCommand(std::string errorMessage);
+
   std::string GetResult();
 
  private:
@@ -14,6 +16,7 @@ class SsdInterface {
   const int LBA_SIZE = 4;  // 4Byte
 
   std::string output = "0x00000000";
+  std::string errorReason = "";
 
   void recordZeroPatternToOutputFile();
   void recordErrorPatternToOutputFile();
