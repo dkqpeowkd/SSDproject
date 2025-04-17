@@ -1,12 +1,23 @@
+#pragma once
 #include "gmock/gmock.h"
 #include<iostream>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include "gtest/gtest.h"
+#include "../ReadCommand.h"
 
+using ::testing::Return;
+using ::testing::_;
 using namespace std;
-// 명령 실행 함수들 (임시 stub)
+
+class MockReadCommand : public ReadCommand {
+public:
+    MOCK_METHOD(int, callSystem, (const std::string&), (override));
+    MOCK_METHOD(std::string, readOutput, (), (override));
+};
+
 int WriteLBA(const std::vector<std::string>& args) {
   int value = std::stoi(args[1], nullptr, 10);
   return value;
