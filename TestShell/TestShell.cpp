@@ -24,21 +24,14 @@ TestShell::TestShell()
 	commandList.emplace_back(exitCommand);
 	shared_ptr<HelpCommand> helpCommand = make_shared<HelpCommand>();
 	commandList.emplace_back(helpCommand);
+	helpCommand->addHelp(helpCommand->getUsage());
+	helpCommand->addHelp(exitCommand->getUsage());
 }
 void TestShell::run()
 {
 	while (exitCommand->isSystemActive()) {
-		string input;
 		displayPrompt();
-		std::getline(std::cin, input);
-		if (input.empty()) continue;
-
-		auto tokens = split(input);
-		std::string cmd = tokens[0];
-		tokens.erase(tokens.begin());
-
-		TestShell::PropmtInput promptInput{ cmd, tokens };
-
+		TestShell::PropmtInput promptInput = getPromptInput();
 		ExcutePromptInput(promptInput);
 	}
 }
@@ -49,12 +42,20 @@ void TestShell::displayPrompt()
 
 ::TestShell::PropmtInput TestShell::getPromptInput()
 {
-	string lineInput = "";
+	::TestShell::PropmtInput promptInput;
+	string input;
+	std::getline(std::cin, input);
+	if (input.empty()) 
+		return promptInput;
 
-	//std::cin.ignore();
-	std::getline(std::cin, lineInput);
+	auto tokens = split(input);
+	std::string cmd = tokens[0];
+	tokens.erase(tokens.begin());
 
-	return ::TestShell::PropmtInput();
+	promptInput.cmd = cmd;
+	promptInput.args = tokens;
+
+	return promptInput;
 }
 
 bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)

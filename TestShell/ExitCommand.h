@@ -15,6 +15,6 @@ interface ExitCommand : public ICommand {
     bool isSystemActive() { return isActive; }
 private:
     const string command = "exit";
-    const string usage = "";
+    const string usage = "exit :\n\tExit the program\nusage:\n\tPrompt>exit";
     bool isActive = true;
 };
