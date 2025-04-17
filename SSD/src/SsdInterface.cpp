@@ -52,6 +52,15 @@ void SsdInterface::recordErrorPatternToOutputFile() {
   }
 }
 
+void SsdInterface::recordSuccessPatternToOutputFile(const std::string & value) {
+  output = value;
+
+  std::ofstream file(OUTPUT_FILE_NAME, std::ios::trunc);
+  if (file.is_open()) {
+    file << output << "\n";
+  }
+}
+
 bool SsdInterface::isValidNumberZeroToNintyNine(const std::string& str) {
   for (char ch : str) {
     if (!std::isdigit(ch)) return false;

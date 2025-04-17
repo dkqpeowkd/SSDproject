@@ -18,6 +18,7 @@ class SsdInterface {
 
   void recordZeroPatternToOutputFile();
   void recordErrorPatternToOutputFile();
+  void recordSuccessPatternToOutputFile(const std::string& value);
 
   bool checkNandFileExist();
 
