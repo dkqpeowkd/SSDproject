@@ -9,7 +9,7 @@ class NandStorage {
 
  private:
   bool checkNandFileExist();
-  unsigned int dataPatterToDigit(std::string dataPattern);
+  unsigned int dataPatternToDigit(std::string dataPattern);
 
  private:
   const int MAX_LBA = 100;

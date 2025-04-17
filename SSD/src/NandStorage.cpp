@@ -9,8 +9,8 @@
 #include "NandStorage.h"
 
 void NandStorage::Write(std::string lba, std::string dataPattern) {
-  int offset = std::stoi(lba) * 4;
-  unsigned int numDataPatter = dataPatterToDigit(dataPattern);
+  int offset = std::stoi(lba) * LBA_SIZE;
+  unsigned int numDataPatter = dataPatternToDigit(dataPattern);
 
   if (checkNandFileExist() == false) {
     std::ofstream outfile(NAND_FILE_NAME, std::ios::binary);
@@ -50,7 +50,7 @@ unsigned int NandStorage::Read(std::string lba) {
 }
 
 
-unsigned int NandStorage::dataPatterToDigit(std::string dataPattern) {
+unsigned int NandStorage::dataPatternToDigit(std::string dataPattern) {
   std::string dataPatterWithout0x = dataPattern.substr(2);
 
   unsigned int numUint;
