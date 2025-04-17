@@ -16,7 +16,7 @@ const std::string& Script1_FullWriteAndReadCompare::getUsage() {
 }
 
 bool Script1_FullWriteAndReadCompare::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
-    return args.empty(); // 인자 없어야 정상
+    return (cmd == "1_" || cmd == "1_FullWriteAndReadCompare") && args.empty();
 }
 
 bool Script1_FullWriteAndReadCompare::Execute(const std::string& cmd, std::vector<std::string>& args) {

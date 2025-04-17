@@ -82,11 +82,14 @@ bool TestShell::isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, Test
 
 shared_ptr<ICommand> TestShell::findCommand(const string& command)
 {
-	if (commandList.size() == 0)
-		return nullptr;
+	if (commandList.empty()) return nullptr;
 
-	for (auto supported : commandList)
-		if (command == supported->getCommandString())
+	for (auto& supported : commandList) {
+		const std::string& registered = supported->getCommandString();
+		// 완전 일치 or 등록된 명령어가 "1_FullWriteAndReadCompare"인데 "1_"처럼 줄여쓴 경우 허용
+		if (command == registered || registered.rfind(command, 0) == 0) {
 			return supported;
+		}
+	}
 	return nullptr;
 }
