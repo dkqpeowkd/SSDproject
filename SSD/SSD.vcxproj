@@ -225,9 +225,12 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Recoder.cpp" />
+    <ClCompile Include="src\Validator.cpp" />
     <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Test|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\NandStorage.cpp" />
     <ClCompile Include="src\SsdInterface.cpp" />
     <ClCompile Include="test\test_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
@@ -238,6 +241,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Recoder.h" />
+    <ClInclude Include="src\Validator.h" />
+    <ClInclude Include="src\NandStorage.h" />
     <ClInclude Include="src\SsdInterface.h" />
     <ClInclude Include="SsdType.h" />
   </ItemGroup>
