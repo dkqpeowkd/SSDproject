@@ -16,6 +16,13 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
 
   if (checkNandFileExist() == false) {
     std::ofstream outfile(NAND_FILE_NAME, std::ios::binary);
+
+    std::fstream nandFile(NAND_FILE_NAME,
+                          std::ios::binary | std::ios::in | std::ios::out);
+    nandFile.seekp((MAX_LBA - 1) * LBA_SIZE, std::ios::beg);
+
+    int zero = 0;
+    nandFile.write(reinterpret_cast<const char*>(&zero), sizeof(zero));
   }
 
   std::fstream nandFile(NAND_FILE_NAME, std::ios::binary | std::ios::in | std::ios::out);
