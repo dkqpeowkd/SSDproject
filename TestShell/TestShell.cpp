@@ -6,6 +6,7 @@
 #include <vector>
 #include "TestShell.h"
 #include "ICommand.h"
+#include "Script1.h"
 
 using std::cout;
 
@@ -24,6 +25,7 @@ TestShell::TestShell()
 	commandList.emplace_back(exitCommand);
 	shared_ptr<HelpCommand> helpCommand = make_shared<HelpCommand>();
 	commandList.emplace_back(helpCommand);
+	commandList.emplace_back(make_shared<Script1_FullWriteAndReadCompare>());
 }
 void TestShell::run()
 {
