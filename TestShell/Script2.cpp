@@ -26,14 +26,14 @@ bool Script2_PartialLBAWrite::Execute(const std::string& cmd, std::vector<std::s
         // Write to shuffled LBAs
         for (int lba : lbas) {
             std::ostringstream writeCmd;
-            writeCmd << "ssd.exe write " << lba << " " << pattern;
+            writeCmd << "ssd.exe Write " << lba << " " << pattern;
             system(writeCmd.str().c_str());
         }
 
         // ReadCompare
         for (int lba : lbas) {
             std::ostringstream readCmd;
-            readCmd << "ssd.exe read " << lba;
+            readCmd << "ssd.exe Read " << lba;
             system(readCmd.str().c_str());
 
             std::ifstream fin("ssd_output.txt");
