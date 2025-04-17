@@ -1,4 +1,6 @@
 #include "gmock/gmock.h"
+#include "../src/SsdInterface.h"
+
 #include <iostream>
 #include <string>
 
@@ -33,7 +35,7 @@ TEST(SSD, Read_Unmapped) {
   SsdInterface* ssdInterface = new SsdInterface();
   
   std::string lba = "0";
-  SsdInterface->Read(lba);
+  ssdInterface->Read(lba);
 
   std::string ZERO_PATTERN = "0x00000000";
 
