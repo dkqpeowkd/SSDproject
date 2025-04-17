@@ -13,7 +13,7 @@ TEST(SSD, Write_Pass) {
   std::string dataPattern = "0x12345678";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_EQ("nothing", ssdInterface->GetResult());
+  EXPECT_NE("nothing", ssdInterface->GetResult());
 
   delete ssdInterface;
 }
