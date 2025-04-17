@@ -39,9 +39,13 @@ TEST_F(TestShellFixture, FindCommandNegativeTC) {
 
 TEST_F(TestShellFixture, FindCommandPositiveTC) {
 
-	shared_ptr<ICommand> command = testShell.findCommand("exit");
+	shared_ptr<ICommand> exitCommand = testShell.findCommand("exit");
 
-	EXPECT_THAT(command, NotNull());
+	EXPECT_THAT(exitCommand, NotNull());
+
+	shared_ptr<ICommand> helpCommand = testShell.findCommand("help");
+
+	EXPECT_THAT(helpCommand, NotNull());
 }
 
 TEST_F(TestShellFixture, CommandValidationPositiveTC) {
@@ -59,6 +63,17 @@ TEST_F(TestShellFixture, CommandArgValidationNegativeTC) {
 	bool expected = false;
 	EXPECT_EQ(expected, status);
 }
+/*
+TEST_F(TestShellFixture, PromptInputTC) {
+	std::streambuf* cinbuf = std::cin.rdbuf();
+	string input = "exit\n";
 
+	std::istringstream iss(input);
+	std::cin.rdbuf(iss.rdbuf());
 
+	std::cin.rdbuf(cinbuf);
+
+	EXPECT_EQ(input, testShell.getPromptInput().cmd);
+}
+*/
 

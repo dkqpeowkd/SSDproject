@@ -3,6 +3,7 @@
 #include <vector>
 #include "ICommand.h"
 #include "ExitCommand.h"
+#include "HelpCommand.h"
 
 using std::string;
 using std::vector;
@@ -27,6 +28,6 @@ public:
 
 private:
 	vector<shared_ptr<ICommand>> commandList;
-	ExitCommand *exitCommand;
+	shared_ptr<ExitCommand> exitCommand;
 };
 

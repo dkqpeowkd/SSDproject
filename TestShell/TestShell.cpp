@@ -1,15 +1,60 @@
 #include <iostream>
+#include <string>
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <vector>
 #include "TestShell.h"
 #include "ICommand.h"
 
 using std::cout;
+
+// 명령어 파서 유틸
+std::vector<std::string> split(const std::string& line) {
+	std::istringstream iss(line);
+	std::vector<std::string> tokens;
+	std::string token;
+	while (iss >> token) tokens.push_back(token);
+	return tokens;
+}
+
 TestShell::TestShell()
 {
-	commandList.emplace_back(make_shared<ExitCommand>());
+	exitCommand = make_shared<ExitCommand>();
+	commandList.emplace_back(exitCommand);
+	shared_ptr<HelpCommand> helpCommand = make_shared<HelpCommand>();
+	commandList.emplace_back(helpCommand);
+}
+void TestShell::run()
+{
+	while (exitCommand->isSystemActive()) {
+		string input;
+		displayPrompt();
+		std::getline(std::cin, input);
+		if (input.empty()) continue;
+
+		auto tokens = split(input);
+		std::string cmd = tokens[0];
+		tokens.erase(tokens.begin());
+
+		TestShell::PropmtInput promptInput{ cmd, tokens };
+
+		ExcutePromptInput(promptInput);
+	}
 }
 void TestShell::displayPrompt()
 {
 	cout << "SSDTestShell:>";
+}
+
+::TestShell::PropmtInput TestShell::getPromptInput()
+{
+	string lineInput = "";
+
+	//std::cin.ignore();
+	std::getline(std::cin, lineInput);
+
+	return ::TestShell::PropmtInput();
 }
 
 bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
