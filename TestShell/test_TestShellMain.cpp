@@ -20,11 +20,21 @@ TEST(TestShellMainLoopTS, displayPromptTC) {
 	EXPECT_EQ(expected, console_output);
 }
 
-TEST(TestShellMainLoopTs, FindCommandTC) {
+TEST(TestShellMainLoopTs, FindCommandNegativeTC) {
 	TestShell testShell;
 
 	shared_ptr<ICommand> command = testShell.findCommand("test");
 
 	EXPECT_THAT(command, IsNull());
 }
+
+TEST(TestShellMainLoopTs, FindCommandPositiveTC) {
+	TestShell testShell;
+
+	shared_ptr<ICommand> command = testShell.findCommand("exit");
+
+	EXPECT_THAT(command, NotNull());
+}
+
+
 

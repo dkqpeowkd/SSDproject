@@ -2,10 +2,12 @@
 #include <string>
 #include <vector>
 #include "ICommand.h"
+#include "ExitCommand.h"
 
 using std::string;
 using std::vector;
 using std::shared_ptr;
+using std::make_shared;
 
 class TestShell
 {
@@ -15,6 +17,7 @@ public:
 		vector<string> args;
 	};
 public:
+	TestShell();
 	void run(); // main loop Ω√¿€
 	void displayPrompt(); // propmt display
 	::TestShell::PropmtInput getPromptInput();
@@ -23,5 +26,6 @@ public:
 
 private:
 	vector<shared_ptr<ICommand>> commandList;
+	ExitCommand *exitCommand;
 };
 

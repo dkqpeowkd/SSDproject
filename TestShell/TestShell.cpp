@@ -3,6 +3,10 @@
 #include "ICommand.h"
 
 using std::cout;
+TestShell::TestShell()
+{
+	commandList.emplace_back(make_shared<ExitCommand>());
+}
 void TestShell::displayPrompt()
 {
 	cout << "SSDTestShell:>";
