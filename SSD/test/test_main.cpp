@@ -7,7 +7,7 @@
 namespace fs = std::filesystem;
 
 // - 콘솔 출력 없음
-TEST(SSD, Write_Pass) {
+TEST(SSD, Write_Pass_0) {
   SsdInterface* ssdInterface = new SsdInterface();
   std::string lba = "0";
   std::string dataPattern = "0x12345678";
@@ -18,11 +18,34 @@ TEST(SSD, Write_Pass) {
   delete ssdInterface;
 }
 
+TEST(SSD, Write_Pass_1) {
+  SsdInterface* ssdInterface = new SsdInterface();
+  std::string lba = "99";
+  std::string dataPattern = "0x12345678";
+  ssdInterface->Write(lba, dataPattern);
+
+  EXPECT_NE("nothing", ssdInterface->GetResult());
+
+  delete ssdInterface;
+}
+
 // - ssd_nand.txt 파일에 해당 LBA 위치에 값 저장
 // - ssd_nand.txt에서 해당 LBA 값 읽어 ssd_output.txt에 기록
-TEST(SSD, Read_Mapped) {
+TEST(SSD, Read_Mapped_0) {
   SsdInterface* ssdInterface = new SsdInterface();
   std::string lba = "0";
+  std::string dataPattern = "0x12345678";
+  ssdInterface->Write(lba, dataPattern);
+  ssdInterface->Read(lba);
+
+  EXPECT_EQ(dataPattern, ssdInterface->GetResult());
+
+  delete ssdInterface;
+}
+
+TEST(SSD, Read_Mapped_1) {
+  SsdInterface* ssdInterface = new SsdInterface();
+  std::string lba = "99";
   std::string dataPattern = "0x12345678";
   ssdInterface->Write(lba, dataPattern);
   ssdInterface->Read(lba);
@@ -77,7 +100,7 @@ TEST(SSD, Write_Pass_After_Read) {
   std::string dataPattern = "0x12345678";
   ssdInterface->Write(lba, dataPattern);
 
-  EXPECT_EQ("nothing", ssdInterface->GetResult());
+  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
 
   delete ssdInterface;
 }
