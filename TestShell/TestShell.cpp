@@ -12,6 +12,20 @@ void TestShell::displayPrompt()
 	cout << "SSDTestShell:>";
 }
 
+bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
+{
+	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
+
+	if (foundCommand == nullptr)
+		return false;
+	if (false == foundCommand->isValidArguments(promptInput.cmd, promptInput.args))
+		return false;
+
+	foundCommand->Execute(promptInput.cmd, promptInput.args);
+
+	return true;
+}
+
 shared_ptr<ICommand> TestShell::findCommand(const string& command)
 {
 	if (commandList.size() == 0)

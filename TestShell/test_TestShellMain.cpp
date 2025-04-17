@@ -44,5 +44,21 @@ TEST_F(TestShellFixture, FindCommandPositiveTC) {
 	EXPECT_THAT(command, NotNull());
 }
 
+TEST_F(TestShellFixture, CommandValidationPositiveTC) {
+	TestShell::PropmtInput promptInput{ "exit", {} };
+
+	bool status = testShell.ExcutePromptInput(promptInput);
+	bool expected = true;
+	EXPECT_EQ(expected, status);
+}
+
+TEST_F(TestShellFixture, CommandArgValidationNegativeTC) {
+	TestShell::PropmtInput promptInput{ "exit", {"dummyArg"}};
+
+	bool status = testShell.ExcutePromptInput(promptInput);
+	bool expected = false;
+	EXPECT_EQ(expected, status);
+}
+
 
 
