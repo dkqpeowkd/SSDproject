@@ -1,7 +1,9 @@
+#include "SsdType.h"
 #include "SsdInterface.h"
 
 #include <cctype>
 #include <sstream>
+#include <iomanip>
 
 void SsdInterface::Write(std::string lba, std::string dataPattern) {
   if (isValidNumberZeroToNintyNine(lba) == false || isValidDataPattern(dataPattern) == false) {
@@ -20,16 +22,30 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
   nandFile.seekp(offset, std::ios::beg);
   nandFile.write(reinterpret_cast<const char*>(&numDataPatter),
              sizeof(numDataPatter));
-
-
 }
 
 void SsdInterface::Read(std::string lba) { 
   if (isValidNumberZeroToNintyNine(lba) == false) return recordErrorPatternToOutputFile();
-  return  recordZeroPatternToOutputFile(); 
-  
-        
-  
+
+  std::ifstream nandFile(NAND_FILE_NAME, std::ios::binary);
+  if (nandFile.is_open() == false) {
+    recordZeroPatternToOutputFile();
+
+    return;
+  }
+
+  int offset = std::stoi(lba) * LBA_SIZE;
+  nandFile.seekg(offset, std::ios::beg);
+
+  int readData;
+  nandFile.read(reinterpret_cast<char*>(&readData), LBA_SIZE);
+
+  std::stringstream ss;
+  ss << std::uppercase << std::hex << std::setw(8) << std::setfill('0')
+     << readData;
+  std::string stringReadData = "0x" + ss.str();
+
+  return recordSuccessPatternToOutputFile(stringReadData);
 }
 
 std::string SsdInterface::GetResult() { return output; }

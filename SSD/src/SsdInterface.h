@@ -9,11 +9,10 @@ class SsdInterface {
 
   std::string GetResult();
 
-  private:
-  const std::string OUTPUT_FILE_NAME = "ssd_output.txt";
-  const std::string NAND_FILE_NAME = "ssd_nand.txt";
-  const std::string ZERO_PATTERN = "0x00000000";
-  const std::string ERROR_PATTERN = "ERROR";
+ private:
+  const int MAX_LBA = 100;
+  const int LBA_SIZE = 4;  // 4Byte
+
   std::string output = "0x00000000";
 
   void recordZeroPatternToOutputFile();
