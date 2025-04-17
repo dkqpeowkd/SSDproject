@@ -63,7 +63,11 @@ bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
 		return false;
 	}
 
-	foundCommand->Execute(promptInput.cmd, promptInput.args);
+	bool executed = foundCommand->Execute(promptInput.cmd, promptInput.args);
+	if (!executed) {
+		std::cout << "INVALID COMMAND" << std::endl;
+		return false;
+	}
 
 	return true;
 }
