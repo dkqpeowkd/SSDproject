@@ -11,7 +11,10 @@ class SsdInterface {
 
   private:
   void recordZeroPatternToOutputFile();
+  void recordErrorPatternToOutputFile();
+  bool isValidNumberZeroToNintyNine(const std::string& str);
   const std::string OUTPUT_FILE_NAME = "ssd_output.txt";
   const std::string ZERO_PATTERN = "0x00000000";
+  const std::string ERROR_PATTERN = "ERROR";
   std::string output = "0x00000000";
 };
