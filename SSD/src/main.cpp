@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
       throw std::invalid_argument("Insufficient comment.");
     }
   } catch (const std::exception& errorMessage) {
-    ssdInterface.Read(errorMessage.what());
+    ssdInterface.InvalidCommand(errorMessage.what());
     return 1;
   }
 
