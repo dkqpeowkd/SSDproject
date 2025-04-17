@@ -3,33 +3,41 @@
 #include "TestShell.h"
 using namespace ::testing;
 
-TEST(TestShellMainLoopTS, displayPromptTC) {
-	TestShell testShell;
+class TestShellFixture : public Test {
+protected:
+	void SetUp() override {
+		prevcoutbuf = std::cout.rdbuf(replacedOutputBuffer.rdbuf()); // 1,2
+	}
 
+	void TearDown() override {
+		std::cout.rdbuf(prevcoutbuf);
+	}
+public:
+	TestShell testShell;
 	std::ostringstream replacedOutputBuffer;
 	std::streambuf* prevcoutbuf;
-	prevcoutbuf = std::cout.rdbuf(replacedOutputBuffer.rdbuf()); // 1,2
 
+	string getConsoleOutput() {
+		replacedOutputBuffer.str();
+	}
+};
+
+TEST_F(TestShellFixture, displayPromptTC) {
 	testShell.displayPrompt();
 	string console_output = replacedOutputBuffer.str();
 
-	std::cout.rdbuf(prevcoutbuf);
-
 	string expected = "SSDTestShell:>";
-
 	EXPECT_EQ(expected, console_output);
 }
 
-TEST(TestShellMainLoopTs, FindCommandNegativeTC) {
-	TestShell testShell;
+TEST_F(TestShellFixture, FindCommandNegativeTC) {
 
 	shared_ptr<ICommand> command = testShell.findCommand("test");
 
 	EXPECT_THAT(command, IsNull());
 }
 
-TEST(TestShellMainLoopTs, FindCommandPositiveTC) {
-	TestShell testShell;
+TEST_F(TestShellFixture, FindCommandPositiveTC) {
 
 	shared_ptr<ICommand> command = testShell.findCommand("exit");
 
