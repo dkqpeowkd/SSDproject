@@ -1,11 +1,14 @@
+#pragma once
+#if 1
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include <sstream>
-#include <string>
 #include <vector>
 #include "TestShell.h"
 #include "ICommand.h"
+#include "Script1.h"
+#include "Script2.h"
 
 using std::cout;
 
@@ -61,10 +64,16 @@ bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
 {
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
-	if (false == isValidPromptInput(foundCommand, promptInput))
+	if (false == isValidPromptInput(foundCommand, promptInput)) {
+		std::cout << "INVALID COMMAND" << std::endl;
 		return false;
+	}
 
-	foundCommand->Execute(promptInput.cmd, promptInput.args);
+	bool executed = foundCommand->Execute(promptInput.cmd, promptInput.args);
+	if (!executed) {
+		std::cout << "INVALID COMMAND" << std::endl;
+		return false;
+	}
 
 	return true;
 }
@@ -80,8 +89,7 @@ bool TestShell::isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, Test
 
 shared_ptr<ICommand> TestShell::findCommand(const string& command)
 {
-	if (commandList.size() == 0)
-		return nullptr;
+	if (commandList.empty()) return nullptr;
 
 	for (auto supported : commandList) {
 		if (command == supported->getCommandString())
