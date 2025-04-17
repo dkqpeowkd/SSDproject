@@ -28,5 +28,6 @@ public:
 
 private:
 	vector<shared_ptr<ICommand>> commandList;
+	shared_ptr<ExitCommand> exitCommand;
 };
 
