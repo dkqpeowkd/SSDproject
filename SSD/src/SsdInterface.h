@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include "NandStorage.h"
+#include "validator.h"
+#include "Recoder.h"
 
 class SsdInterface {
  public:
@@ -15,17 +18,10 @@ class SsdInterface {
   const int MAX_LBA = 100;
   const int LBA_SIZE = 4;  // 4Byte
 
-  std::string output = "0x00000000";
-  std::string errorReason = "";
+  NandStorage nandStorage;
+  Validator validator;
+  Recoder recoder;
 
-  void recordZeroPatternToOutputFile();
-  void recordErrorPatternToOutputFile();
-  void recordSuccessPatternToOutputFile(const std::string& value);
 
-  bool checkNandFileExist();
 
-  bool isValidNumberZeroToNintyNine(const std::string& str);
-  bool isValidDataPattern(std::string dataPattern);
-
-  unsigned int dataPatterToDigit(std::string dataPattern);
 };
