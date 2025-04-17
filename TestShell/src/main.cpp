@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include "../TestShell.h"
 
@@ -8,3 +9,4 @@ int main() {
 	testShell.run();
 	return 0;
 }
+
