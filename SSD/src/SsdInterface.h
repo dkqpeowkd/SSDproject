@@ -12,8 +12,8 @@ class SsdInterface {
 
   void InvalidCommand(std::string errorMessage);
 
-  void ResetResult();
-  std::string GetResult();
+  void ResetResult() { recoder.ResetResult(); };
+  std::string GetResult() { return recoder.GetResult(); };
 
  private:
   const int MAX_LBA = 100;
@@ -23,6 +23,5 @@ class SsdInterface {
   Validator validator;
   Recoder recoder;
 
-
-
+  std::string unsignedIntToPrefixedHexString(unsigned int readData);
 };

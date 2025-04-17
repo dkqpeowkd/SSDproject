@@ -3,15 +3,17 @@
 
 class Recoder {
  public:
-  void recordErrorPatternToOutputFile(const std::string& errorMessage);
-  void recordZeroPatternToOutputFile();
-  void recordSuccessPatternToOutputFile(const std::string& value);
+  void RecordErrorPatternToOutputFile(const std::string& errorMessage);
+  void RecordZeroPatternToOutputFile();
+  void RecordSuccessPatternToOutputFile(const std::string& value);
 
-  void resetResult() { output = INIT_OUTPUT; };
-  std::string getResult() { return output; };
+  void ResetResult() { output = INIT_OUTPUT; };
+  std::string GetResult() { return output; };
 
 private:
   const std::string INIT_OUTPUT = "0x00000000";
 
   std::string output = INIT_OUTPUT;
+
+  void writeToOutputFile(const std::string& content, const std::string& errorMessage = "");
 };
