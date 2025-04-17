@@ -22,6 +22,7 @@ public:
 	void displayPrompt(); // propmt display
 	::TestShell::PropmtInput getPromptInput();
 	bool ExcutePromptInput(::TestShell::PropmtInput& promptInput);
+	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, TestShell::PropmtInput& promptInput);
 	shared_ptr<ICommand> findCommand(const string& command);
 
 private:

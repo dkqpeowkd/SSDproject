@@ -16,13 +16,20 @@ bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
 {
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
-	if (foundCommand == nullptr)
-		return false;
-	if (false == foundCommand->isValidArguments(promptInput.cmd, promptInput.args))
+	if (false == isValidPromptInput(foundCommand, promptInput))
 		return false;
 
 	foundCommand->Execute(promptInput.cmd, promptInput.args);
 
+	return true;
+}
+
+bool TestShell::isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, TestShell::PropmtInput& promptInput)
+{
+	if (foundCommand == nullptr)
+		return false;
+	if (false == foundCommand->isValidArguments(promptInput.cmd, promptInput.args))
+		return false;
 	return true;
 }
 
