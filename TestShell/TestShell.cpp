@@ -1,8 +1,9 @@
+#pragma once
+#if 1
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include <sstream>
-#include <string>
 #include <vector>
 #include "TestShell.h"
 #include "ICommand.h"
@@ -10,15 +11,6 @@
 #include "Script2.h"
 
 using std::cout;
-
-// 명령어 파서 유틸
-std::vector<std::string> split(const std::string& line) {
-	std::istringstream iss(line);
-	std::vector<std::string> tokens;
-	std::string token;
-	while (iss >> token) tokens.push_back(token);
-	return tokens;
-}
 
 TestShell::TestShell()
 {
@@ -98,3 +90,4 @@ shared_ptr<ICommand> TestShell::findCommand(const string& command)
 	}
 	return nullptr;
 }
+#endif
