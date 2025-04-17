@@ -29,14 +29,14 @@ bool Script1_FullWriteAndReadCompare::Execute(const std::string& cmd, std::vecto
         // Write
         for (int lba = group; lba < group + 5 && lba < 100; ++lba) {
             std::ostringstream writeCmd;
-            writeCmd << "ssd.exe write " << lba << " " << pattern;
+            writeCmd << "ssd.exe Write " << lba << " " << pattern;
             system(writeCmd.str().c_str());
         }
 
         // Read + Compare
         for (int lba = group; lba < group + 5 && lba < 100; ++lba) {
             std::ostringstream readCmd;
-            readCmd << "ssd.exe read " << lba;
+            readCmd << "ssd.exe Read " << lba;
             system(readCmd.str().c_str());
 
             std::ifstream fin("ssd_output.txt");
