@@ -8,7 +8,7 @@
 void SsdInterface::Write(std::string lba, std::string dataPattern) {
   if (validator.isValidNumberZeroToNintyNine(lba) == false ||
       validator.isValidDataPattern(dataPattern) == false) {
-    recoder.recordErrorPatternToOutputFile();
+    recoder.recordErrorPatternToOutputFile(validator.getErrorReason());
     return;
   }
 
@@ -18,7 +18,7 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
 
 
 void SsdInterface::Read(std::string lba) { 
-  if (validator.isValidNumberZeroToNintyNine(lba) == false) return recoder.recordErrorPatternToOutputFile();
+  if (validator.isValidNumberZeroToNintyNine(lba) == false) return recoder.recordErrorPatternToOutputFile(validator.getErrorReason());
 
   std::ifstream nandFile(NAND_FILE_NAME, std::ios::binary);
   if (nandStorage.exists() == false) {
@@ -39,7 +39,7 @@ void SsdInterface::Read(std::string lba) {
 
 void SsdInterface::InvalidCommand(std::string errorMessage) {
   validator.setErrorReason(errorMessage);
-  recoder.recordErrorPatternToOutputFile();
+  recoder.recordErrorPatternToOutputFile(validator.getErrorReason());
 }
 
 std::string SsdInterface::GetResult() { return recoder.getResult(); }
