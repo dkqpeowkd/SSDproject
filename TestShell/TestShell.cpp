@@ -6,10 +6,21 @@ using std::cout;
 TestShell::TestShell()
 {
 	commandList.emplace_back(make_shared<ExitCommand>());
+	commandList.emplace_back(make_shared<HelpCommand>());
 }
 void TestShell::displayPrompt()
 {
 	cout << "SSDTestShell:>";
+}
+
+::TestShell::PropmtInput TestShell::getPromptInput()
+{
+	string lineInput = "";
+
+	//std::cin.ignore();
+	std::getline(std::cin, lineInput);
+
+	return ::TestShell::PropmtInput();
 }
 
 bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
