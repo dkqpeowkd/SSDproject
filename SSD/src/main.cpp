@@ -3,10 +3,14 @@
 #include <regex>
 #include <algorithm>
 
+#include "SsdType.h"
 #include "SsdInterface.h"
 
 int main(int argc, char* argv[]) {
   SsdInterface ssdInterface;
+
+  ssdInterface.ResetResult();
+
   try {
     // 명령어 개수 검사
     if (argc < 3) {
@@ -37,8 +41,7 @@ int main(int argc, char* argv[]) {
     }
   } catch (const std::exception& errorMessage) {
     ssdInterface.InvalidCommand(errorMessage.what());
-    return 1;
   }
 
-  return 0;
+  return (ssdInterface.GetResult() == ERROR_PATTERN);
 }
