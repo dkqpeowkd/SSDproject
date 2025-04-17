@@ -7,6 +7,7 @@
 #include "TestShell.h"
 #include "ICommand.h"
 #include "Script1.h"
+#include "Script2.h"
 
 using std::cout;
 
@@ -26,6 +27,8 @@ TestShell::TestShell()
 	shared_ptr<HelpCommand> helpCommand = make_shared<HelpCommand>();
 	commandList.emplace_back(helpCommand);
 	commandList.emplace_back(make_shared<Script1_FullWriteAndReadCompare>());
+	commandList.emplace_back(make_shared<Script2_PartialLBAWrite>());
+
 }
 void TestShell::run()
 {
