@@ -10,6 +10,8 @@ class SsdInterface {
   std::string GetResult();
 
   private:
-  void checkOutputFileExist();
-  const std::string outputFileName = "ssd_output.txt";
+  void recordZeroPatternToOutputFile();
+  const std::string OUTPUT_FILE_NAME = "ssd_output.txt";
+  const std::string ZERO_PATTERN = "0x00000000";
+  std::string output = "0x00000000";
 };
