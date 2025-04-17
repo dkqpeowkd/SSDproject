@@ -14,7 +14,7 @@ public:
     void addHelp(string help);
 private:
     const string command = "help";
-    const string usage = "";
+    const string usage = "help :\n\tDisplay Help for commands\nusage:\n\tPrompt>help";
     string result = "";
     vector<string> cmdHelp;
 };

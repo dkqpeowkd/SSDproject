@@ -25,17 +25,11 @@ public:
 	bool ExcutePromptInput(::TestShell::PropmtInput& promptInput);
 	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, TestShell::PropmtInput& promptInput);
 	shared_ptr<ICommand> findCommand(const string& command);
-    // 명령어 파서 유틸
-    std::vector<std::string> split(const std::string& line) {
-        std::istringstream iss(line);
-        std::vector<std::string> tokens;
-        std::string token;
-        while (iss >> token) tokens.push_back(token);
-        return tokens;
-    }
+	void addCommand(shared_ptr<ICommand> newCommand);
 
-       private:
+private:
 	vector<shared_ptr<ICommand>> commandList;
 	shared_ptr<ExitCommand> exitCommand;
+	shared_ptr<HelpCommand> helpCommand;
 };
 

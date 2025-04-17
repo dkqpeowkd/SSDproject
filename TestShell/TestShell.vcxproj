@@ -208,6 +208,7 @@
   <ItemGroup>
     <ClCompile Include="HelpCommand.cpp" />
     <ClCompile Include="ReadCommand.cpp" />
+    <ClCompile Include="script_3_WriteReadAging.cpp" />
     <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TestShell_test|x64'">true</ExcludedFromBuild>
@@ -222,6 +223,7 @@
     <ClInclude Include="ExitCommand.h" />
     <ClInclude Include="HelpCommand.h" />
     <ClInclude Include="ICommand.h" />
+    <ClInclude Include="script_3_WriteReadAging.h" />
     <ClInclude Include="TestShell.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -230,7 +232,7 @@
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
+      <ErrorText>�로�트컴퓨�에 �는 NuGet �키지�참조�니 �당 �키지륤운로드�려�NuGet �키지 복원�용�십�오. �세�용� http://go.microsoft.com/fwlink/?LinkID=322105�참조�십�오. �락�일� {0}�니</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\gmock.1.11.0\build\native\gmock.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\gmock.1.11.0\build\native\gmock.targets'))" />
   </Target>
