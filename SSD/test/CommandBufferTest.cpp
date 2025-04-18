@@ -57,7 +57,6 @@ TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
   buffer.Init();
   buffer.AddCommand("W 1 ABC");
   buffer.AddCommand("E 2 3");
-  buffer.SaveBuffer();
 
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/1_W 1 ABC"));
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/2_E 2 3"));
@@ -73,8 +72,7 @@ TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
   buffer.Init();
   buffer.AddCommand("W 1 0x12345678");
   buffer.AddCommand("E 2 3");
-  buffer.SaveBuffer();
-  buffer.Flush();
+  buffer.ClearBuffer();
 
   for (int i = 1; i <= 5; ++i) {
     std::string filePath = bufferDir + "/" + std::to_string(i) + "_empty";
@@ -88,7 +86,6 @@ TEST_F(CommandBufferTest, Write_Buffer_in_Buffer) {
   buffer.Init();
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 2 3");
-  buffer.SaveBuffer();
   EXPECT_EQ(VALID_VALUE_1, buffer.Read(VALID_LBA_BEGIN));
   EXPECT_EQ(DATA_IS_NOT_IN_BUFFER,buffer.Read(VALID_LBA_END));
   EXPECT_EQ(ZERO_PATTERN, buffer.Read("2"));
@@ -96,6 +93,28 @@ TEST_F(CommandBufferTest, Write_Buffer_in_Buffer) {
   EXPECT_EQ(ZERO_PATTERN, buffer.Read("4"));
   EXPECT_EQ(DATA_IS_NOT_IN_BUFFER, buffer.Read("5"));
 }
+
+TEST_F(CommandBufferTest, BufferCount3) {
+  CommandBuffer buffer(bufferDir);
+  buffer.Init();
+  buffer.AddCommand("W 0 0x12345678");
+  buffer.AddCommand("E 2 3");
+  buffer.AddCommand("W 1 0x12345678");
+  EXPECT_EQ(3, buffer.GetValidBufferCount());
+}
+
+TEST_F(CommandBufferTest, BufferCount1AfterCleanUp) {
+  CommandBuffer buffer(bufferDir);
+  buffer.Init();
+  buffer.AddCommand("W 0 0x12345678");
+  buffer.AddCommand("E 2 3");
+  buffer.AddCommand("W 1 0x12345678");
+  buffer.AddCommand("W 11 0x12345678");
+  buffer.AddCommand("W 12 0x12345678");
+  buffer.AddCommand("W 13 0x12345678");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+}
+
 
 TEST_F(CommandBufferTest, Write_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);

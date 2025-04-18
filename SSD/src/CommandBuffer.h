@@ -16,23 +16,19 @@ class CommandBuffer {
 
   void Init();
   void AddCommand(const std::string& command);
-  int GetValidBufferCount() { return MAX_BUFFER_SIZE; }
-  void Flush();
+  int GetValidBufferCount();
   void SaveBuffer();
   void DestroyBuffer();
   std::string Read(std::string lba_);
   std::vector<std::string> GetCommandBuffer();
+
+  void ClearBuffer();
 
 
  private:
   std::string bufferDirectory;
   std::vector<std::string> commands;
 
-  void ClearBuffer();
-
-
-  void ExecuteCommand(const std::string& command);
-  bool IsFlushNeeded() const;
   bool IsWriteOrEraseCommand(const std::string& command) const;
   std::unordered_map<int, std::string> BuildLbaMapFromFilenames();
 };
