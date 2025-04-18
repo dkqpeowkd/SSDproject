@@ -149,7 +149,6 @@ TEST_F(SSDTest, Read_Fail_OutOfRange) {
   EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
-
 int main() { 
 	testing::InitGoogleMock();
 	return RUN_ALL_TESTS();

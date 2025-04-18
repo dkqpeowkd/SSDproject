@@ -77,7 +77,6 @@ TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
   buffer.DestroyBuffer();
 }
 
-
 TEST_F(CommandBufferTest, Write_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
   EXPECT_EQ(true, ssdInterface->IsBufferingLba(VALID_LBA_BEGIN));

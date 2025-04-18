@@ -36,6 +36,20 @@ int main(int argc, char* argv[]) {
       std::string value = argv[3];
 
       ssdInterface.Write(lbaStr, value);
+    } else if (command == "E") {
+      if (argc != 4) {
+        throw std::invalid_argument("Insufficient erase arguments.");
+      }
+
+      std::string scope = argv[3];
+
+      ssdInterface.Erase(lbaStr, scope);
+    } else if (command == "F") {
+      if (argc != 2) {
+        throw std::invalid_argument("Insufficient flush arguments.");
+      }
+
+      ssdInterface.Flush();
     } else {
       throw std::invalid_argument("Insufficient comment.");
     }
