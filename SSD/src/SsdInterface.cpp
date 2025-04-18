@@ -12,7 +12,10 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
     return;
   }
 
-  nandStorage.Write(lba, dataPattern);
+  if (nandStorage.Write(lba, dataPattern) == false) {
+    validator.SetErrorReason(" ### Write Fail (about File) ### ");
+    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  }
 }
 
 void SsdInterface::Read(std::string lba) { 
@@ -52,6 +55,8 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
     std::string currentLba = std::to_string(std::stoi(lba) + writeOffset);
 
     nandStorage.Write(currentLba, ZERO_PATTERN);
+    validator.SetErrorReason(" ### Write Fail (about File) ### ");
+    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 }
 

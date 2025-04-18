@@ -3,12 +3,13 @@
 
 class NandStorage {
  public:
-  void Write(const std::string& lba, const std::string& dataPattern);
+  bool Write(const std::string& lba, const std::string& dataPattern);
   unsigned int Read(const std::string& lba);
 
   bool IsExistNand();
 
  private:
-  void nandFileInitialize();
+  bool createNandFile();
+  bool initializeNandFile();
   unsigned int dataPatternToDigit(const std::string& dataPattern);
 };
