@@ -156,7 +156,7 @@ TEST_F(SSDTest, Read_Fail_OutOfRange) {
 TEST_F(SSDTest, Erase_Pass_MinusSize) {
   std::string minusSize = "-5";
   ssdInterface->Erase(VALID_LBA_END, minusSize);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
 TEST_F(SSDTest, Erase_Fail_MinusLba) {
