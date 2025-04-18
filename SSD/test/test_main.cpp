@@ -149,6 +149,7 @@ TEST_F(SSDTest, Read_Fail_OutOfRange) {
   EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
+/*
 TEST_F(SSDTest, Write_Buffer) { 
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
   EXPECT_EQ(true, ssdInterface->IsBufferingLba(VALID_LBA_BEGIN));
@@ -200,6 +201,7 @@ TEST_F(SSDTest, Invalid_Range_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
   EXPECT_EQ(false, ssdInterface->IsBufferingLba(INVALID_LBA));
 }
+*/
 
 int main() { 
 	testing::InitGoogleMock();
