@@ -5,3 +5,5 @@
 #define ZERO_PATTERN "0x00000000"
 #define ERROR_PATTERN "ERROR"
 
+#define MAX_LBA 99
+#define LBA_SIZE 4 // 4Byte

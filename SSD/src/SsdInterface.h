@@ -10,6 +10,7 @@ class SsdInterface {
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
   void Erase(std::string lba, std::string scope);
+  void Flush();
 
   void InvalidCommand(std::string errorMessage);
 
@@ -17,9 +18,6 @@ class SsdInterface {
   std::string GetResult() { return recoder.GetResult(); };
 
  private:
-  const int MAX_LBA = 100;
-  const int LBA_SIZE = 4;  // 4Byte
-
   NandStorage nandStorage;
   Validator validator;
   Recoder recoder;
