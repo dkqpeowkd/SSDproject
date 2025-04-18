@@ -12,10 +12,12 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
     return;
   }
 
-  if (nandStorage.Write(lba, dataPattern) == false) {
-    validator.SetErrorReason(" ### Write Fail (about File) ### ");
-    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  if (commandBuffer.GetValidBufferCount() == 5) {
+    Flush();
   }
+
+  std::string writeCommand = "W " + lba + " " + dataPattern;
+  commandBuffer.AddCommand(writeCommand);
 }
 
 void SsdInterface::Read(std::string lba) { 
@@ -29,8 +31,15 @@ void SsdInterface::Read(std::string lba) {
     return;
   }
 
-  unsigned int readData = nandStorage.Read(lba);
-  std::string stringReadData = unsignedIntToPrefixedHexString(readData);
+  std::string stringReadData;
+  if (commandBuffer.GetValidBufferCount() > 0) {
+    stringReadData = commandBuffer.Read(lba);
+  }
+
+  if (stringReadData == "DATA_IS_NOT_IN_BUFFER") {
+    unsigned int readData = nandStorage.Read(lba);
+    stringReadData = unsignedIntToPrefixedHexString(readData);
+  }
 
   return recoder.RecordSuccessPatternToOutputFile(stringReadData);
 }
@@ -44,6 +53,44 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
+  if (commandBuffer.GetValidBufferCount() == 5) {
+    Flush();
+  }
+
+  std::string eraseCommand = "E " + lba + " " + scope;
+  commandBuffer.AddCommand(eraseCommand);
+}
+
+void SsdInterface::Flush() { 
+  std::vector<std::string> commands = commandBuffer.GetCommandBuffer();
+  const int bufferItemCount = commands.size();
+
+  for (int bufferSlot = 0; bufferSlot < bufferItemCount; bufferSlot++) {
+    std::string command = commands[bufferSlot];
+
+    std::string commandType = "W";
+    if (commandType == "W") {
+      const std::string lba = "0";
+      const std::string dataPattern = "0x12345678";
+      if (nandStorage.Write(lba, dataPattern) == false) {
+        validator.SetErrorReason(" ### Write Fail (about File) ### ");
+        recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+      }
+    } else if (commandType == "E") {
+      const std::string lba = "0";
+      const std::string scope = "1";
+      processErase(lba, scope);
+    } else {
+      validator.SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +
+                               commandType);
+      return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    }
+  }
+
+  commandBuffer.DestroyBuffer();
+}
+
+void SsdInterface::processErase(std::string lba, std::string scope) {
   int writeCount = std::stoi(scope);
   int lastLba = std::stoi(lba) + writeCount;
   if (lastLba > MAX_LBA) {
@@ -54,14 +101,11 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
   for (int writeOffset = 0; writeOffset < writeCount; writeOffset++) {
     std::string currentLba = std::to_string(std::stoi(lba) + writeOffset);
 
-    nandStorage.Write(currentLba, ZERO_PATTERN);
-    validator.SetErrorReason(" ### Write Fail (about File) ### ");
-    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    if (nandStorage.Write(currentLba, ZERO_PATTERN) == false) {
+      validator.SetErrorReason(" ### Write Fail (about File) ### ");
+      recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    }
   }
-}
-
-void SsdInterface::Flush() { 
-    return;
 }
 
 std::string SsdInterface::unsignedIntToPrefixedHexString(unsigned int readData) {
