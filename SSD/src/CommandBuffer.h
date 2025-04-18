@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SsdTYpe.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -17,14 +19,13 @@ class CommandBuffer {
   int GetValidBufferCount();
   void SaveBuffer();
   void DestroyBuffer();
-  std::string CommandBuffer::Read(std::string lba_);
+  std::string Read(std::string lba_);
   std::vector<std::string> GetCommandBuffer();
 
   void ClearBuffer();
 
 
  private:
-  const int MAX_BUFFER_SIZE = 5;
   std::string bufferDirectory;
   std::vector<std::string> commands;
 
