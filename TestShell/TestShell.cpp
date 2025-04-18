@@ -10,6 +10,7 @@
 #include "WriteCommand.h"
 #include "Script1.h"
 #include "Script2.h"
+#include "Script3.h"
 
 using std::cout;
 
@@ -20,6 +21,14 @@ std::vector<std::string> split(const std::string& line) {
 	std::string token;
 	while (iss >> token) tokens.push_back(token);
 	return tokens;
+}
+
+std::vector<std::shared_ptr<ICommand>> getAllScriptCommands() {
+	return {
+		std::make_shared<Script1_FullWriteAndReadCompare>(),
+		std::make_shared<Script2_PartialLBAWrite>(),
+		std::make_shared<Script3_WriteReadAging>()
+	};
 }
 
 TestShell::TestShell()
@@ -33,6 +42,10 @@ TestShell::TestShell()
 	addCommand(helpCommand);
 	addCommand(readCommand);
 	addCommand(writeCommand);
+
+	for (auto& scriptCmd : getAllScriptCommands()) {
+		addCommand(scriptCmd);
+	}
 }
 void TestShell::run()
 {
