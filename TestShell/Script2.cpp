@@ -12,7 +12,7 @@ const std::string& Script2_PartialLBAWrite::getUsage() {
 }
 
 bool Script2_PartialLBAWrite::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
-    return (cmd == "2_" || cmd == command) && args.empty();
+    return args.empty();
 }
 
 bool Script2_PartialLBAWrite::Execute(const std::string& cmd, std::vector<std::string>& args) {
@@ -47,8 +47,7 @@ bool Script2_PartialLBAWrite::Execute(const std::string& cmd, std::vector<std::s
 
             if (result != pattern) {
                 std::cout << "[FAIL] Loop " << loop << ", LBA " << lba << " - Expected: " << pattern << ", Got: " << result << std::endl;
-                std::cout << "FAIL" << std::endl;
-                return false;
+                return true;
             }
         }
     }

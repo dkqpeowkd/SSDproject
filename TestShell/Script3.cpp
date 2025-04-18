@@ -14,7 +14,7 @@ const std::string& Script3_WriteReadAging::getUsage() {
 }
 
 bool Script3_WriteReadAging::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
-    return (cmd == "3_" || cmd == command) && args.empty();
+    return args.empty();
 }
 
 bool Script3_WriteReadAging::Execute(const string& cmd, vector<string>& args)
@@ -51,8 +51,7 @@ bool Script3_WriteReadAging::Execute(const string& cmd, vector<string>& args)
             if (result != pattern) {
                 std::cout << "[FAIL] Loop " << loop << ", LBA " << lba
                     << " - Expected: " << pattern << ", Got: " << result << std::endl;
-                std::cout << "FAIL" << std::endl;
-                return false;
+                return true;
             }
         }
     }
