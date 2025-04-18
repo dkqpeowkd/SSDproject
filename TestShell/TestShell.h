@@ -4,6 +4,8 @@
 #include "ICommand.h"
 #include "ExitCommand.h"
 #include "HelpCommand.h"
+#include "ReadCommand.h"
+#include "WriteCommand.h"
 
 using std::string;
 using std::vector;
