@@ -20,6 +20,8 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
   commandBuffer.AddCommand(writeCommand);
 }
 
+void SsdInterface::ClearCommandBuffer() { commandBuffer.ClearBuffer(); }
+
 void SsdInterface::Read(std::string lba) { 
   if (validator.IsNumberWithinRange(lba, 0, MAX_LBA) == false) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());

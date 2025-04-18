@@ -2,6 +2,7 @@
 
 #define OUTPUT_FILE_NAME "ssd_output.txt"
 #define NAND_FILE_NAME "ssd_nand.txt"
+#define COMMAND_BUFFER_FOLDER_NAME "buffer"
 #define ZERO_PATTERN "0x00000000"
 #define ERROR_PATTERN "ERROR"
 #define FAIL_BUFFER_READ_MESSAGE "DATA_IS_NOT_IN_BUFFER"
