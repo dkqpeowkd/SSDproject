@@ -25,18 +25,18 @@ void SsdInterface::Read(std::string lba) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
-  std::ifstream nandFile(NAND_FILE_NAME, std::ios::binary);
-  if (nandStorage.IsExistNand() == false) {
-    recoder.RecordZeroPatternToOutputFile();
-    return;
-  }
-
   std::string stringReadData;
   if (commandBuffer.GetValidBufferCount() > 0) {
     stringReadData = commandBuffer.Read(lba);
   }
 
   if (stringReadData == FAIL_BUFFER_READ_MESSAGE) {
+    std::ifstream nandFile(NAND_FILE_NAME, std::ios::binary);
+    if (nandStorage.IsExistNand() == false) {
+      recoder.RecordZeroPatternToOutputFile();
+      return;
+    }  
+
     unsigned int readData = nandStorage.Read(lba);
     stringReadData = unsignedIntToPrefixedHexString(readData);
   }
@@ -94,7 +94,7 @@ void SsdInterface::Flush() {
     }
   }
 
-  commandBuffer.DestroyBuffer();
+  commandBuffer.ClearBuffer();
 }
 
 void SsdInterface::processErase(std::string lba, std::string scope) {
