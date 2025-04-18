@@ -47,6 +47,7 @@ TEST_F(CommandBufferTest, InitCreatesBufferFiles) {
     std::string filePath = bufferDir + "/" + std::to_string(i) + "_empty";
     ASSERT_TRUE(std::filesystem::exists(filePath));
   }
+  buffer.DestroyBuffer();
 }
 
 TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
@@ -58,6 +59,7 @@ TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
 
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/1_W 1 ABC"));
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/2_E 2 3"));
+  buffer.DestroyBuffer();
 }
 
 TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
@@ -72,6 +74,7 @@ TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
     std::string filePath = bufferDir + "/" + std::to_string(i) + "_empty";
     ASSERT_TRUE(std::filesystem::exists(filePath));
   }
+  buffer.DestroyBuffer();
 }
 
 
@@ -111,6 +114,7 @@ TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(VALID_VALUE_2, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
 }
 
 TEST_F(CommandBufferTest, WtoE_Ignore_Buffer) {
@@ -121,6 +125,7 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer) {
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
 }
 
 TEST_F(CommandBufferTest, Invalid_Range_Buffer) {

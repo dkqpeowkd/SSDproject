@@ -62,6 +62,12 @@ void CommandBuffer::ClearBuffer() {
   }
 }
 
+void CommandBuffer::DestroyBuffer() {
+  if (std::filesystem::exists(bufferDirectory)) {
+    std::filesystem::remove_all(bufferDirectory);
+  }
+}
+
 bool CommandBuffer::IsFlushNeeded() const {
   return commands.size() >= MAX_BUFFER_SIZE;
 }

@@ -16,6 +16,7 @@ class CommandBuffer {
   int GetValidBufferCount() { return MAX_BUFFER_SIZE; }
   void Flush();
   void SaveBuffer();
+  void DestroyBuffer();
 
  private:
   const int MAX_BUFFER_SIZE = 5;
