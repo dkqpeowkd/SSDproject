@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class CommandBuffer {
  public:
@@ -17,6 +18,9 @@ class CommandBuffer {
   void Flush();
   void SaveBuffer();
   void DestroyBuffer();
+  std::string CommandBuffer::Read(std::string lba_);
+  std::vector<std::string> GetCommandBuffer();
+
 
  private:
   const int MAX_BUFFER_SIZE = 5;
@@ -24,7 +28,10 @@ class CommandBuffer {
   std::vector<std::string> commands;
 
   void ClearBuffer();
+
+
   void ExecuteCommand(const std::string& command);
   bool IsFlushNeeded() const;
   bool IsWriteOrEraseCommand(const std::string& command) const;
+  std::unordered_map<int, std::string> BuildLbaMapFromFilenames();
 };
