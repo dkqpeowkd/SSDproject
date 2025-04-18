@@ -27,7 +27,7 @@ void SsdInterface::Read(std::string lba) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
-  std::string stringReadData;
+  std::string stringReadData = FAIL_BUFFER_READ_MESSAGE;
   if (commandBuffer.GetValidBufferCount() > 0) {
     stringReadData = commandBuffer.Read(lba);
   }
@@ -47,12 +47,25 @@ void SsdInterface::Read(std::string lba) {
 }
 
 void SsdInterface::Erase(std::string lba, std::string scope) {
+  if (validator.IsNumberWithinRange(scope, 1, 10, true) == false) {
+    return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  }
+
   if (validator.IsNumberWithinRange(lba, 0, MAX_LBA) == false) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
-  if (validator.IsNumberWithinRange(scope, 1, 10) == false) {
+  int numLba = stoi(lba);
+  int numScope = stoi(scope);
+  std::string endLba = std::to_string(numLba + numScope);
+
+  if (validator.IsNumberWithinRange(endLba, 0, MAX_LBA) == false) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  }
+
+  if (numScope < 0) {
+    lba = endLba;
+    scope = std::to_string(abs(numScope));
   }
 
   if (isBufferFull() == true) {

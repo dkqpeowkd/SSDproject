@@ -1,9 +1,11 @@
 #include "Validator.h"
 
 bool Validator::IsNumberWithinRange(const std::string& str, const int minNum,
-    const int maxNum) {
+    const int maxNum, bool isScope) {
   try {
     int num = std::stoi(str);
+
+    if (isScope == true) num = std::abs(num);
 
     if (num >= minNum && num <= maxNum) {
       return true;

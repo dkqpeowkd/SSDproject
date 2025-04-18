@@ -153,6 +153,31 @@ TEST_F(SSDTest, Read_Fail_OutOfRange) {
   EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
+TEST_F(SSDTest, Erase_Pass_MinusSize) {
+  std::string minusSize = "-5";
+  ssdInterface->Erase(VALID_LBA_END, minusSize);
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+}
+
+TEST_F(SSDTest, Erase_Fail_MinusLba) {
+  std::string minusLba = "-3";
+  ssdInterface->Erase(minusLba, VALID_ERASE_SCOPE_1);
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+}
+
+TEST_F(SSDTest, Erase_Fail_MinusSize) {
+  std::string minusSize = "-5";
+  ssdInterface->Erase(VALID_LBA_BEGIN, minusSize);
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+}
+
+TEST_F(SSDTest, Erase_Fail_MinusLbaAndSize) {
+  std::string minusLba = "-3";
+  std::string minusSize = "-5";
+  ssdInterface->Erase(minusLba, minusSize);
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+}
+
 int main() { 
 	testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
