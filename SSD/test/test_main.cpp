@@ -149,60 +149,6 @@ TEST_F(SSDTest, Read_Fail_OutOfRange) {
   EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
-/*
-TEST_F(SSDTest, Write_Buffer) { 
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  EXPECT_EQ(true, ssdInterface->IsBufferingLba(VALID_LBA_BEGIN));
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(VALID_LBA_END));
-}
-
-TEST_F(SSDTest, Erase_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Erase(VALID_LBA_BEGIN, 1);
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(VALID_LBA_END));
-  EXPECT_NE(VALID_VALUE_1, ssdInterface->Read(VALID_LBA_BEGIN));
-}
-
-TEST_F(SSDTest, Explicit_Flush_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Flush();
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(VALID_LBA_END));
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->Read(VALID_LBA_BEGIN));
-}
-
-TEST_F(SSDTest, Implicit_Flush_Buffer) {
-  for (int cmdCount = 0; cmdCount <= 6; cmdCount++) {
-    std::string lba = std::to_string(std::stoi(VALID_LBA_BEGIN) + cmdCount);
-    ssdInterface->Write(lba, VALID_VALUE_1);
-  }
-
-  for (int cmdCount = 0; cmdCount <= 5; cmdCount++) {
-    std::string lba = std::to_string(std::stoi(VALID_LBA_BEGIN) + cmdCount);
-    EXPECT_EQ(false, ssdInterface->IsBufferingLba(lba));
-    EXPECT_EQ(VALID_VALUE_1, ssdInterface->Read(lba));
-  }
-}
-
-TEST_F(SSDTest, WtoW_Ignore_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_2);
-  EXPECT_EQ(1, ssdInterface->GetValidBufferCount());
-  EXPECT_EQ(VALID_VALUE_2, ssdInterface->Read(VALID_LBA_BEGIN));
-}
-
-TEST_F(SSDTest, WtoE_Ignore_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Erase(VALID_LBA_BEGIN, 1);
-  EXPECT_EQ(1, ssdInterface->GetValidBufferCount());
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->Read(VALID_LBA_BEGIN));
-}
-
-TEST_F(SSDTest, Invalid_Range_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(INVALID_LBA));
-}
-*/
-
 int main() { 
 	testing::InitGoogleMock();
 	return RUN_ALL_TESTS();

@@ -10,6 +10,7 @@ class SsdInterface {
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
   void Erase(std::string lba, std::string scope);
+  bool IsBufferingLba(std::string lba) { return true; };
   void Flush();
 
   void InvalidCommand(std::string errorMessage);
