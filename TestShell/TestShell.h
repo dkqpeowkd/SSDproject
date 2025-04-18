@@ -9,6 +9,7 @@
 #include "FullReadCommand.h"
 #include "FullWriteCommand.h"
 #include "EraseCommand.h"
+#include "ErageRangeCommand.h"
 #include "Script1.h"
 #include "Script2.h"
 #include "Script3.h"
@@ -44,6 +45,7 @@ private:
 	shared_ptr<FullReadCommand> fullReadCommand;
 	shared_ptr<FullWriteCommand> fullWriteCommand;
 	shared_ptr<EraseCommand> eraseCommand;
+	shared_ptr<ErageRangeCommand> erageRangeCommand;
 	shared_ptr<Script1_FullWriteAndReadCompare> scriptCommand1;
 	shared_ptr<Script2_PartialLBAWrite> scriptCommand2;
 	shared_ptr<Script3_WriteReadAging> scriptCommand3;
