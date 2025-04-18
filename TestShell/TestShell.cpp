@@ -6,6 +6,8 @@
 #include <vector>
 #include "TestShell.h"
 #include "ICommand.h"
+#include "ReadCommand.h"
+#include "WriteCommand.h"
 #include "Script1.h"
 #include "Script2.h"
 
@@ -24,9 +26,13 @@ TestShell::TestShell()
 {
 	exitCommand = make_shared<ExitCommand>();
 	helpCommand = make_shared<HelpCommand>();
+	readCommand = make_shared<ReadCommand>();
+	writeCommand = make_shared<WriteCommand>();
 
 	addCommand(exitCommand);
 	addCommand(helpCommand);
+	addCommand(readCommand);
+	addCommand(writeCommand);
 }
 void TestShell::run()
 {
@@ -101,4 +107,5 @@ void TestShell::addCommand(shared_ptr<ICommand> newCommand)
 {
 	commandList.emplace_back(newCommand);
 	helpCommand->addHelp(newCommand->getUsage());
+
 }
