@@ -31,17 +31,15 @@ void SsdInterface::Read(std::string lba) {
     return;
   }
 
-  bool isReadDone = false;
-  unsigned int readData;
+  std::string stringReadData;
   if (commandBuffer.GetValidBufferCount() > 0) {
-    isReadDone = commandBuffer.Read(lba, readData);
+    stringReadData = commandBuffer.Read(lba);
   }
 
-  if (isReadDone == false) {
-    readData = nandStorage.Read(lba);
+  if (stringReadData == "DATA_IS_NOT_IN_BUFFER") {
+    unsigned int readData = nandStorage.Read(lba);
+    stringReadData = unsignedIntToPrefixedHexString(readData);
   }
-
-  std::string stringReadData = unsignedIntToPrefixedHexString(readData);
 
   return recoder.RecordSuccessPatternToOutputFile(stringReadData);
 }
@@ -64,9 +62,30 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
 }
 
 void SsdInterface::Flush() { 
-  int validBufferCount = commandBuffer.GetValidBufferCount();
-  // get buffer;
-  // process command;
+  std::vector<std::string> commands = commandBuffer.GetCommandBuffer();
+  const int bufferItemCount = commands.size();
+
+  for (int bufferSlot = 0; bufferSlot < bufferItemCount; bufferSlot++) {
+    std::string command = commands[bufferSlot];
+
+    std::string commandType = "W";
+    if (commandType == "W") {
+      const std::string lba = "0";
+      const std::string dataPattern = "0x12345678";
+      if (nandStorage.Write(lba, dataPattern) == false) {
+        validator.SetErrorReason(" ### Write Fail (about File) ### ");
+        recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+      }
+    } else if (commandType == "E") {
+      const std::string lba = "0";
+      const std::string scope = "1";
+      processErase(lba, scope);
+    } else {
+      validator.SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +
+                               commandType);
+      return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    }
+  }
 
   commandBuffer.DestroyBuffer();
 }
@@ -82,9 +101,10 @@ void SsdInterface::processErase(std::string lba, std::string scope) {
   for (int writeOffset = 0; writeOffset < writeCount; writeOffset++) {
     std::string currentLba = std::to_string(std::stoi(lba) + writeOffset);
 
-    nandStorage.Write(currentLba, ZERO_PATTERN);
-    validator.SetErrorReason(" ### Write Fail (about File) ### ");
-    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    if (nandStorage.Write(currentLba, ZERO_PATTERN) == false) {
+      validator.SetErrorReason(" ### Write Fail (about File) ### ");
+      recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    }
   }
 }
 
