@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <cmath>
 
 const std::string& EraseRangeCommand::getCommandString() {
     static std::string cmd = "erase_range";
@@ -19,17 +20,29 @@ bool EraseRangeCommand::isValidArguments(const std::string& cmd, std::vector<std
 }
 
 bool EraseRangeCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
-    int start = std::stoi(args[0]);
-    int end = std::stoi(args[1]);
-    int size = end - start + 1;
+    int startLBA = std::stoi(args[0]);
+    int endLBA = std::stoi(args[1]);
 
-    std::ostringstream oss;
-    oss << "ssd.exe E " << start << " " << size;
+    int size = endLBA - startLBA + 1;
+    if (size <= 0) return false; // 잘못된 범위는 무시
 
-    int result = callSystem(oss.str());
+    int processed = 0;
+    while (processed < size) {
+        int chunkSize = std::min(10, size - processed);
+        int currentLBA = startLBA + processed;
 
-    std::string output = readOutput();
-    return output != "ERROR";
+        std::ostringstream oss;
+        oss << "ssd.exe E " << currentLBA << " " << chunkSize;
+
+        int result = callSystem(oss.str());
+        std::string output = readOutput();
+
+        if (output == "ERROR") return false;
+
+        processed += chunkSize;
+    }
+
+    return true;
 }
 
 int EraseRangeCommand::callSystem(const std::string& cmd) {
