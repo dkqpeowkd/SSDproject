@@ -186,11 +186,25 @@
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>rmdir /S /Q "$(OutDir)scripts"
+xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestShell_Release|x64'">
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>rmdir /S /Q "$(OutDir)scripts"
+xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
     <Link>
@@ -204,12 +218,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="scripts\1_FullWriteAndReadCompare.cmd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelpCommand.cpp" />
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Script1.cpp" />
     <ClCompile Include="Script2.cpp" />
+    <ClCompile Include="ScriptCommand.cpp" />
+    <ClCompile Include="ScriptContainer.cpp" />
     <ClCompile Include="script_3_WriteReadAging.cpp" />
     <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
@@ -226,9 +243,12 @@
     <ClInclude Include="ExitCommand.h" />
     <ClInclude Include="HelpCommand.h" />
     <ClInclude Include="ICommand.h" />
+    <ClInclude Include="PromptInput.h" />
     <ClInclude Include="ReadCommand.h" />
     <ClInclude Include="Script1.h" />
     <ClInclude Include="Script2.h" />
+    <ClInclude Include="ScriptCommand.h" />
+    <ClInclude Include="ScriptContainer.h" />
     <ClInclude Include="script_3_WriteReadAging.h" />
     <ClInclude Include="TestShell.h" />
     <ClInclude Include="WriteCommand.h" />
