@@ -4,7 +4,14 @@
 #include <algorithm>
 
 CommandBuffer::CommandBuffer(const std::string& bufferDir)
-    : bufferDirectory(bufferDir) {}
+    : bufferDirectory(bufferDir) {
+  if (!std::filesystem::exists(bufferDirectory)) {
+    Init();
+  } else {
+    BuildLbaMapFromFilenames();
+  }
+
+}
 
 void CommandBuffer::Init() {
   std::filesystem::create_directory(bufferDirectory);
@@ -65,14 +72,9 @@ std::unordered_map<int, std::string> CommandBuffer::BuildLbaMapFromFilenames() {
   commands = GetCommandBuffer();
   std::unordered_map<int, std::string> lbaMap;
 
- for (const auto& filename : commands) {
-    size_t underscorePos = filename.find('_');
-    if (underscorePos == std::string::npos) continue;
+ for (const auto& command : commands) {
 
-    std::string indexPart = filename.substr(0, underscorePos);     // "1"
-    std::string commandPart = filename.substr(underscorePos + 1);  // "W 5 AAA"
-
-    std::istringstream iss(commandPart);
+    std::istringstream iss(command);
     std::string cmd;
     int lba;
 
@@ -111,20 +113,45 @@ std::string CommandBuffer::Read(std::string lba_) {
 }
 
 std::vector<std::string> CommandBuffer::GetCommandBuffer() {
-  std::vector<std::string> filenames;
+  std::vector<std::pair<int, std::string>> indexedCommands;
 
   for (const auto& entry :
        std::filesystem::directory_iterator(bufferDirectory)) {
-    if (entry.is_regular_file()) {
-      filenames.push_back(entry.path().filename().string());
+    if (!entry.is_regular_file()) continue;
+
+    std::string filename = entry.path().filename().string();
+    size_t underscorePos = filename.find('_');
+    if (underscorePos == std::string::npos) continue;
+
+    std::string indexStr = filename.substr(0, underscorePos);
+    std::string commandStr = filename.substr(underscorePos + 1);
+
+    if (!std::all_of(indexStr.begin(), indexStr.end(), ::isdigit)) continue;
+
+    int index = std::stoi(indexStr);
+    indexedCommands.emplace_back(index, commandStr);
+  }
+
+  // 인덱스 기준 오름차순 정렬
+  std::sort(indexedCommands.begin(), indexedCommands.end());
+
+  // 정리된 커맨드만 추출
+  std::vector<std::string> result;
+  for (const auto& [_, cmd] : indexedCommands) {
+    if (cmd.find("empty") == std::string::npos) {
+    result.push_back(cmd);
     }
   }
 
-  return filenames;
+  return result;
 }
 
 int CommandBuffer::GetValidBufferCount() {
   int count = 0;
+
+    if (!std::filesystem::exists(bufferDirectory)) {
+    std::filesystem::create_directories(bufferDirectory);
+  }
 
   for (const auto& entry :
        std::filesystem::directory_iterator(bufferDirectory)) {

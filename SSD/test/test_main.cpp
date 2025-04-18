@@ -37,6 +37,8 @@ class SSDTest : public ::testing::Test {
     delete ssdInterface;
     if (fs::exists(OUTPUT_FILE_NAME)) fs::remove(OUTPUT_FILE_NAME);
     if (fs::exists(NAND_FILE_NAME)) fs::remove(NAND_FILE_NAME);
+    if (fs::exists(COMMAND_BUFFER_FOLDER_NAME))
+      fs::remove_all(COMMAND_BUFFER_FOLDER_NAME);
   }
 };
 
@@ -134,11 +136,13 @@ TEST_F(SSDTest, Write_Fail_InvalidPattern_0) {
 }
 
 TEST_F(SSDTest, Write_Fail_InvalidPattern_1) {
+  ssdInterface->ClearCommandBuffer();
   ssdInterface->Write(VALID_LBA_BEGIN, INVALID_VALUE_2);
   EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
 TEST_F(SSDTest, Read_Unmapped_After_Write_1) {
+  ssdInterface->ClearCommandBuffer();
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
   ssdInterface->Read(VALID_LBA_END);
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());

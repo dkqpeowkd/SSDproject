@@ -17,6 +17,7 @@ class SsdInterface {
   void InvalidCommand(std::string errorMessage);
 
   void ResetResult() { recoder.ResetResult(); };
+  void ClearCommandBuffer();
   std::string GetResult() { return recoder.GetResult(); };
 
  private:

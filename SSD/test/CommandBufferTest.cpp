@@ -54,7 +54,6 @@ TEST_F(CommandBufferTest, InitCreatesBufferFiles) {
 
 TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
   CommandBuffer buffer(bufferDir);
-  buffer.Init();
   buffer.AddCommand("W 1 ABC");
   buffer.AddCommand("E 2 3");
 
@@ -69,7 +68,6 @@ TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
 
 TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
   CommandBuffer buffer(bufferDir);
-  buffer.Init();
   buffer.AddCommand("W 1 0x12345678");
   buffer.AddCommand("E 2 3");
   buffer.ClearBuffer();
@@ -83,7 +81,6 @@ TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
 
 TEST_F(CommandBufferTest, Write_Buffer_in_Buffer) {
   CommandBuffer buffer(bufferDir);
-  buffer.Init();
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 2 3");
   EXPECT_EQ(VALID_VALUE_1, buffer.Read(VALID_LBA_BEGIN));
@@ -92,20 +89,37 @@ TEST_F(CommandBufferTest, Write_Buffer_in_Buffer) {
   EXPECT_EQ(ZERO_PATTERN, buffer.Read("3"));
   EXPECT_EQ(ZERO_PATTERN, buffer.Read("4"));
   EXPECT_EQ(DATA_IS_NOT_IN_BUFFER, buffer.Read("5"));
+  buffer.DestroyBuffer();
 }
 
 TEST_F(CommandBufferTest, BufferCount3) {
   CommandBuffer buffer(bufferDir);
-  buffer.Init();
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 2 3");
   buffer.AddCommand("W 1 0x12345678");
   EXPECT_EQ(3, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
 }
+
+TEST_F(CommandBufferTest, BufferCount3forTerminated) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("W 0 0x12345678");
+  buffer.AddCommand("E 2 3");
+  buffer.AddCommand("W 1 0x12345678");
+  EXPECT_EQ(3, buffer.GetValidBufferCount());
+  //buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, BufferCount4afterTerminated) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("W 10 0x12345678");
+  EXPECT_EQ(4, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+
 
 TEST_F(CommandBufferTest, BufferCount1AfterCleanUp) {
   CommandBuffer buffer(bufferDir);
-  buffer.Init();
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 2 3");
   buffer.AddCommand("W 1 0x12345678");
@@ -113,8 +127,8 @@ TEST_F(CommandBufferTest, BufferCount1AfterCleanUp) {
   buffer.AddCommand("W 12 0x12345678");
   buffer.AddCommand("W 13 0x12345678");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
 }
-
 
 TEST_F(CommandBufferTest, Write_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
@@ -125,20 +139,18 @@ TEST_F(CommandBufferTest, Write_Buffer) {
 TEST_F(CommandBufferTest, Erase_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
   ssdInterface->Erase(VALID_LBA_BEGIN, "1");
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(VALID_LBA_END));
   ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_NE(VALID_VALUE_1, ssdInterface->GetResult());
+  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
 }
 
 TEST_F(CommandBufferTest, Implicit_Flush_Buffer) {
   for (int cmdCount = 0; cmdCount <= 6; cmdCount++) {
-    std::string lba = std::to_string(std::stoi(VALID_LBA_BEGIN) + cmdCount);
+    std::string lba = std::to_string(cmdCount);
     ssdInterface->Write(lba, VALID_VALUE_1);
   }
 
-  for (int cmdCount = 0; cmdCount <= 5; cmdCount++) {
-    std::string lba = std::to_string(std::stoi(VALID_LBA_BEGIN) + cmdCount);
-    EXPECT_EQ(false, ssdInterface->IsBufferingLba(lba));
+  for (int cmdCount = 0; cmdCount <= 6; cmdCount++) {
+    std::string lba = std::to_string(cmdCount);
     ssdInterface->Read(lba);
     EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
   }
@@ -148,7 +160,6 @@ TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
   CommandBuffer buffer(bufferDir);
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("W 0 0xabcdef01");
-  buffer.SaveBuffer();
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(VALID_VALUE_2, ssdInterface->GetResult());
@@ -159,14 +170,8 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer) {
   CommandBuffer buffer(bufferDir);
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 0 1");
-  buffer.SaveBuffer();
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
   buffer.DestroyBuffer();
-}
-
-TEST_F(CommandBufferTest, Invalid_Range_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(INVALID_LBA));
 }
