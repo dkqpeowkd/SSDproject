@@ -12,7 +12,7 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
     return;
   }
 
-  if (commandBuffer.GetValidBufferCount() == 5) {
+  if (isBufferFull() == true) {
     Flush();
   }
 
@@ -36,7 +36,7 @@ void SsdInterface::Read(std::string lba) {
     stringReadData = commandBuffer.Read(lba);
   }
 
-  if (stringReadData == "DATA_IS_NOT_IN_BUFFER") {
+  if (stringReadData == FAIL_BUFFER_READ_MESSAGE) {
     unsigned int readData = nandStorage.Read(lba);
     stringReadData = unsignedIntToPrefixedHexString(readData);
   }
@@ -53,7 +53,7 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
-  if (commandBuffer.GetValidBufferCount() == 5) {
+  if (isBufferFull() == true) {
     Flush();
   }
 
@@ -68,17 +68,24 @@ void SsdInterface::Flush() {
   for (int bufferSlot = 0; bufferSlot < bufferItemCount; bufferSlot++) {
     std::string command = commands[bufferSlot];
 
-    std::string commandType = "W";
+    std::istringstream issCommand(command);
+    std::string commandType;
+    issCommand >> commandType;
+
     if (commandType == "W") {
-      const std::string lba = "0";
-      const std::string dataPattern = "0x12345678";
+      std::string lba;
+      std::string dataPattern;
+      issCommand >> lba >> dataPattern;
+
       if (nandStorage.Write(lba, dataPattern) == false) {
         validator.SetErrorReason(" ### Write Fail (about File) ### ");
         recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
       }
     } else if (commandType == "E") {
-      const std::string lba = "0";
-      const std::string scope = "1";
+      std::string lba;
+      std::string scope;
+      issCommand >> lba >> scope;
+
       processErase(lba, scope);
     } else {
       validator.SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +

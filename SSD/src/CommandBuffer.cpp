@@ -1,4 +1,5 @@
 #include "CommandBuffer.h"
+#include "SsdType.h"
 #include <sstream>
 #include <algorithm>
 
@@ -135,7 +136,7 @@ std::string CommandBuffer::Read(std::string lba_) {
   int lba = std::stoi(lba_);
   std::unordered_map<int, std::string> lbaMap = BuildLbaMapFromFilenames();
   auto it = lbaMap.find(lba);
-  return it != lbaMap.end() ? it->second : "DATA_IS_NOT_IN_BUFFER";
+  return it != lbaMap.end() ? it->second : FAIL_BUFFER_READ_MESSAGE;
 }
 
 std::vector<std::string> CommandBuffer::GetCommandBuffer() {
