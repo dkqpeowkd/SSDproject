@@ -9,6 +9,7 @@ class SsdInterface {
  public:
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
+  void Erase(std::string lba, std::string scope);
 
   void InvalidCommand(std::string errorMessage);
 

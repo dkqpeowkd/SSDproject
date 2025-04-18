@@ -32,6 +32,10 @@ void SsdInterface::Read(std::string lba) {
   return recoder.RecordSuccessPatternToOutputFile(stringReadData);
 }
 
+void SsdInterface::Erase(std::string lba, std::string scope) {
+  nandStorage.Erase(lba, scope);
+}
+
 std::string SsdInterface::unsignedIntToPrefixedHexString(unsigned int readData) {
   std::stringstream ss;
   ss << std::uppercase << std::hex << std::setw(8) << std::setfill('0')
