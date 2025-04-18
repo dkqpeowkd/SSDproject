@@ -11,6 +11,8 @@ constexpr const char* VALID_VALUE_2 = "0xabcdef01";
 constexpr const char* INVALID_VALUE_1 = "0x1";
 constexpr const char* INVALID_VALUE_2 = "1234567890";
 
+constexpr const char* DATA_IS_NOT_IN_BUFFER = "DATA_IS_NOT_IN_BUFFER";
+
 constexpr const char* VALID_ERASE_SCOPE_1 = "1";
 constexpr const char* VALID_ERASE_SCOPE_6 = "6";
 constexpr const char* VALID_ERASE_SCOPE_10 = "10";
@@ -59,13 +61,17 @@ TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
 
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/1_W 1 ABC"));
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/2_E 2 3"));
+  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/3_empty"));
+  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/4_empty"));
+  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/5_empty"));
+
   buffer.DestroyBuffer();
 }
 
 TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
   CommandBuffer buffer(bufferDir);
   buffer.Init();
-  buffer.AddCommand("W 1 ABC");
+  buffer.AddCommand("W 1 0x12345678");
   buffer.AddCommand("E 2 3");
   buffer.SaveBuffer();
   buffer.Flush();
@@ -77,10 +83,24 @@ TEST_F(CommandBufferTest, FlushClearsBufferFiles) {
   buffer.DestroyBuffer();
 }
 
+TEST_F(CommandBufferTest, Write_Buffer_in_Buffer) {
+  CommandBuffer buffer(bufferDir);
+  buffer.Init();
+  buffer.AddCommand("W 0 0x12345678");
+  buffer.AddCommand("E 2 3");
+  buffer.SaveBuffer();
+  EXPECT_EQ(VALID_VALUE_1, buffer.Read(VALID_LBA_BEGIN));
+  EXPECT_EQ(DATA_IS_NOT_IN_BUFFER,buffer.Read(VALID_LBA_END));
+  EXPECT_EQ(ZERO_PATTERN, buffer.Read("2"));
+  EXPECT_EQ(ZERO_PATTERN, buffer.Read("3"));
+  EXPECT_EQ(ZERO_PATTERN, buffer.Read("4"));
+  EXPECT_EQ(DATA_IS_NOT_IN_BUFFER, buffer.Read("5"));
+}
+
 TEST_F(CommandBufferTest, Write_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  EXPECT_EQ(true, ssdInterface->IsBufferingLba(VALID_LBA_BEGIN));
-  EXPECT_EQ(false, ssdInterface->IsBufferingLba(VALID_LBA_END));
+  ssdInterface->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
 }
 
 TEST_F(CommandBufferTest, Erase_Buffer) {
