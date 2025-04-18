@@ -10,6 +10,7 @@
 #include "WriteCommand.h"
 #include "Script1.h"
 #include "Script2.h"
+#include "Script3.h"
 
 using std::cout;
 
@@ -22,17 +23,25 @@ std::vector<std::string> split(const std::string& line) {
 	return tokens;
 }
 
+
 TestShell::TestShell()
 {
 	exitCommand = make_shared<ExitCommand>();
 	helpCommand = make_shared<HelpCommand>();
 	readCommand = make_shared<ReadCommand>();
 	writeCommand = make_shared<WriteCommand>();
+	scriptCommand1 = make_shared<Script1_FullWriteAndReadCompare>(writeCommand, readCommand);
+	scriptCommand2 = make_shared<Script2_PartialLBAWrite>(writeCommand, readCommand);
+	scriptCommand3 = make_shared<Script3_WriteReadAging>(writeCommand, readCommand);
+
 
 	addCommand(exitCommand);
 	addCommand(helpCommand);
 	addCommand(readCommand);
 	addCommand(writeCommand);
+	addCommand(scriptCommand1);
+	addCommand(scriptCommand2);
+	addCommand(scriptCommand3);
 }
 void TestShell::run()
 {
@@ -96,9 +105,19 @@ shared_ptr<ICommand> TestShell::findCommand(const string& command)
 {
 	if (commandList.empty()) return nullptr;
 
-	for (auto supported : commandList) {
-		if (command == supported->getCommandString())
+	for (auto& supported : commandList) {
+		const string& fullCommand = supported->getCommandString();
+
+		// 정확히 일치하는 경우
+		if (command == fullCommand)
 			return supported;
+
+		// 스크립트 전용: 정확히 "1_" 또는 "2_", "3_" 만 허용
+		if ((fullCommand == "1_FullWriteAndReadCompare" && command == "1_") ||
+			(fullCommand == "2_PartialLBAWrite" && command == "2_") ||
+			(fullCommand == "3_WriteReadAging" && command == "3_")) {
+			return supported;
+		}
 	}
 	return nullptr;
 }

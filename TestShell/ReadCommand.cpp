@@ -1,5 +1,32 @@
-﻿
-#include "ReadCommand.h"
+﻿#include "ReadCommand.h"
+#include <cstdlib>
+
+const std::string& ReadCommand::getCommandString() {
+    static std::string cmd = "read";
+    return cmd;
+}
+
+const std::string& ReadCommand::getUsage() {
+    static std::string usage = "read <LBA> : 지정된 LBA 영역의 데이터를 읽습니다.";
+    return usage;
+}
+
+bool ReadCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
+    return args.size() == 1;
+}
+
+bool ReadCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
+    std::string command = "ssd.exe R " + args[0];
+    int result = callSystem(command);
+
+    std::string output = readOutput();
+    std::cout << output << std::endl;
+
+    if (output == "ERROR") {
+        return false;
+    }
+    return true;
+}
 
 int ReadCommand::callSystem(const std::string& cmd) {
     return system(cmd.c_str());
@@ -10,14 +37,4 @@ std::string ReadCommand::readOutput() {
     std::string line;
     std::getline(fin, line);
     return line;
-}
-
-bool ReadCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
-    int lba = std::stoi(args[1]);
-    std::string command = "ssd R " + std::to_string(lba);
-    callSystem(command);
-
-    std::string result = readOutput();
-    std::cout << result << std::endl;
-    return true;
 }
