@@ -27,7 +27,7 @@ void SsdInterface::Read(std::string lba) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
-  std::string stringReadData;
+  std::string stringReadData = FAIL_BUFFER_READ_MESSAGE;
   if (commandBuffer.GetValidBufferCount() > 0) {
     stringReadData = commandBuffer.Read(lba);
   }
