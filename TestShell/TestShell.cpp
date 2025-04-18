@@ -8,6 +8,7 @@
 #include "ICommand.h"
 #include "ReadCommand.h"
 #include "WriteCommand.h"
+#include "FullReadCommand.h"
 #include "Script1.h"
 #include "Script2.h"
 #include "Script3.h"
@@ -30,6 +31,7 @@ TestShell::TestShell()
 	helpCommand = make_shared<HelpCommand>();
 	readCommand = make_shared<ReadCommand>();
 	writeCommand = make_shared<WriteCommand>();
+	fullReadCommand = make_shared<FullReadCommand>();
 	scriptCommand1 = make_shared<Script1_FullWriteAndReadCompare>(writeCommand, readCommand);
 	scriptCommand2 = make_shared<Script2_PartialLBAWrite>(writeCommand, readCommand);
 	scriptCommand3 = make_shared<Script3_WriteReadAging>(writeCommand, readCommand);
@@ -39,6 +41,7 @@ TestShell::TestShell()
 	addCommand(helpCommand);
 	addCommand(readCommand);
 	addCommand(writeCommand);
+	addCommand(fullReadCommand);
 	addCommand(scriptCommand1);
 	addCommand(scriptCommand2);
 	addCommand(scriptCommand3);
