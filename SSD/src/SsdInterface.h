@@ -4,6 +4,7 @@
 #include "NandStorage.h"
 #include "validator.h"
 #include "Recoder.h"
+#include "CommandBuffer.h"
 
 class SsdInterface {
  public:
@@ -22,6 +23,8 @@ class SsdInterface {
   NandStorage nandStorage;
   Validator validator;
   Recoder recoder;
+  CommandBuffer commandBuffer;
 
+  void processErase(std::string lba, std::string scope);
   std::string unsignedIntToPrefixedHexString(unsigned int readData);
 };

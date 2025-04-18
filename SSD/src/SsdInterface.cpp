@@ -12,10 +12,12 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
     return;
   }
 
-  if (nandStorage.Write(lba, dataPattern) == false) {
-    validator.SetErrorReason(" ### Write Fail (about File) ### ");
-    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  if (commandBuffer.GetValidBufferCount() == 5) {
+    Flush();
   }
+
+  std::string writeCommand = "W " + lba + " " + dataPattern;
+  commandBuffer.AddCommand(writeCommand);
 }
 
 void SsdInterface::Read(std::string lba) { 
@@ -29,7 +31,16 @@ void SsdInterface::Read(std::string lba) {
     return;
   }
 
-  unsigned int readData = nandStorage.Read(lba);
+  bool isReadDone = false;
+  unsigned int readData;
+  if (commandBuffer.GetValidBufferCount() > 0) {
+    isReadDone = commandBuffer.Read(lba, readData);
+  }
+
+  if (isReadDone == false) {
+    readData = nandStorage.Read(lba);
+  }
+
   std::string stringReadData = unsignedIntToPrefixedHexString(readData);
 
   return recoder.RecordSuccessPatternToOutputFile(stringReadData);
@@ -44,6 +55,23 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
+  if (commandBuffer.GetValidBufferCount() == 5) {
+    Flush();
+  }
+
+  std::string eraseCommand = "E " + lba + " " + scope;
+  commandBuffer.AddCommand(eraseCommand);
+}
+
+void SsdInterface::Flush() { 
+  int validBufferCount = commandBuffer.GetValidBufferCount();
+  // get buffer;
+  // process command;
+
+  commandBuffer.DestroyBuffer();
+}
+
+void SsdInterface::processErase(std::string lba, std::string scope) {
   int writeCount = std::stoi(scope);
   int lastLba = std::stoi(lba) + writeCount;
   if (lastLba > MAX_LBA) {
@@ -58,10 +86,6 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
     validator.SetErrorReason(" ### Write Fail (about File) ### ");
     recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
-}
-
-void SsdInterface::Flush() { 
-    return;
 }
 
 std::string SsdInterface::unsignedIntToPrefixedHexString(unsigned int readData) {
