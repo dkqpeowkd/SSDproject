@@ -8,6 +8,8 @@
 #include "ICommand.h"
 #include "ReadCommand.h"
 #include "WriteCommand.h"
+#include "FullReadCommand.h"
+#include "FullWriteCommand.h"
 #include "Script1.h"
 #include "Script2.h"
 #include "Script3.h"
@@ -30,6 +32,8 @@ TestShell::TestShell()
 	helpCommand = make_shared<HelpCommand>();
 	readCommand = make_shared<ReadCommand>();
 	writeCommand = make_shared<WriteCommand>();
+	fullReadCommand = make_shared<FullReadCommand>();
+	fullWriteCommand = make_shared<FullWriteCommand>();
 	scriptCommand1 = make_shared<Script1_FullWriteAndReadCompare>(writeCommand, readCommand);
 	scriptCommand2 = make_shared<Script2_PartialLBAWrite>(writeCommand, readCommand);
 	scriptCommand3 = make_shared<Script3_WriteReadAging>(writeCommand, readCommand);
@@ -39,6 +43,8 @@ TestShell::TestShell()
 	addCommand(helpCommand);
 	addCommand(readCommand);
 	addCommand(writeCommand);
+	addCommand(fullReadCommand);
+	addCommand(fullWriteCommand);
 	addCommand(scriptCommand1);
 	addCommand(scriptCommand2);
 	addCommand(scriptCommand3);
@@ -85,7 +91,7 @@ bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
 
 	bool executed = foundCommand->Execute(promptInput.cmd, promptInput.args);
 	if (!executed) {
-		std::cout << "INVALID COMMAND" << std::endl;
+		std::cout << "FAILED" << std::endl;
 		return false;
 	}
 

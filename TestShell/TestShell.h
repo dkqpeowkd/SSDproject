@@ -6,6 +6,8 @@
 #include "HelpCommand.h"
 #include "ReadCommand.h"
 #include "WriteCommand.h"
+#include "FullReadCommand.h"
+#include "FullWriteCommand.h"
 #include "Script1.h"
 #include "Script2.h"
 #include "Script3.h"
@@ -38,6 +40,8 @@ private:
 	shared_ptr<HelpCommand> helpCommand;
 	shared_ptr<ReadCommand> readCommand;
 	shared_ptr<WriteCommand> writeCommand;
+	shared_ptr<FullReadCommand> fullReadCommand;
+	shared_ptr<FullWriteCommand> fullWriteCommand;
 	shared_ptr<Script1_FullWriteAndReadCompare> scriptCommand1;
 	shared_ptr<Script2_PartialLBAWrite> scriptCommand2;
 	shared_ptr<Script3_WriteReadAging> scriptCommand3;

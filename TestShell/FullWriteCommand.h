@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-class WriteCommand : public ICommand {
+class FullWriteCommand : public ICommand {
 public:
-    WriteCommand() = default;
+    FullWriteCommand() = default;
 
     const std::string& getCommandString() override;
     const std::string& getUsage() override;

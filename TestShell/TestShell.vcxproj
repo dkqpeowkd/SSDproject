@@ -206,6 +206,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FullReadCommand.cpp" />
+    <ClCompile Include="FullWriteCommand.cpp" />
     <ClCompile Include="HelpCommand.cpp" />
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Script1.cpp" />
@@ -224,6 +226,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExitCommand.h" />
+    <ClInclude Include="FullReadCommand.h" />
+    <ClInclude Include="FullWriteCommand.h" />
     <ClInclude Include="HelpCommand.h" />
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="ReadCommand.h" />
