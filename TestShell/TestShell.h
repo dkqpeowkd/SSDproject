@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "ICommand.h"
+#include "PromptInput.h"
 #include "ExitCommand.h"
 #include "HelpCommand.h"
 #include "ReadCommand.h"
@@ -21,17 +22,12 @@ using std::make_shared;
 class TestShell
 {
 public:
-	struct PropmtInput {
-		string cmd;
-		vector<string> args;
-	};
-public:
 	TestShell();
 	void run(); // main loop Ω√¿€
 	void displayPrompt(); // propmt display
-	::TestShell::PropmtInput getPromptInput();
-	bool ExcutePromptInput(::TestShell::PropmtInput& promptInput);
-	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, TestShell::PropmtInput& promptInput);
+	PromptInput getPromptInput();
+	bool ExcutePromptInput(PromptInput& promptInput);
+	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, PromptInput& promptInput);
 	shared_ptr<ICommand> findCommand(const string& command);
 	void addCommand(shared_ptr<ICommand> newCommand);
 

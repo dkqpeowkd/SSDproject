@@ -1,0 +1,4 @@
+write 0 0xEEEEFFFF
+write 1 0xEEEEFFFF
+write 2 0xEEEEFFFF
+write 3 0xEEEEFFFF

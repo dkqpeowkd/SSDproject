@@ -187,6 +187,13 @@
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>rmdir /S /Q "$(OutDir)scripts"
+xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
+    </PostBuildEvent>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TestShell_Release|x64'">
     <Link>
@@ -195,6 +202,10 @@
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>rmdir /S /Q "$(OutDir)scripts"
+xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
     <Link>
@@ -218,6 +229,8 @@
     <ClCompile Include="Script1.cpp" />
     <ClCompile Include="Script2.cpp" />
     <ClCompile Include="Script3.cpp" />
+    <ClCompile Include="ScriptCommand.cpp" />
+    <ClCompile Include="ScriptContainer.cpp" />
     <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TestShell_test|x64'">true</ExcludedFromBuild>
@@ -240,6 +253,8 @@
     <ClInclude Include="Script1.h" />
     <ClInclude Include="Script2.h" />
     <ClInclude Include="Script3.h" />
+    <ClInclude Include="ScriptCommand.h" />
+    <ClInclude Include="ScriptContainer.h" />
     <ClInclude Include="TestShell.h" />
     <ClInclude Include="WriteCommand.h" />
   </ItemGroup>
