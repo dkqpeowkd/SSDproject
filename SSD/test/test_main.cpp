@@ -42,7 +42,7 @@ class SSDTest : public ::testing::Test {
 
 TEST_F(SSDTest, ErasePassLBA0To1) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE);
+    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
   }
   ssdInterface->Erase(VALID_LBA_BEGIN, VALID_ERASE_SCOPE_1);
   ssdInterface->Read(VALID_LBA_BEGIN);
@@ -51,7 +51,7 @@ TEST_F(SSDTest, ErasePassLBA0To1) {
 
 TEST_F(SSDTest, ErasePassLBA0To10) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE);
+    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
   }
   ssdInterface->Erase(VALID_LBA_BEGIN, VALID_ERASE_SCOPE_10);
   for (int i = 0; i < 10; i++) {
@@ -60,28 +60,28 @@ TEST_F(SSDTest, ErasePassLBA0To10) {
   }
 }
 
-TEST_F(SSDTest, ErasePassLBA0To11) {
+TEST_F(SSDTest, EraseErrorLBA0To11) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE);
+    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
   }
   ssdInterface->Erase(VALID_LBA_BEGIN, INVALID_ERASE_SCOPE_11);
-  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
 TEST_F(SSDTest, EraseErrorLBA95To6) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE);
+    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
   }
   ssdInterface->Erase(VALID_LBA_95, VALID_ERASE_SCOPE_6);
-  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
 TEST_F(SSDTest, EraseErrorInvalidLBA) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE);
+    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
   }
   ssdInterface->Erase(INVALID_LBA, VALID_ERASE_SCOPE_10);
-  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
+  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
 }
 
 TEST_F(SSDTest, Write_Pass_0) {
