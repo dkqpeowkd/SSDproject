@@ -3,10 +3,11 @@
 
 class Validator {
  public:
-  bool isValidNumberZeroToNintyNine(const std::string& lbaStr);
-  bool isValidDataPattern(const std::string& pattern) ;
-  std::string getErrorReason() { return errorReason; };
-  void setErrorReason(const std::string& errorMessage) {
+  bool IsNumberWithinRange(const std::string& str, const int minNum,
+                           const int maxNum, const bool isScope = false);
+  bool IsValidDataPattern(const std::string& pattern);
+  std::string GetErrorReason() { return errorReason; };
+  void SetErrorReason(const std::string& errorMessage) {
     errorReason = errorMessage;
   };
 

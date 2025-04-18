@@ -1,24 +1,25 @@
 #include "Validator.h"
 
-bool Validator::isValidNumberZeroToNintyNine(const std::string& str) {
+bool Validator::IsNumberWithinRange(const std::string& str, const int minNum,
+    const int maxNum, bool isScope) {
   try {
     int num = std::stoi(str);
 
-    if (num >= 0 && num <= 99) {
+    if (isScope == true) num = std::abs(num);
+
+    if (num >= minNum && num <= maxNum) {
       return true;
     } else {
-      errorReason = "### LBA is out of range (0~99) ###";
+      errorReason = "### Out of range ###";
       return false;
     }
   } catch (...) {
-    errorReason = "### LBA is not decimal ###";
+    errorReason = "### Not decimal ###";
     return false;
   }
 }
-
-
   
-bool Validator::isValidDataPattern(const std::string& dataPattern) {
+bool Validator::IsValidDataPattern(const std::string& dataPattern) {
   if (dataPattern.length() != 10) {
     errorReason = "### DataPattern Length is not 10 ###";
     return false;
