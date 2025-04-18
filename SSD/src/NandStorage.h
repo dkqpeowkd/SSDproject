@@ -3,13 +3,13 @@
 
 class NandStorage {
  public:
-  void Write(std::string lba, std::string dataPattern);
-  unsigned int Read(std::string lba);
+  void Write(const std::string& lba, const std::string& dataPattern);
+  unsigned int Read(const std::string& lba);
   bool exists();
 
  private:
   bool checkNandFileExist();
-  unsigned int dataPatternToDigit(std::string dataPattern);
+  unsigned int dataPatternToDigit(const std::string& dataPattern);
 
  private:
   const int MAX_LBA = 100;
