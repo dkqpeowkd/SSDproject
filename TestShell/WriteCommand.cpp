@@ -1,41 +1,43 @@
 #include "WriteCommand.h"
 #include <iostream>
 #include <sstream>
-#include <regex>
+#include <fstream>
 #include <cstdlib>
 
 const std::string& WriteCommand::getCommandString() {
-    return command;
+    static std::string cmd = "write";
+    return cmd;
 }
 
 const std::string& WriteCommand::getUsage() {
+    static std::string usage = "write <LBA> <PATTERN> : 해당 LBA에 패턴을 저장합니다.";
     return usage;
 }
 
 bool WriteCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
-    if (args.size() != 2) return false;
-
-    try {
-        int lba = std::stoi(args[0]);
-        if (lba < 0 || lba >= 100) return false;
-
-        std::regex patternRegex("0x[0-9A-Fa-f]{8}");
-        return std::regex_match(args[1], patternRegex);
-    }
-    catch (...) {
-        return false;
-    }
+    return args.size() == 2;
 }
 
 bool WriteCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
     std::ostringstream oss;
-    oss << "ssd.exe write " << args[0] << " " << args[1];
+    oss << "ssd.exe W " << args[0] << " " << args[1];
 
-    int result = system(oss.str().c_str());
-    if (result != 0) {
-        std::cout << "[ERROR] Failed to execute: " << oss.str() << std::endl;
+    int result = callSystem(oss.str());
+
+    std::string output = readOutput();
+    if (output == "ERROR") {
         return false;
     }
-
     return true;
+}
+
+int WriteCommand::callSystem(const std::string& cmd) {
+    return system(cmd.c_str());
+}
+
+std::string WriteCommand::readOutput() {
+    std::ifstream fin("ssd_output.txt");
+    std::string line;
+    std::getline(fin, line);
+    return line;
 }
