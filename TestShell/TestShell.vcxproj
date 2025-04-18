@@ -158,8 +158,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -191,6 +192,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
     <Link>
@@ -207,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelpCommand.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Script1.cpp" />
     <ClCompile Include="Script2.cpp" />
@@ -226,6 +231,7 @@
     <ClInclude Include="ExitCommand.h" />
     <ClInclude Include="HelpCommand.h" />
     <ClInclude Include="ICommand.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="ReadCommand.h" />
     <ClInclude Include="Script1.h" />
     <ClInclude Include="Script2.h" />

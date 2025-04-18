@@ -9,6 +9,7 @@
 #include "Script1.h"
 #include "Script2.h"
 #include "Script3.h"
+#include "Log.h"
 
 using std::string;
 using std::vector;
@@ -41,5 +42,6 @@ private:
 	shared_ptr<Script1_FullWriteAndReadCompare> scriptCommand1;
 	shared_ptr<Script2_PartialLBAWrite> scriptCommand2;
 	shared_ptr<Script3_WriteReadAging> scriptCommand3;
+    Logger log;
 };
 
