@@ -210,7 +210,7 @@
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Script1.cpp" />
     <ClCompile Include="Script2.cpp" />
-    <ClCompile Include="script_3_WriteReadAging.cpp" />
+    <ClCompile Include="Script3.cpp" />
     <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TestShell_test|x64'">true</ExcludedFromBuild>
@@ -229,7 +229,7 @@
     <ClInclude Include="ReadCommand.h" />
     <ClInclude Include="Script1.h" />
     <ClInclude Include="Script2.h" />
-    <ClInclude Include="script_3_WriteReadAging.h" />
+    <ClInclude Include="Script3.h" />
     <ClInclude Include="TestShell.h" />
     <ClInclude Include="WriteCommand.h" />
   </ItemGroup>

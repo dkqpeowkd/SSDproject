@@ -45,7 +45,7 @@
     <ClCompile Include="TestShell.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="script_3_WriteReadAging.cpp">
+    <ClCompile Include="Script3.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Script1.cpp">
@@ -55,6 +55,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="WriteCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +77,7 @@
     <ClInclude Include="TestShell.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="script_3_WriteReadAging.h">
+    <ClInclude Include="Script3.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Script1.h">
