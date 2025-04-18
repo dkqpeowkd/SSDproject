@@ -31,5 +31,7 @@ private:
 	vector<shared_ptr<ICommand>> commandList;
 	shared_ptr<ExitCommand> exitCommand;
 	shared_ptr<HelpCommand> helpCommand;
+	shared_ptr<ReadCommand> readCommand;
+	shared_ptr<WriteCommand> writeCommand;
 };
 
