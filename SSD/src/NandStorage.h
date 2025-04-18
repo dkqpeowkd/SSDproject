@@ -5,6 +5,7 @@ class NandStorage {
  public:
   void Write(const std::string& lba, const std::string& dataPattern);
   unsigned int Read(const std::string& lba);
+  void Erase(const std::string& lba, const std::string& scope);
   bool exists();
 
  private:

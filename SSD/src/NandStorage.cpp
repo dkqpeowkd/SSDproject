@@ -30,6 +30,10 @@ void NandStorage::Write(const std::string& lba, const std::string& dataPattern) 
                  sizeof(numDataPattern));
 }
 
+void NandStorage::Erase(const std::string& lba, const std::string& scope) {
+  return;
+}
+
 bool NandStorage::exists() {
   std::ifstream file(NAND_FILE_NAME, std::ios::binary);
   return file.good();
