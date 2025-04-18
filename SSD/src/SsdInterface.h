@@ -27,4 +27,7 @@ class SsdInterface {
 
   void processErase(std::string lba, std::string scope);
   std::string unsignedIntToPrefixedHexString(unsigned int readData);
+  bool isBufferFull(){
+    return (commandBuffer.GetValidBufferCount() == MAX_BUFFER_SIZE);
+  };
 };
