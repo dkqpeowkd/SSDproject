@@ -5,9 +5,9 @@
 #include <vector>
 #include <memory>
 
-class Script1_FullWriteAndReadCompare : public ICommand {
+class Script3_WriteReadAging : public ICommand {
 public:
-    Script1_FullWriteAndReadCompare(std::shared_ptr<ICommand> writeCommand, std::shared_ptr<ICommand> readCommand)
+    Script3_WriteReadAging(std::shared_ptr<ICommand> writeCommand, std::shared_ptr<ICommand> readCommand)
         : writeCommand(writeCommand), readCommand(readCommand) {
     }
 
@@ -17,8 +17,8 @@ public:
     bool Execute(const std::string& cmd, std::vector<std::string>& args) override;
 
 private:
-    const std::string command = "1_FullWriteAndReadCompare";
-    const std::string usage = "1_FullWriteAndReadCompare: 5개 단위로 FullWrite 후 ReadCompare 수행";
+    const std::string command = "3_WriteReadAging";
+    const std::string usage = "3_WriteReadAging: 200회 반복, LBA 0 / 99에 랜덤 값 Write 후 ReadCompare 수행";
     std::shared_ptr<ICommand> writeCommand;
     std::shared_ptr<ICommand> readCommand;
 };

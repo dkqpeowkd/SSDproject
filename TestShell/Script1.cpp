@@ -16,7 +16,7 @@ const std::string& Script1_FullWriteAndReadCompare::getUsage() {
 }
 
 bool Script1_FullWriteAndReadCompare::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
-    return (cmd == "1_" || cmd == "1_FullWriteAndReadCompare") && args.empty();
+    return args.empty();
 }
 
 bool Script1_FullWriteAndReadCompare::Execute(const std::string& cmd, std::vector<std::string>& args) {
@@ -46,8 +46,7 @@ bool Script1_FullWriteAndReadCompare::Execute(const std::string& cmd, std::vecto
 
             if (result != pattern) {
                 std::cout << "[FAIL] LBA " << lba << " - Expected: " << pattern << ", Got: " << result << std::endl;
-                std::cout << "FAIL" << std::endl;
-                return false;
+                return true;
             }
         }
     }

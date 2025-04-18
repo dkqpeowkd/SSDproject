@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "ICommand.h"
 #include "TestShell.h"
-#include "script_3_WriteReadAging.h"
+#include "Script3.h"
 
 using namespace ::testing;
 
