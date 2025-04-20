@@ -221,6 +221,8 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EraseRangeCommand.cpp" />
+    <ClCompile Include="EraseCommand.cpp" />
     <ClCompile Include="FullReadCommand.cpp" />
     <ClCompile Include="FullWriteCommand.cpp" />
     <ClCompile Include="HelpCommand.cpp" />
@@ -243,6 +245,8 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EraseRangeCommand.h" />
+    <ClInclude Include="EraseCommand.h" />
     <ClInclude Include="ExitCommand.h" />
     <ClInclude Include="FullReadCommand.h" />
     <ClInclude Include="FullWriteCommand.h" />
