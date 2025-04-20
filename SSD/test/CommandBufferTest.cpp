@@ -259,3 +259,14 @@ TEST_F(CommandBufferTest, EtoE_No_Merge_Buffer) {
   EXPECT_EQ("E 4 3", commands[1]);
   buffer.DestroyBuffer();
 }
+
+TEST_F(CommandBufferTest, EtoE_Merge_Multiple_Buffers_1) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 3");
+  buffer.AddCommand("E 4 3");
+  buffer.AddCommand("E 3 1");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  std::vector<std::string> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 7", commands[0]);
+  buffer.DestroyBuffer();
+}
