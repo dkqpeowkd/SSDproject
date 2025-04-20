@@ -15,6 +15,7 @@
 #include "Script1.h"
 #include "Script2.h"
 #include "Script3.h"
+#include "ScriptContainer.h"
 
 using std::cout;
 
@@ -54,12 +55,21 @@ TestShell::TestShell()
 	addCommand(scriptCommand1);
 	addCommand(scriptCommand2);
 	addCommand(scriptCommand3);
+
+	ScriptContainer scriptsContainer;
+
+	scriptsContainer.loadScript(commandList);
+	vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommands();
+
+	for (auto scriptCmd : scriptCommands) {
+		addCommand(scriptCmd);
+	}
 }
 void TestShell::run()
 {
 	while (exitCommand->isSystemActive()) {
 		displayPrompt();
-		TestShell::PropmtInput promptInput = getPromptInput();
+		PromptInput promptInput = getPromptInput();
 		ExcutePromptInput(promptInput);
 	}
 }
@@ -68,9 +78,9 @@ void TestShell::displayPrompt()
 	cout << "SSDTestShell:>";
 }
 
-::TestShell::PropmtInput TestShell::getPromptInput()
+PromptInput TestShell::getPromptInput()
 {
-	::TestShell::PropmtInput promptInput;
+	PromptInput promptInput;
 	string input;
 	std::getline(std::cin, input);
 	if (input.empty()) 
@@ -86,7 +96,7 @@ void TestShell::displayPrompt()
 	return promptInput;
 }
 
-bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
+bool TestShell::ExcutePromptInput(PromptInput& promptInput)
 {
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
@@ -104,7 +114,7 @@ bool TestShell::ExcutePromptInput(::TestShell::PropmtInput& promptInput)
 	return true;
 }
 
-bool TestShell::isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, TestShell::PropmtInput& promptInput)
+bool TestShell::isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, PromptInput& promptInput)
 {
 	if (foundCommand == nullptr)
 		return false;
