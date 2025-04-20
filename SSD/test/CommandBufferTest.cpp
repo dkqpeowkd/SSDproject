@@ -166,12 +166,96 @@ TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
   buffer.DestroyBuffer();
 }
 
-TEST_F(CommandBufferTest, WtoE_Ignore_Buffer) {
+TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_1) {
   CommandBuffer buffer(bufferDir);
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 0 1");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_2) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("W VALID_LBA_95 0x12345678");
+  buffer.AddCommand("E 94 3");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  ssdInterface->Read(VALID_LBA_95);
+  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoW_Ignore_Buffer_1) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 1");
+  buffer.AddCommand("W 0 0x12345678");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  ssdInterface->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoW_Ignore_Buffer_2) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 2");
+  buffer.AddCommand("W 1 0x12345678");
+  buffer.AddCommand("W 0 0x12345678");
+  EXPECT_EQ(2, buffer.GetValidBufferCount());
+  ssdInterface->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoW_Ignore_Buffer_3) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 3");
+  buffer.AddCommand("W 1 0x12345678");
+  buffer.AddCommand("W 0 0x12345678");
+  buffer.AddCommand("W 2 0x12345678");
+  EXPECT_EQ(3, buffer.GetValidBufferCount());
+  ssdInterface->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoE_Merge_Buffer_1) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 3");
+  buffer.AddCommand("E 0 3");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  std::vector<std::string> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 3", commands[0]);
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoE_Merge_Buffer_2) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 3");
+  buffer.AddCommand("E 1 3");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  std::vector<std::string> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 4", commands[0]);
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoE_Merge_Buffer_3) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 3");
+  buffer.AddCommand("E 3 3");
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  std::vector<std::string> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 6", commands[0]);
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoE_No_Merge_Buffer) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 3");
+  buffer.AddCommand("E 4 3");
+  EXPECT_EQ(2, buffer.GetValidBufferCount());
+  std::vector<std::string> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 3", commands[0]);
+  EXPECT_EQ("E 4 3", commands[1]);
   buffer.DestroyBuffer();
 }
