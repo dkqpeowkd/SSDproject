@@ -5,11 +5,14 @@
 
 #include "SsdType.h"
 #include "SsdController.h"
+#include "RealSsdComponentFactory.h"
 
 int main(int argc, char* argv[]) {
-  SsdController ssdInterface;
+  std::unique_ptr<SsdComponentFactory> realFactory =
+      std::make_unique<RealSsdComponentFactory>();
+  SsdController ssdControllerWithReal(std::move(realFactory));
 
-  ssdInterface.ResetResult();
+  ssdControllerWithReal.ResetResult();
 
   try {
     // 명령어 개수 검사
@@ -27,7 +30,7 @@ int main(int argc, char* argv[]) {
         throw std::invalid_argument("Insufficient read arguments.");
       }
 
-      ssdInterface.Read(lbaStr);
+      ssdControllerWithReal.Read(lbaStr);
     } else if (command == "W") {
       if (argc != 4) {
         throw std::invalid_argument("Insufficient write arguments.");
@@ -35,7 +38,7 @@ int main(int argc, char* argv[]) {
 
       std::string value = argv[3];
 
-      ssdInterface.Write(lbaStr, value);
+      ssdControllerWithReal.Write(lbaStr, value);
     } else if (command == "E") {
       if (argc != 4) {
         throw std::invalid_argument("Insufficient erase arguments.");
@@ -43,19 +46,19 @@ int main(int argc, char* argv[]) {
 
       std::string scope = argv[3];
 
-      ssdInterface.Erase(lbaStr, scope);
+      ssdControllerWithReal.Erase(lbaStr, scope);
     } else if (command == "F") {
       if (argc != 2) {
         throw std::invalid_argument("Insufficient flush arguments.");
       }
 
-      ssdInterface.Flush();
+      ssdControllerWithReal.Flush();
     } else {
       throw std::invalid_argument("Insufficient comment.");
     }
   } catch (const std::exception& errorMessage) {
-    ssdInterface.InvalidCommand(errorMessage.what());
+    ssdControllerWithReal.InvalidCommand(errorMessage.what());
   }
 
-  return (ssdInterface.GetResult() == ERROR_PATTERN);
+  return (ssdControllerWithReal.GetResult() == ERROR_PATTERN);
 }
