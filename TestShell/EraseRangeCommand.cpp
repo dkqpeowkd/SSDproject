@@ -1,9 +1,9 @@
-#include "EraseRangeCommand.h"
+ï»¿#include "EraseRangeCommand.h"
 #include <iostream>
-#include <fstream>
 #include <sstream>
+#include <fstream>
 #include <cstdlib>
-#include <cmath>
+#include <algorithm>
 
 const std::string& EraseRangeCommand::getCommandString() {
     return cmd;
@@ -15,7 +15,7 @@ bool EraseRangeCommand::isMatch(const string& command)
 }
 
 const std::string& EraseRangeCommand::getUsage() {
-    static std::string usage = "erase_range <START_LBA> <END_LBA> : STARTºÎÅÍ END±îÁö ¹üÀ§¸¦ »èÁ¦ÇÕ´Ï´Ù (ÃÖ´ë 10Ä­)";
+    static std::string usage = "erase_range <START_LBA> <END_LBA> : í•´ë‹¹ ë²”ìœ„ ì „ì²´ ì‚­ì œ (10ì¹¸ ë‹¨ìœ„, ìœ íš¨ ì˜ì—­ ìš°ì„ )";
     return usage;
 }
 
@@ -24,26 +24,72 @@ bool EraseRangeCommand::isValidArguments(const std::string& cmd, std::vector<std
 }
 
 bool EraseRangeCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
-    int startLBA = std::stoi(args[0]);
-    int endLBA = std::stoi(args[1]);
+    int start = std::stoi(args[0]);
+    int end = std::stoi(args[1]);
 
-    int size = endLBA - startLBA + 1;
-    if (size <= 0) return false; // Àß¸øµÈ ¹üÀ§´Â ¹«½Ã
+    if (start > end) std::swap(start, end);
+
+    int totalSize = end - start + 1;
+
+    struct EraseCall {
+        int lba;
+        int size;
+        bool isValid;
+    };
+
+    std::vector<EraseCall> validCalls;
+    std::vector<EraseCall> invalidCalls;
 
     int processed = 0;
-    while (processed < size) {
-        int chunkSize = std::min(10, size - processed);
-        int currentLBA = startLBA + processed;
+    while (processed < totalSize) {
+        int chunkSize = std::min(10, totalSize - processed);
+        int currentLBA = start + processed;
+        int chunkStart = currentLBA;
+        int chunkEnd = currentLBA + chunkSize - 1;
 
-        std::ostringstream oss;
-        oss << "ssd.exe E " << currentLBA << " " << chunkSize;
+        // valid 0 ~ 99
+        int validStart = std::max(chunkStart, 0);
+        int validEnd = std::min(chunkEnd, 99);
+        int validSize = validEnd - validStart + 1;
 
-        int result = callSystem(oss.str());
-        std::string output = readOutput();
+        if (validSize > 0) {
+            validCalls.push_back({ validStart, validSize, true });
+        }
 
-        if (output == "ERROR") return false;
+        if (chunkStart < 0) {
+            int invalidSize = std::min(chunkSize, 0 - chunkStart);
+            invalidCalls.push_back({ chunkStart, invalidSize, false });
+        }
+
+        if (chunkEnd > 99) {
+            int invalidStart = std::max(100, chunkStart);
+            int invalidSize = chunkEnd - invalidStart + 1;
+            if (invalidSize > 0) {
+                invalidCalls.push_back({ invalidStart, invalidSize, false });
+            }
+        }
 
         processed += chunkSize;
+    }
+
+    // âœ… valid call first
+    for (const auto& call : validCalls) {
+        std::ostringstream oss;
+        oss << "ssd.exe E " << call.lba << " " << call.size;
+        std::cout << "[CALL] " << oss.str() << std::endl;
+
+        if (callSystem(oss.str()) != 0) return false;
+        if (readOutput() == "ERROR") return false;
+    }
+
+    // âŒ ë¬´íš¨í•œ ì˜ì—­ ë‚˜ì¤‘ system call
+    for (const auto& call : invalidCalls) {
+        std::ostringstream oss;
+        oss << "ssd.exe E " << call.lba << " " << call.size;
+        std::cout << "[CALL] " << oss.str() << std::endl;
+
+        if (callSystem(oss.str()) != 0) return false;
+        if (readOutput() == "ERROR") return false;
     }
 
     return true;
