@@ -5,15 +5,14 @@
 #include <fstream>
 #include <sstream>
 #include "ScriptCommand.h"
+#include "MetaCommandContainer.h"
 
 using std::string;
 using std::vector;
 using std::pair;
 namespace fs = std::filesystem;
 
-#include "ScriptContainer.h"
-
-void ScriptContainer::loadScript(vector<shared_ptr<ICommand>> supported)
+void MetaCommandContainer::loadScript(vector<shared_ptr<ICommand>> supported)
 {
 	vector<string> scriptCommandList = loadScriptCommandList();
 
@@ -49,7 +48,7 @@ void ScriptContainer::loadScript(vector<shared_ptr<ICommand>> supported)
 	
 }
 
-shared_ptr<ICommand> ScriptContainer::lookupCommand(const string& command, vector<shared_ptr<ICommand>>& supported)
+shared_ptr<ICommand> MetaCommandContainer::lookupCommand(const string& command, vector<shared_ptr<ICommand>>& supported)
 {
     for (auto supportedCommand : supported) {
         if (supportedCommand->getCommandString() == command)
@@ -58,7 +57,7 @@ shared_ptr<ICommand> ScriptContainer::lookupCommand(const string& command, vecto
     return nullptr;
 }
 
-vector<string> ScriptContainer::getFileList(const string extension)
+vector<string> MetaCommandContainer::getFileList(const string extension)
 {
 	const string& folderPath = scriptFolderPath;
 	vector<string> fileList = {};
@@ -72,19 +71,19 @@ vector<string> ScriptContainer::getFileList(const string extension)
 	return fileList;
 }
 
-vector<string> ScriptContainer::loadScriptCommandList()
+vector<string> MetaCommandContainer::loadScriptCommandList()
 {
 	return getFileList(".cmd");
 }
 
-string ScriptContainer::loadHelp(const string& scriptCommand)
+string MetaCommandContainer::loadHelp(const string& scriptCommand)
 {
 	const string fileName = scriptFolderPath + string{ "\\" } + scriptCommand + ".help";
 
     return loadFileContents(fileName);
 }
 
-unsigned long ScriptContainer::loadNumRepeats(const string& scriptCommand)
+unsigned long MetaCommandContainer::loadNumRepeats(const string& scriptCommand)
 {
     const string fileName = scriptFolderPath + string{ "\\" } + scriptCommand + ".repeats";
     try {
@@ -95,13 +94,13 @@ unsigned long ScriptContainer::loadNumRepeats(const string& scriptCommand)
     }
 }
 
-const vector<shared_ptr<ScriptCommand>>& ScriptContainer::getScriptCommands()
+const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommands()
 {
     // TODO: 여기에 return 문을 삽입합니다.
     return executableScripts;
 }
 
-string ScriptContainer::loadFileContents(string fileName)
+string MetaCommandContainer::loadFileContents(string fileName)
 {
     string __EMPTY = { "" };
     // read file and save.
@@ -127,7 +126,7 @@ string ScriptContainer::loadFileContents(string fileName)
     return buffer.str();
 }
 
-vector<string> ScriptContainer::loadCommandsFromScript(const string& scriptCommand)
+vector<string> MetaCommandContainer::loadCommandsFromScript(const string& scriptCommand)
 {
     string fileName = scriptFolderPath + string{"\\"} + scriptCommand + ".cmd";
     string fileContents = loadFileContents(fileName);

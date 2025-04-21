@@ -10,10 +10,10 @@ using std::vector;
 using std::shared_ptr;
 using std::make_shared;
 
-class ScriptContainer {
+class MetaCommandContainer {
 public:
-	ScriptContainer() {}
-	ScriptContainer(const string scriptPath) : scriptFolderPath{ scriptPath } {}
+	MetaCommandContainer() {}
+	MetaCommandContainer(const string scriptPath) : scriptFolderPath{ scriptPath } {}
 	void loadScript(vector<shared_ptr<ICommand>> supported);
 	vector<string> getFileList(const string extension);
 	vector<string> loadScriptCommandList(); // list up the XXXXXX.cmd in scripts folder

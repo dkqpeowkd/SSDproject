@@ -12,7 +12,7 @@
 #include "FullWriteCommand.h"
 #include "EraseCommand.h"
 #include "EraseRangeCommand.h"
-#include "ScriptContainer.h"
+#include "MetaCommandContainer.h"
 
 using std::cout;
 
@@ -47,7 +47,7 @@ TestShell::TestShell()
 	addCommand(eraseCommand);
 	addCommand(eraseRangeCommand);
 
-	ScriptContainer scriptsContainer;
+	MetaCommandContainer scriptsContainer;
 
 	scriptsContainer.loadScript(commandList);
 	vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommands();
