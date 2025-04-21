@@ -104,14 +104,14 @@ void EraseCommand::performEraseCalls(const std::vector<EraseCall>& calls) {
     for (const auto& call : calls) {
         std::ostringstream oss;
         oss << "ssd.exe E " << call.lba << " " << call.size;
-        std::cout << "[ERASE] " << oss.str() << std::endl;
+        logMessage("EraseCommand.performEraseCalls()", "[ERASE] %s", oss.str().c_str());
 
         int result = callSystem(oss.str());
         if (result == 1) {
-            std::cout << "ERROR" << std::endl;
+            logMessage("EraseCommand.performEraseCalls()", "[ERASE] ERROR");
         }
         else {
-            std::cout << "ERASE COMPLETED!" << std::endl;
+            logMessage("EraseCommand.performEraseCalls()", "[ERASE] COMPLETED!");
         }
     }
 }

@@ -9,14 +9,12 @@
 
 class ReadCommand : public ICommand {
 public:
-    ReadCommand() = default;
-
+    ReadCommand(Logger* logger) : log(logger) {}
     const std::string& getCommandString() override;
     bool isMatch(const string& command) override;
     const std::string& getUsage() override;
     bool isValidArguments(const std::string& cmd, std::vector<std::string>& args) override;
     bool Execute(const std::string& cmd, std::vector<std::string>& args) override;
-    ReadCommand(Logger* logger) : log(logger) {}
     void logMessage(const std::string& msg, const char* format, ...) const {
       if (log) {
         char buffer[1024];
