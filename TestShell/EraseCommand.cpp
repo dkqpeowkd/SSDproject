@@ -1,21 +1,22 @@
-#include "EraseCommand.h"
+ï»¿#include "EraseCommand.h"
 #include <iostream>
-#include <fstream>
 #include <sstream>
+#include <fstream>
 #include <cstdlib>
+#include <vector>
+#include <algorithm>
 #include <cmath>
 
 const std::string& EraseCommand::getCommandString() {
     return cmd;
 }
 
-bool EraseCommand::isMatch(const string& command)
-{
-    return command == cmd;
+bool EraseCommand::isMatch(const std::string& command) {
+    return cmd == command;
 }
 
 const std::string& EraseCommand::getUsage() {
-    static std::string usage = "erase <LBA> <SIZE> : Æ¯Á¤ LBAºÎÅÍ SIZE¸¸Å­ »èÁ¦ÇÕ´Ï´Ù (ÃÖ´ë 10Ä­)";
+    static std::string usage = "erase <LBA> <SIZE> : ì§€ì •ëœ ì˜ì—­ì„ ì‚­ì œí•©ë‹ˆë‹¤ (ìµœëŒ€ 10ì¹¸ ë‹¨ìœ„ë¡œ ë¶„í•  ì „ì†¡)";
     return usage;
 }
 
@@ -27,28 +28,92 @@ bool EraseCommand::Execute(const std::string& cmd, std::vector<std::string>& arg
     int lba = std::stoi(args[0]);
     int size = std::stoi(args[1]);
 
-    // SIZE°¡ À½¼ö¸é: ¿ª¹æÇâ º¸Á¤
+    if (size == 0) return true;
+
+    // ìŒìˆ˜ size ì²˜ë¦¬ (ì—­ë°©í–¥ ì‚­ì œ)
     if (size < 0) {
-        lba = lba + size + 1; // ½ÃÀÛ À§Ä¡ º¸Á¤
-        size = -size;         // ¾ç¼ö·Î º¯È¯
+        lba = lba + size + 1;
+        size = std::abs(size);
     }
 
-    int processed = 0;
-    while (processed < size) {
-        int chunkSize = std::min(10, size - processed);
-        int currentLBA = lba + processed;
-
-        std::ostringstream oss;
-        oss << "ssd.exe E " << currentLBA << " " << chunkSize;
-        int result = callSystem(oss.str());
-        std::string output = readOutput();
-
-        if (output == "ERROR") return false;
-
-        processed += chunkSize;
+    // 10ì¹¸ ë‹¨ìœ„ë¡œ ë‚˜ëˆ ì„œ ëª¨ë“  LBA ìˆ˜ì§‘
+    std::vector<EraseCall> calls;
+    for (int i = 0; i < size; ++i) {
+        calls.push_back({ lba + i, 1 });
     }
+
+    // ìœ íš¨ / ë¬´íš¨ LBA êµ¬ë¶„
+    std::vector<EraseCall> valid, invalid;
+    for (const auto& call : calls) {
+        if (call.lba >= 0 && call.lba < 100)
+            valid.push_back(call);
+        else
+            invalid.push_back(call);
+    }
+
+    // ê·¸ë£¹í•‘ + 10ë‹¨ìœ„ ìª¼ê°œê¸°
+    auto chunkedValid = groupAndChunk(valid);
+    auto chunkedInvalid = groupAndChunk(invalid);
+
+    // system call
+    performEraseCalls(chunkedValid);
+    performEraseCalls(chunkedInvalid);
 
     return true;
+}
+
+std::vector<EraseCommand::EraseCall> EraseCommand::groupAndChunk(const std::vector<EraseCall>& calls) {
+    std::vector<EraseCall> result;
+    if (calls.empty()) return result;
+
+    // ì •ë ¬
+    std::vector<EraseCall> sorted = calls;
+    std::sort(sorted.begin(), sorted.end(), [](const EraseCall& a, const EraseCall& b) {
+        return a.lba < b.lba;
+        });
+
+    // ì—°ì†ëœ LBA ê·¸ë£¹í•‘
+    std::vector<EraseCall> grouped;
+    grouped.push_back(sorted[0]);
+    for (size_t i = 1; i < sorted.size(); ++i) {
+        EraseCall& last = grouped.back();
+        if (last.lba + last.size == sorted[i].lba) {
+            last.size++;
+        }
+        else {
+            grouped.push_back(sorted[i]);
+        }
+    }
+
+    // ê·¸ë£¹ì„ 10ì¹¸ ë‹¨ìœ„ë¡œ ë‚˜ëˆ”
+    for (const auto& group : grouped) {
+        int start = group.lba;
+        int remain = group.size;
+        while (remain > 0) {
+            int chunkSize = std::min(10, remain);
+            result.push_back({ start, chunkSize });
+            start += chunkSize;
+            remain -= chunkSize;
+        }
+    }
+
+    return result;
+}
+
+void EraseCommand::performEraseCalls(const std::vector<EraseCall>& calls) {
+    for (const auto& call : calls) {
+        std::ostringstream oss;
+        oss << "ssd.exe E " << call.lba << " " << call.size;
+        std::cout << "[ERASE] " << oss.str() << std::endl;
+
+        int result = callSystem(oss.str());
+        if (result == 1) {
+            std::cout << "ERROR" << std::endl;
+        }
+        else {
+            std::cout << "DELETED" << std::endl;
+        }
+    }
 }
 
 int EraseCommand::callSystem(const std::string& cmd) {

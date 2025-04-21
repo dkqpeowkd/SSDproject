@@ -1,9 +1,9 @@
-#include "EraseRangeCommand.h"
+ï»¿#include "EraseRangeCommand.h"
 #include <iostream>
-#include <fstream>
 #include <sstream>
+#include <fstream>
 #include <cstdlib>
-#include <cmath>
+#include <algorithm>
 
 const std::string& EraseRangeCommand::getCommandString() {
     return cmd;
@@ -15,7 +15,7 @@ bool EraseRangeCommand::isMatch(const string& command)
 }
 
 const std::string& EraseRangeCommand::getUsage() {
-    static std::string usage = "erase_range <START_LBA> <END_LBA> : STARTºÎÅÍ END±îÁö ¹üÀ§¸¦ »èÁ¦ÇÕ´Ï´Ù (ÃÖ´ë 10Ä­)";
+    static std::string usage = "erase_range <START_LBA> <END_LBA> : ì£¼ì–´ì§„ ë²”ìœ„ë¥¼ ì‚­ì œ";
     return usage;
 }
 
@@ -27,23 +27,28 @@ bool EraseRangeCommand::Execute(const std::string& cmd, std::vector<std::string>
     int startLBA = std::stoi(args[0]);
     int endLBA = std::stoi(args[1]);
 
-    int size = endLBA - startLBA + 1;
-    if (size <= 0) return false; // Àß¸øµÈ ¹üÀ§´Â ¹«½Ã
+    if (startLBA < 0 || endLBA < 0 || startLBA >= 100 || endLBA >= 100) {
+        std::cout << "ERROR" << std::endl;
+        return true;
+    }
 
-    int processed = 0;
-    while (processed < size) {
-        int chunkSize = std::min(10, size - processed);
-        int currentLBA = startLBA + processed;
+    if (startLBA > endLBA)
+        std::swap(startLBA, endLBA);
+
+    int totalSize = endLBA - startLBA + 1;
+
+    for (int i = 0; i < totalSize; i += 10) {
+        int chunkSize = std::min(10, totalSize - i);
+        int lba = startLBA + i;
 
         std::ostringstream oss;
-        oss << "ssd.exe E " << currentLBA << " " << chunkSize;
+        oss << "ssd.exe E " << lba << " " << chunkSize;
+        std::cout << "[ERASE] " << oss.str() << std::endl;
 
         int result = callSystem(oss.str());
-        std::string output = readOutput();
 
-        if (output == "ERROR") return false;
-
-        processed += chunkSize;
+        if (result == 1) std::cout << "ERROR" << std::endl;
+        else std::cout << "DELETED" << std::endl;
     }
 
     return true;
