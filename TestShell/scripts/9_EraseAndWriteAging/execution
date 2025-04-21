@@ -3,8 +3,7 @@ WriteFunc SetLBA 2
 EraseFunc SetLBA 2
 WriteFunc DisableAutoIncrease
 Loop 2
-WriteFunc Random 1
-WriteFunc Random 1
+WriteFunc Random 2
 EraseFunc 3
 WriteFunc IncreaseLBA
 WriteFunc IncreaseLBA

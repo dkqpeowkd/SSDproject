@@ -94,7 +94,7 @@ shared_ptr<ScriptFunction> MetaCommandContainer::lookupScriptFunction(const stri
     return nullptr;
 }
 
-const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandList(vector<shared_ptr<ICommand>> supported)
+void MetaCommandContainer::createScriptCommands(vector<shared_ptr<ICommand>> supported)
 {
     addPreDefinedScriptFunction(supported);
     for (const auto& metaScript : metaScriptDesc) {
@@ -113,7 +113,6 @@ const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandL
             continue;
         }
     }
-    return scriptCommandList;
 }
 
 shared_ptr<ScriptCommand> MetaCommandContainer::createNewScriptCommandInstance(MetaCommandDescription& metaScript, vector<shared_ptr<ICommand>> supported)
@@ -152,7 +151,6 @@ vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExec
 
     for (auto iter = executionCommands.begin(); iter != executionCommands.end(); ++iter)
     {
-
         auto execCmd = *iter;
         string cmd = execCmd.first;
         vector<string> args = execCmd.second;

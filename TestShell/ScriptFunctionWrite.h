@@ -14,7 +14,7 @@ private:
     int LBAoffset = 0;
     vector<pair<string, string>> writeHistory = {};
 public:
-    shared_ptr<ScriptFunction> clone() const override { return nullptr; }
+    shared_ptr<ScriptFunction> cloneInstance() const override { return make_shared<ScriptFunctionWrite>(*this); }
     ScriptFunctionWrite(shared_ptr<ICommand> writeCommand, shared_ptr<ICommand> readCommand) : writeCommand{ writeCommand }, readCommand{ readCommand } {}
     const string& getCommandString() override { return command; }
     bool isMatch(const string& command) override { return this->command == command; }
@@ -106,18 +106,18 @@ public:
     }
 
     bool WriteRandom(int numLBA) {
-        int lbaNum;
-        for (lbaNum = LBAoffset; lbaNum < LBAoffset + numLBA; ++lbaNum) {
-            string lbaStr = std::to_string(lbaNum);
+        
+        for (int i = 0; i < numLBA; ++i) {
+            string lbaStr = std::to_string(LBAoffset);
             string randomValue = getRandomHexValue();
-            //std::cout << "write with random value : " << lbaStr << ", " << randomValue << std::endl;
             vector<string> args{ lbaStr, randomValue };
             if (writeCommand->Execute(writeCommand->getCommandString(), args) == false)
                 return false;
             else
                 writeHistory.emplace_back(pair{ lbaStr, randomValue });
+            LBAoffset = (isAutoIncrease) ? LBAoffset + 1 : LBAoffset;
         }
-        LBAoffset = lbaNum;
+        
         return true;
     }
 
