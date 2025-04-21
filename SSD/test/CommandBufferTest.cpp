@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 #include "../src/SsdType.h"
 #include <filesystem>
+#include "TestSsdComponentFactory.h"
 
 namespace fs = std::filesystem;
 
@@ -25,15 +26,17 @@ constexpr const char* INVALID_LBA = "100";
 
 class CommandBufferTest : public ::testing::Test {
  protected:
-  SsdController* ssdInterface;
+  SsdController* ssdControllerWithTest;
 
   void SetUp() override { 
-      bufferDir = "buffer";
-      ssdInterface = new SsdController();
+    bufferDir = "buffer";
+    std::unique_ptr<SsdComponentFactory> testFactory =
+        std::make_unique<TestSsdComponentFactory>();
+    ssdControllerWithTest = new SsdController(std::move(testFactory));
   }
 
   void TearDown() override {
-    delete ssdInterface;
+    delete ssdControllerWithTest;
     if (fs::exists(OUTPUT_FILE_NAME)) fs::remove(OUTPUT_FILE_NAME);
     if (fs::exists(NAND_FILE_NAME)) fs::remove(NAND_FILE_NAME);
   }
@@ -117,32 +120,32 @@ TEST_F(CommandBufferTest, BufferCount4afterTerminated) {
 }
 
 TEST_F(CommandBufferTest, Write_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
-  ssdInterface->ClearCommandBuffer();
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
+  ssdControllerWithTest->ClearCommandBuffer();
 }
 
 TEST_F(CommandBufferTest, Erase_Buffer) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Erase(VALID_LBA_BEGIN, "1");
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
-  ssdInterface->ClearCommandBuffer();
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
+  ssdControllerWithTest->Erase(VALID_LBA_BEGIN, "1");
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
+  ssdControllerWithTest->ClearCommandBuffer();
 }
 
 TEST_F(CommandBufferTest, Implicit_Flush_Buffer) {
   for (int cmdCount = 0; cmdCount <= 6; cmdCount++) {
     std::string lba = std::to_string(cmdCount);
-    ssdInterface->Write(lba, VALID_VALUE_1);
+    ssdControllerWithTest->Write(lba, VALID_VALUE_1);
   }
 
   for (int cmdCount = 0; cmdCount <= 6; cmdCount++) {
     std::string lba = std::to_string(cmdCount);
-    ssdInterface->Read(lba);
-    EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+    ssdControllerWithTest->Read(lba);
+    EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
   }
-  ssdInterface->ClearCommandBuffer();
+  ssdControllerWithTest->ClearCommandBuffer();
 }
 
 TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
@@ -150,8 +153,8 @@ TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("W 0 0xabcdef01");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(VALID_VALUE_2, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_2, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -172,8 +175,8 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_1) {
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("E 0 1");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -182,8 +185,8 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_2) {
   buffer.AddCommand("W 95 0x12345678");
   buffer.AddCommand("E 94 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_95);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_95);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -193,8 +196,8 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_3) {
   buffer.AddCommand("W 1 0x12345678");
   buffer.AddCommand("E 0 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_95);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_95);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -205,10 +208,10 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_4) {
   buffer.AddCommand("W 3 0x12345678");
   buffer.AddCommand("E 0 3");
   EXPECT_EQ(2, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
-  ssdInterface->Read("3");
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
+  ssdControllerWithTest->Read("3");
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -219,10 +222,10 @@ TEST_F(CommandBufferTest, WtoE_Ignore_Buffer_5) {
   buffer.AddCommand("W 1 0x12345678");
   buffer.AddCommand("E 0 3");
   EXPECT_EQ(2, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
-  ssdInterface->Read("3");
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
+  ssdControllerWithTest->Read("3");
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -231,8 +234,8 @@ TEST_F(CommandBufferTest, EtoW_Ignore_Buffer_1) {
   buffer.AddCommand("E 0 1");
   buffer.AddCommand("W 0 0x12345678");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -242,8 +245,8 @@ TEST_F(CommandBufferTest, EtoW_Ignore_Buffer_2) {
   buffer.AddCommand("W 1 0x12345678");
   buffer.AddCommand("W 0 0x12345678");
   EXPECT_EQ(2, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
@@ -254,8 +257,8 @@ TEST_F(CommandBufferTest, EtoW_Ignore_Buffer_3) {
   buffer.AddCommand("W 0 0x12345678");
   buffer.AddCommand("W 2 0x12345678");
   EXPECT_EQ(3, buffer.GetValidBufferCount());
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
   buffer.DestroyBuffer();
 }
 
