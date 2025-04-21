@@ -55,6 +55,8 @@ TestShell::TestShell()
 	for (auto scriptCmd : scriptCommands) {
 		addCommand(scriptCmd);
 	}
+
+	helpCommand->addSupportedCommand(commandList);
 }
 void TestShell::run()
 {
@@ -138,6 +140,6 @@ shared_ptr<ICommand> TestShell::findCommand(const string& command)
 void TestShell::addCommand(shared_ptr<ICommand> newCommand)
 {
 	commandList.emplace_back(newCommand);
-	helpCommand->addHelp(newCommand->getUsage());
+	//helpCommand->addHelp(newCommand->getUsage());
 
 }
