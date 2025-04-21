@@ -30,10 +30,7 @@ public:
 	MetaCommandContainer() {}
 	MetaCommandContainer(const string scriptPath) : metaScriptFolderPath{ scriptPath } {}
 	void loadMetaScript();
-
 	const vector<shared_ptr<ScriptCommand>>& getScriptCommandList(vector<shared_ptr<ICommand>> supported);
-
-
 private:
 	const string executionFile = "execution";
 	const string helpFile = "help";
@@ -47,6 +44,8 @@ private:
 	shared_ptr<ScriptFunction> lookupScriptPhrase(const string& command);
 	shared_ptr<ScriptFunction> lookupScriptFunction(const string& command);
 	vector<string> getLinesFromExecutions(const string&);
+	vector<pair<string, vector<string>>> getCommandsAndArgumentsFromExecutions(const string& executions);
+	vector<pair<string, vector<string>>> extractMetaCommands(vector<string>& commandLines);
 private:
 	vector<shared_ptr<ScriptFunction>> scriptPhrase;
 	vector<shared_ptr<ScriptFunction>> scriptFunctions;

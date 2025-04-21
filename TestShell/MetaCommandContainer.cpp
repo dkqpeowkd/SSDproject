@@ -91,31 +91,41 @@ const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandL
 {
     addPreDefinedScriptFunction(supported);
     for (const auto& metaScript : metaScriptDesc) {
-        vector<pair<string, vector<string>>> executionCommands;
+        vector<pair<string, vector<string>>> executionCommands = getCommandsAndArgumentsFromExecutions(metaScript.executions);
         // split command line to tokens, havin cmd and arguments.
-        vector<pair<string, vector<string>>> cmds;
-        if (metaScript.executions.size() == 0)
-            return {};
 
-        vector<string> lines = getLinesFromExecutions(metaScript.executions);
-
-        for (auto line : lines) {
-            std::istringstream iss(line);
-            std::vector<std::string> tokens;
-            std::string token;
-
-            while (iss >> token) {
-                tokens.push_back(token);
-            }
-
-            string cmd = tokens[0];
-            tokens.erase(tokens.begin());
-
-            executionCommands.emplace_back(pair{ cmd, tokens });
-        }
     }
     return scriptCommandList;
 }
+
+vector<pair<string, vector<string>>> MetaCommandContainer::getCommandsAndArgumentsFromExecutions(const string& executions)
+{ 
+    if (executions.size() == 0)
+        return {};
+
+    vector<string> lines = getLinesFromExecutions(executions);
+    return extractMetaCommands(lines);
+}
+
+vector<pair<string, vector<string>>> MetaCommandContainer::extractMetaCommands(vector<string>& commandLines)
+{
+    vector<pair<string, vector<string>>> metaCommands;
+    for (auto line : commandLines) {
+        std::istringstream iss(line);
+        std::vector<std::string> tokens;
+        std::string token;
+
+        while (iss >> token) {
+            tokens.push_back(token);
+        }
+
+        string cmd = tokens[0];
+        tokens.erase(tokens.begin());
+
+        metaCommands.emplace_back(pair{ cmd, tokens });
+    }
+}
+
 
 void MetaCommandContainer::addPreDefinedScriptFunction(vector<shared_ptr<ICommand>> supported)
 {
