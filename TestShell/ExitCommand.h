@@ -5,9 +5,10 @@
 
 interface ExitCommand : public ICommand {
     ExitCommand() = default;
-    const string& getCommandString() { return command;}
+    const string& getCommandString() override { return command;}
     bool isMatch(const string& command) override { return this->command == command; }
-    const string& getUsage() { return usage; }
+    const string& getUsage() override  { return usage; }
+    const string& getDescription() override { return description; }
     bool isValidArguments(const string& cmd, vector<string>& args) { return args.size() == 0; }
     bool Execute(const string& cmd, vector<string>& args) {
         if (false == isValidArguments(cmd, args))
@@ -31,7 +32,8 @@ interface ExitCommand : public ICommand {
 
    private:
     const string command = "exit";
-    const string usage = "exit :\n\tExit the program\nusage:\n\tPrompt>exit";
+    const string usage = "Prompt>exit\n";
+    const string description = "Exit the program\n";
     bool isActive = true;
     Logger* log;
 };

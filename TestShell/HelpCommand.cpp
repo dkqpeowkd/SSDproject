@@ -38,9 +38,11 @@ bool HelpCommand::Execute(const string& cmd, vector<string>& args)
     for (auto& command : supportedCommand) {
         std::cout << "[" << command->getCommandString() << "]\n";
         std::cout << "Description:\n";
-        std::cout << "\t" << command->getDescription() << "\n";
+        //std::cout << "\t" << command->getDescription() << "\n";
+        printLines(command->getDescription());
         std::cout << "Usage:\n";
-        std::cout << "\t" << command->getUsage() << "\n";
+        //std::cout << "\t" << command->getUsage() << "\n";
+        printLines(command->getUsage());
         std::cout << "\n\n";
     }
     return true;
@@ -49,4 +51,14 @@ bool HelpCommand::Execute(const string& cmd, vector<string>& args)
 void HelpCommand::addSupportedCommand(vector<shared_ptr<ICommand>> supported)
 {
     supportedCommand = supported;
+}
+
+void HelpCommand::printLines(const string& lines)
+{
+    std::string line;
+    std::istringstream iss(lines);
+
+    while (std::getline(iss, line)) {
+        std::cout << '\t' << line << "\n";
+    }
 }

@@ -30,10 +30,12 @@ public:
 
 private:
     const string command = "help";
-    const string usage = "help :\n\tDisplay Help for commands\nusage:\n\tPrompt>help";
+    const string usage = "Prompt>help\n";
     const string description = "Display Help for commands\n";
     string result = "";
     vector<shared_ptr<ICommand>> supportedCommand = {};
     Logger* log = nullptr;
+
+    void printLines(const string& lines);
 };
 
