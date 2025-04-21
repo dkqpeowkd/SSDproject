@@ -14,6 +14,7 @@ public:
     const std::string& getCommandString() override;
     bool isMatch(const string& command) override;
     const std::string& getUsage() override;
+    const std::string& getDescription() override;
     bool isValidArguments(const std::string& cmd, std::vector<std::string>& args) override;
     bool Execute(const std::string& cmd, std::vector<std::string>& args) override;
     ReadCommand(Logger* logger) : log(logger) {}
@@ -32,7 +33,7 @@ public:
    protected:
     virtual int callSystem(const std::string& cmd);
     virtual std::string readOutput();
-    Logger* log;
+    Logger* log = nullptr;
 private:
     const std::string cmd = "read";
 };

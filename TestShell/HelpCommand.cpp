@@ -55,6 +55,7 @@ void HelpCommand::addSupportedCommand(vector<shared_ptr<ICommand>> supported)
 
 void HelpCommand::printLines(const string& lines)
 {
+    if (lines.size() == 0)return;
     std::string line;
     std::istringstream iss(lines);
 

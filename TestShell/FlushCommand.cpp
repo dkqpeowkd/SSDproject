@@ -10,8 +10,14 @@ bool FlushCommand::isMatch(const std::string& command) {
 }
 
 const std::string& FlushCommand::getUsage() {
-    static std::string usage = "flush : Command Buffer에 있는 모든 명령어를 수행하여 비웁니다.";
+    static std::string usage = "flush";
     return usage;
+}
+
+const std::string& FlushCommand::getDescription()
+{
+    static std::string description = "Command Buffer에 있는 모든 명령어를 수행하여 비웁니다.";
+    return description;
 }
 
 bool FlushCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {

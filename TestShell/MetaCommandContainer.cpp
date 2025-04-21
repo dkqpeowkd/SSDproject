@@ -12,8 +12,11 @@ using std::pair;
 namespace fs = std::filesystem;
 
 #include "MetaCommandContainer.h"
+#include "ScriptFunctionWrite.h"
+#include "ScriptFunctionErase.h"
+#include "ScriptFunctionLoop.h"
 
-void MetaCommandContainer::loadMetaScript()
+void MetaCommandContainer::loadMetaScript(vector<shared_ptr<ICommand>>& supported)
 {
     // Read the Folders in folderPath, each folder match the script command.
     try {
@@ -28,6 +31,8 @@ void MetaCommandContainer::loadMetaScript()
     catch (std::exception& e) {
         return;
     }
+
+    addPreDefinedScriptFunction(supported);
 }
 
 MetaCommandDescription MetaCommandContainer::getMetaCommandDescriptionFromFile(const fs::directory_entry& entry)
@@ -89,7 +94,7 @@ shared_ptr<ScriptFunction> MetaCommandContainer::lookupScriptFunction(const stri
     return nullptr;
 }
 
-const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandList(vector<shared_ptr<ICommand>> supported)
+void MetaCommandContainer::createScriptCommands(vector<shared_ptr<ICommand>> supported)
 {
     addPreDefinedScriptFunction(supported);
     for (const auto& metaScript : metaScriptDesc) {
@@ -108,7 +113,35 @@ const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandL
             continue;
         }
     }
-    return scriptCommandList;
+}
+
+shared_ptr<ScriptCommand> MetaCommandContainer::createNewScriptCommandInstance(MetaCommandDescription& metaScript, vector<shared_ptr<ICommand>> supported)
+{
+    try {
+        vector<pair<string, vector<string>>> executionCommands = getCommandsAndArgumentsFromExecutions(metaScript.executions);
+        vector<pair<shared_ptr<ICommand>, vector<string>>> executableScripts = getExecutableScripts(executionCommands, supported);
+
+        shared_ptr<ScriptCommand> newScriptCommand = ScriptCommand::Builder(metaScript.cmd)
+            ->setUsage(metaScript.usage)
+            .setDescription(metaScript.description)
+            .addExecutableScript(executableScripts)
+            .build();
+        return newScriptCommand;
+    }
+    catch (std::exception& e) {
+        return nullptr;
+    }
+}
+
+shared_ptr<ScriptCommand> MetaCommandContainer::getScriptCommand(const string& cmd, vector<shared_ptr<ICommand>> supported)
+{
+    for (auto& metaScript : metaScriptDesc) {
+        if (metaScript.cmd == cmd || metaScript.cmd.substr(0, 2) == cmd) {
+            return createNewScriptCommandInstance(metaScript, supported);
+        }
+    }
+
+    return nullptr;
 }
 
 vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExecutableScripts(vector<pair<string, vector<string>>>& executionCommands, vector<shared_ptr<ICommand>>& supported)
@@ -118,7 +151,6 @@ vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExec
 
     for (auto iter = executionCommands.begin(); iter != executionCommands.end(); ++iter)
     {
-
         auto execCmd = *iter;
         string cmd = execCmd.first;
         vector<string> args = execCmd.second;

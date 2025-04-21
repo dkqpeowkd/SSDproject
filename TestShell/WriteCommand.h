@@ -30,7 +30,7 @@ public:
    protected:
     virtual int callSystem(const std::string& cmd);
     virtual std::string readOutput();
-    Logger* log;
+    Logger* log = nullptr;
 private:
     const std::string cmd = "write";
 };

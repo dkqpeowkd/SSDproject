@@ -14,8 +14,14 @@ bool FullReadCommand::isMatch(const string& command)
 }
 
 const std::string& FullReadCommand::getUsage() {
-    static std::string usage = "fullread : 전체 LBA 영역을 읽고 출력합니다.";
+    static std::string usage = "fullread";
     return usage;
+}
+
+const std::string& FullReadCommand::getDescription()
+{
+    static std::string description = "전체 LBA 영역을 읽고 출력합니다.";
+    return description;
 }
 
 bool FullReadCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {

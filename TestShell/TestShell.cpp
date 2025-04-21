@@ -14,6 +14,7 @@
 #include "EraseRangeCommand.h"
 #include "FlushCommand.h"
 #include "MetaCommandContainer.h"
+#include <Windows.h>
 
 using std::cout;
 
@@ -25,7 +26,33 @@ std::vector<std::string> split(const std::string& line) {
 	while (iss >> token) tokens.push_back(token);
 	return tokens;
 }
+TestShell::TestShell(bool EnableLog) {
+  if (EnableLog == true) {
+    exitCommand = make_shared<ExitCommand>(&log);
+    helpCommand = make_shared<HelpCommand>(&log);
+    readCommand = make_shared<ReadCommand>(&log);
+    writeCommand = make_shared<WriteCommand>(&log);
+    fullReadCommand = make_shared<FullReadCommand>(&log);
+    fullWriteCommand = make_shared<FullWriteCommand>(&log);
+    eraseCommand = make_shared<EraseCommand>(&log);
+    eraseRangeCommand = make_shared<EraseRangeCommand>(&log);
+    flushCommand = make_shared<FlushCommand>(&log);
+  }
 
+  addCommand(exitCommand);
+  addCommand(helpCommand);
+  addCommand(readCommand);
+  addCommand(writeCommand);
+  addCommand(fullReadCommand);
+  addCommand(fullWriteCommand);
+  addCommand(eraseCommand);
+  addCommand(eraseRangeCommand);
+  addCommand(flushCommand);
+
+  
+
+  helpCommand->addSupportedCommand(commandList);
+}
 
 TestShell::TestShell()
 {
@@ -50,15 +77,6 @@ TestShell::TestShell()
 	addCommand(eraseRangeCommand);
 	addCommand(flushCommand);
 
-	MetaCommandContainer scriptsContainer;
-
-	scriptsContainer.loadMetaScript();
-	vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommandList(commandList);
-
-	for (auto scriptCmd : scriptCommands) {
-		addCommand(scriptCmd);
-	}
-
 	helpCommand->addSupportedCommand(commandList);
 }
 void TestShell::run()
@@ -69,7 +87,79 @@ void TestShell::run()
 		ExcutePromptInput(promptInput);
 	}
 }
+std::filesystem::path getExecutableDir() {
+  char path[MAX_PATH];
+  GetModuleFileNameA(NULL, path, MAX_PATH);
+  return std::filesystem::path(path).parent_path();
+}
 
+void TestShell::run(const std::string filename) {
+  std::filesystem::path exeDir = getExecutableDir();
+  std::filesystem::path filePath = exeDir / filename;
+  std::ifstream infile(filePath);
+
+  std::string line;
+  if (std::getline(infile, line)) {
+    // BOM 제거
+    if (line.size() >= 3 && static_cast<unsigned char>(line[0]) == 0xEF &&
+        static_cast<unsigned char>(line[1]) == 0xBB &&
+        static_cast<unsigned char>(line[2]) == 0xBF) {
+      line = line.substr(3);
+    }
+    std::cout << line << "      ___   Run...";
+  }
+
+  shared_ptr<ICommand> foundCommand = findCommand(line);
+  PromptInput promptInput;
+  promptInput.cmd = line;
+
+  if (foundCommand == nullptr) {
+    MetaCommandContainer scriptContainer;
+    scriptContainer.loadMetaScript(commandList);
+    shared_ptr<ICommand> scriptCommand =
+        scriptContainer.getScriptCommand(promptInput.cmd, commandList);
+
+    if (scriptCommand == nullptr) {
+      std::cout << "Fail" << std::endl;
+      return;
+	}
+
+
+    if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
+          std::cout << "Fail" << std::endl;
+		return;
+
+        }
+  }
+
+    std::cout << "Pass" << std::endl;
+
+
+  while (std::getline(infile, line)) {
+    std::cout << line << "      ___   Run...";
+    foundCommand = findCommand(line);
+    promptInput.cmd = line;
+    if (foundCommand == nullptr) {
+      MetaCommandContainer scriptContainer;
+      scriptContainer.loadMetaScript(commandList);
+      shared_ptr<ICommand> scriptCommand =
+          scriptContainer.getScriptCommand(promptInput.cmd, commandList);
+
+      if (scriptCommand == nullptr) {
+        std::cout << "Fail" << std::endl;
+        return;
+      }
+
+      if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
+        std::cout << "Fail" << std::endl;
+        return;
+      }
+    }
+    std::cout << "Pass" << std::endl;
+  }
+
+  infile.close();  // 파일 닫기
+}
 void TestShell::displayPrompt()
 {
 	cout << "SSDTestShell:>";
@@ -77,36 +167,65 @@ void TestShell::displayPrompt()
 
 PromptInput TestShell::getPromptInput()
 {
-	PromptInput promptInput;
-	string input;
-	std::getline(std::cin, input);
-	if (input.empty()) 
+	try {
+		PromptInput promptInput;
+		string input;
+		std::getline(std::cin, input);
+		if (input.empty())
+			return promptInput;
+
+		auto tokens = split(input);
+		std::string cmd = tokens[0];
+		tokens.erase(tokens.begin());
+
+		promptInput.cmd = cmd;
+		promptInput.args = tokens;
+
 		return promptInput;
-
-	auto tokens = split(input);
-	std::string cmd = tokens[0];
-	tokens.erase(tokens.begin());
-
-	promptInput.cmd = cmd;
-	promptInput.args = tokens;
-
-	return promptInput;
+	}
+	catch (std::exception& e) {
+		return PromptInput{};
+	}
 }
 
 bool TestShell::ExcutePromptInput(PromptInput& promptInput)
 {
+	if (TryInternalCommand(promptInput) == false) {
+		if (TryScriptCommand(promptInput.cmd, promptInput.args) == false) {
+			std::cout << "INVALID COMMAND" << std::endl;
+			return false;
+		}
+	}
+	return true;
+}
+
+bool TestShell::TryInternalCommand(PromptInput& promptInput)
+{
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
-	if (false == isValidPromptInput(foundCommand, promptInput)) {
-		std::cout << "INVALID COMMAND" << std::endl;
+	if (foundCommand == nullptr)
 		return false;
-	}
 
-	bool executed = foundCommand->Execute(promptInput.cmd, promptInput.args);
-	if (!executed) {
+	if (false == isValidPromptInput(foundCommand, promptInput))
 		return false;
-	}
 
+	if (false ==foundCommand->Execute(promptInput.cmd, promptInput.args))
+		return false;
+
+	return true;
+}
+
+bool TestShell::TryScriptCommand(const string& cmd, vector<string>& args)
+{
+	MetaCommandContainer scriptContainer;
+	scriptContainer.loadMetaScript(commandList);
+	shared_ptr<ICommand> scriptCommand = scriptContainer.getScriptCommand(cmd, commandList);
+
+	if (scriptCommand == nullptr)
+		return false;
+
+	if (scriptCommand->Execute(cmd, args) == false)
+		return false;
 	return true;
 }
 
@@ -134,5 +253,4 @@ void TestShell::addCommand(shared_ptr<ICommand> newCommand)
 {
 	commandList.emplace_back(newCommand);
 	//helpCommand->addHelp(newCommand->getUsage());
-
 }

@@ -1,17 +1,23 @@
 #pragma once
-
+#include <memory>
+#include <string>
+#include <vector>
 #include "ICommand.h"
-#include "TestShell.h"
-#include "PromptInput.h"
-
 
 using std::pair;
-class ScriptCommand;
+using std::shared_ptr;
+using std::make_shared;
+using std::string;
 
 class ScriptCommand : public ICommand {
 private:
 public:
     ScriptCommand() {}
+    shared_ptr<ScriptCommand> clone() { 
+        shared_ptr<ScriptCommand> cloneInstance = make_shared<ScriptCommand>(*this);
+        cloneInstance->scripts = this->scripts;
+        return cloneInstance;
+    }
     ScriptCommand(const string& command) : scriptCommand{ command } {}
     virtual bool isMatch(const string& cmd) override;
     virtual const string& getCommandString() override;
@@ -59,6 +65,5 @@ protected:
     string scriptCommand = "";
     string usage = "";
     string description = "";
-    vector<string> commandLines;
     vector<pair<shared_ptr<ICommand>, vector<string>>> scripts = {};
 };
