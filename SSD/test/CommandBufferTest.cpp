@@ -340,3 +340,57 @@ TEST_F(CommandBufferTest, EtoW_Not_Ignore_Buffer) {
   buffer.DestroyBuffer();
 }
 
+TEST_F(CommandBufferTest, WtoE_And_WW_Buffer) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("W 0 0x11111111");
+  buffer.AddCommand("E 0 1");
+  buffer.AddCommand("W 1 0x22222222");
+  buffer.AddCommand("W 2 0x33333333");
+
+  EXPECT_EQ(3, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EtoWtoE_Not_Ignore_Buffer) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 2");
+  buffer.AddCommand("W 3 0x99999999");
+  buffer.AddCommand("E 4 2");
+
+  EXPECT_EQ(3, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EWtoE_Buffer) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 2");
+  buffer.AddCommand("W 0 0x99999999");
+  buffer.AddCommand("E 0 5");
+
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EWtoE_Buffer_1) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 2");
+  buffer.AddCommand("W 1 0x99999999");
+  buffer.AddCommand("E 0 5");
+
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, EWtoE_Buffer_2) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 2");
+  buffer.AddCommand("W 3 0x99999999");
+  buffer.AddCommand("E 0 5");
+
+  EXPECT_EQ(1, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+
+
+
+
