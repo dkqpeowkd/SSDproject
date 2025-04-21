@@ -143,10 +143,10 @@ bool EraseCommand::Execute(const std::string& cmd, std::vector<std::string>& arg
         int result = callSystem(oss.str());
 
         if (result == 1) {
-            std::cout << "DELETED" << std::endl;
+            std::cout << "ERROR" << std::endl;
         }
         else {
-            std::cout << "ERROR" << std::endl;
+            std::cout << "DELETED" << std::endl;
         }
     }
 
@@ -157,10 +157,10 @@ bool EraseCommand::Execute(const std::string& cmd, std::vector<std::string>& arg
         std::cout << "[ERASE] " << oss.str() << std::endl;
         int result = callSystem(oss.str());
         if (result == 1) {
-            std::cout << "DELETED" << std::endl;
+            std::cout << "ERROR" << std::endl;
         }
         else {
-            std::cout << "ERROR" << std::endl;
+            std::cout << "DELETED" << std::endl;
         }
     }
 
