@@ -24,46 +24,45 @@ void CommandBuffer::InitializeEmptyCommandBuffer() {
 
 void CommandBuffer::AddCommand(const std::string& command) {
   if (!IsWriteOrEraseCommand(command)) return;
-
-  commands.push_back(command);
+  auto cmd = CommandFactory::Create(command);
+  if (cmd) {
+    commands.push_back(std::move(cmd));
+  }
   SaveBuffer();
 
   std::map<int, std::string> lbaMap = UpdateCommandsAndBuildLbaToValueList();
-  commands = convertLbaMapToBuffers(lbaMap);
+  commands = ConvertLbaMapToBuffers(lbaMap);
 
   SaveBuffer();
 }
+std::vector<std::unique_ptr<ICommand>> CommandBuffer::ConvertLbaMapToBuffers(
+    const std::map<int, std::string>& lbaMap) {
+  std::vector<std::unique_ptr<ICommand>> commands;
 
-std::vector<std::string> CommandBuffer::convertLbaMapToBuffers(
-    std::map<int, std::string> lbaMap) {
-  std::vector<std::string> commands;
-
-  auto it =lbaMap.begin();
+  auto it = lbaMap.begin();
   while (it != lbaMap.end()) {
     if (it->second == "0x00000000") {
       int start = it->first;
       int count = 1;
 
       auto next = std::next(it);
-      while (next != lbaMap.end() &&
-             next->first == it->first + 1) {  // 다음 key가 존재하기만 하면 OK
+      while (next != lbaMap.end() && next->first == it->first + 1) {
         ++count;
         ++it;
         ++next;
       }
 
-      commands.push_back("E " + std::to_string(start) + " " +
-                         std::to_string(count));
+      commands.push_back(std::make_unique<EraseCommand>(start, count));
       it = next;
     } else {
       ++it;
     }
   }
 
-  // Write 명령어 추가 (0x00000000 제외)
+  // Write 명령어 추가
   for (const auto& [lba, value] : lbaMap) {
     if (value != "0x00000000") {
-      commands.push_back("W " + std::to_string(lba) + " " + value);
+      commands.push_back(std::make_unique<WriteCommand>(lba, value));
     }
   }
 
@@ -82,7 +81,7 @@ void CommandBuffer::SaveBuffer() {
 
     if (i < commands.size()) {
       newPath =
-          bufferDirectory + "/" + std::to_string(i + 1) + "_" + commands[i];
+          bufferDirectory + "/" + std::to_string(i + 1) + "_" + commands[i].get()->ToString();
     } else {
       newPath = bufferDirectory + "/" + std::to_string(i + 1) + "_empty";
     }
@@ -116,32 +115,7 @@ std::map<int, std::string> CommandBuffer::UpdateCommandsAndBuildLbaToValueList()
   std::map<int, std::string> lbaMap;
 
   for (const auto& command : commands) {
-    std::istringstream iss(command);
-    std::string cmd;
-    int lba;
-
-    iss >> cmd >> lba;
-    if (lba < MIN_LBA || lba > MAX_LBA) continue;
-
-    if (cmd == "W") {
-      std::string value;
-      iss >> value;
-      lbaMap[lba] = value;
-    } else if (cmd == "E") {
-      int scope;
-      iss >> scope;
-      if (scope < -10 || scope > 10) continue;
-
-      int start = lba;
-      int end = lba + scope - 1;
-      if (scope < 0) std::swap(start, end);
-
-      for (int i = start; i <= end; ++i) {
-        if (i >= MIN_LBA && i <= MAX_LBA) {
-          lbaMap[i] = ZERO_PATTERN;
-        }
-      }
-    }
+    command.get()->ApplyCommandBuffer(lbaMap);
   }
 
   return lbaMap;
@@ -154,21 +128,26 @@ std::string CommandBuffer::Read(std::string lba_) {
   return it != lbaMap.end() ? it->second : FAIL_BUFFER_READ_MESSAGE;
 }
 
-std::vector<std::string> CommandBuffer::GetCommandBuffer() {
+std::vector<std::unique_ptr<ICommand>> CommandBuffer::GetCommandBuffer() {
   auto indexedCommands = MakeCommandsWithIndexFromFIleNames();
   return MakeCommandBufferFromIndexedCommands(indexedCommands);
 }
 
-std::vector<std::string> CommandBuffer::MakeCommandBufferFromIndexedCommands(
-  const std::vector<std::pair<int, std::string>>& indexedCommands) {
-  std::vector<std::string> commandBuffer;
-  for (const auto& [_, cmd] : indexedCommands) {
-    if (cmd.find("empty") == std::string::npos) {
-      commandBuffer.push_back(cmd);
+std::vector<std::unique_ptr<ICommand>>
+CommandBuffer::MakeCommandBufferFromIndexedCommands(
+    const std::vector<std::pair<int, std::string>>& indexedCommands) {
+  std::vector<std::unique_ptr<ICommand>> result;
+
+  for (const auto& [_, cmdStr] : indexedCommands) {
+    if (cmdStr.find("empty") != std::string::npos) continue;
+
+    auto cmd = CommandFactory::Create(cmdStr);
+    if (cmd) {
+      result.push_back(std::move(cmd));
     }
   }
 
-  return commandBuffer;
+  return result;
 }
 
 std::vector<std::pair<int, std::string>>

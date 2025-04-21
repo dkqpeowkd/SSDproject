@@ -267,8 +267,8 @@ TEST_F(CommandBufferTest, EtoE_Merge_Buffer_1) {
   buffer.AddCommand("E 0 3");
   buffer.AddCommand("E 0 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 3", commands[0]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 3", commands[0].get()->ToString());
   buffer.DestroyBuffer();
 }
 
@@ -277,8 +277,8 @@ TEST_F(CommandBufferTest, EtoE_Merge_Buffer_2) {
   buffer.AddCommand("E 0 3");
   buffer.AddCommand("E 1 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 4", commands[0]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 4", commands[0].get()->ToString());
   buffer.DestroyBuffer();
 }
 
@@ -287,8 +287,8 @@ TEST_F(CommandBufferTest, EtoE_Merge_Buffer_3) {
   buffer.AddCommand("E 1 3");
   buffer.AddCommand("E 0 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 4", commands[0]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 4", commands[0].get()->ToString());
   buffer.DestroyBuffer();
 }
 
@@ -297,8 +297,8 @@ TEST_F(CommandBufferTest, EtoE_Merge_Buffer_4) {
   buffer.AddCommand("E 0 3");
   buffer.AddCommand("E 3 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 6", commands[0]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 6", commands[0].get()->ToString());
   buffer.DestroyBuffer();
 }
 
@@ -307,8 +307,8 @@ TEST_F(CommandBufferTest, EtoE_Merge_Buffer_5) {
   buffer.AddCommand("E 3 3");
   buffer.AddCommand("E 0 3");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 6", commands[0]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 6", commands[0].get()->ToString());
   buffer.DestroyBuffer();
 }
 
@@ -317,9 +317,9 @@ TEST_F(CommandBufferTest, EtoE_No_Merge_Buffer) {
   buffer.AddCommand("E 0 3");
   buffer.AddCommand("E 4 3");
   EXPECT_EQ(2, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 3", commands[0]);
-  EXPECT_EQ("E 4 3", commands[1]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 3", commands[0].get()->ToString());
+  EXPECT_EQ("E 4 3", commands[1].get()->ToString());
   buffer.DestroyBuffer();
 }
 
@@ -329,8 +329,8 @@ TEST_F(CommandBufferTest, EtoE_Merge_Multiple_Buffers_1) {
   buffer.AddCommand("E 4 3");
   buffer.AddCommand("E 3 1");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
-  std::vector<std::string> commands = buffer.GetCommandBuffer();
-  EXPECT_EQ("E 0 7", commands[0]);
+  std::vector<std::unique_ptr<ICommand>> commands = buffer.GetCommandBuffer();
+  EXPECT_EQ("E 0 7", commands[0].get()->ToString());
   buffer.DestroyBuffer();
 }
 
