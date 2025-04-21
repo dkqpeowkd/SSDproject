@@ -22,18 +22,19 @@ bool ReadCommand::isValidArguments(const std::string& cmd,
 
 bool ReadCommand::Execute(const std::string& cmd,
                           std::vector<std::string>& args) {
-  std::string command = "ssd.exe R " + args[0];
-  std::cout << "[READ] " << command << std::endl;
+    std::ostringstream oss;
+    oss << "ssd.exe R " << args[0];
+    logMessage("ReadCommand.Execute()", "[READ] %s", oss.str().c_str());
 
-  int result = callSystem(command);
-
-  if (result == 1) {
-      std::cout << "ERROR" << std::endl;
-      return false;
-  }
+    int result = callSystem(oss.str());
+    if (result == 1) {
+        logMessage("ReadCommand.Execute()", "[READ] ERROR");
+        return false;
+    }
 
    std::string output = readOutput();
-   std::cout << output << std::endl;
+   logMessage("ReadCommand.Execute()", "[READ] %s", output.c_str());
+   //std::cout << output << std::endl;
 
   if (args.size() >= 2) {
     // 사용자로부터 전달받은 패턴을 16진수로 변환
@@ -43,7 +44,7 @@ bool ReadCommand::Execute(const std::string& cmd,
 
     // 비교 결과 출력
     if (expected != actual) {
-      logMessage("ReadCommand::Execute", "불일치: 기대값 0x%x 실제값 0x%x",
+      logMessage("ReadCommand.Execute()", "불일치: 기대값 0x%x 실제값 0x%x",
                  expected, actual);
       return false;
     }

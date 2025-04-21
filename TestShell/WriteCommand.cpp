@@ -25,16 +25,16 @@ bool WriteCommand::isValidArguments(const std::string& cmd, std::vector<std::str
 bool WriteCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
     std::ostringstream oss;
     oss << "ssd.exe W " << args[0] << " " << args[1];
-    std::cout << "[WRITE] " << oss.str() << std::endl;
+    logMessage("WriteCommand.Execute()", "[WRITE] %s", oss.str().c_str());
 
     int result = callSystem(oss.str());
 
     if (result == 1) {
-        std::cout << "ERROR" << std::endl;
+        logMessage("WriteCommand.Execute()", "[WRITE] ERROR");
         return false;
     }
     std::string output = readOutput();
-    std::cout << "WRITE COMPLETED!" << std::endl;
+    logMessage("WriteCommand.Execute()", "[WRITE] COMPLETED!");
     return true;
 }
 
