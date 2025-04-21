@@ -5,15 +5,17 @@
 class ScriptFunctionErase : public ScriptFunction {
 private:
     const string command = "EraseFunc";
-    shared_ptr<ICommand> eraseCommand;
-    shared_ptr<ICommand> eraseRangeCommand;
+    std::shared_ptr<ICommand> eraseCommand;
+    std::shared_ptr<ICommand> eraseRangeCommand;
     const string __EMPTY = "";
 
     bool isAutoIncrease = false;
     int LBAoffset = 0;
 public:
-    shared_ptr<ScriptFunction> clone() const override { return nullptr; }
-    ScriptFunctionErase(shared_ptr<ICommand> eraseCommand, shared_ptr<ICommand> eraseRangeCommand) : eraseCommand{ eraseCommand }, eraseRangeCommand{ eraseRangeCommand } {}
+    std::shared_ptr<ScriptFunction> clone() const override { return nullptr; }
+    ScriptFunctionErase(std::shared_ptr<ICommand> eraseCommand,
+                        std::shared_ptr<ICommand> eraseRangeCommand)
+     : eraseCommand{eraseCommand}, eraseRangeCommand{eraseRangeCommand} {}
     const string& getCommandString() override { return command; }
     bool isMatch(const string& command) override { return this->command == command; }
     const string& getUsage() override { return __EMPTY; }

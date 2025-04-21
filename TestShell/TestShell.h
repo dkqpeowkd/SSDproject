@@ -12,9 +12,9 @@
 #include "EraseCommand.h"
 #include "EraseRangeCommand.h"
 #include "FlushCommand.h"
+#include "MetaCommandContainer.h"
 #include "Log.h"
 #include "ICommand.h"
-#include "MetaCommandContainer.h"
 
 using std::string;
 using std::vector;

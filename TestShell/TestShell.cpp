@@ -4,16 +4,8 @@
 #include <algorithm>
 #include <sstream>
 #include <vector>
-#include "TestShell.h"
 #include "ICommand.h"
-#include "ReadCommand.h"
-#include "WriteCommand.h"
-#include "FullReadCommand.h"
-#include "FullWriteCommand.h"
-#include "EraseCommand.h"
-#include "EraseRangeCommand.h"
-#include "FlushCommand.h"
-#include "MetaCommandContainer.h"
+#include "TestShell.h"
 
 using std::cout;
 

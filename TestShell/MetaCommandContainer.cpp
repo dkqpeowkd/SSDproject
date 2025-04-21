@@ -11,10 +11,10 @@ using std::vector;
 using std::pair;
 namespace fs = std::filesystem;
 
-#include "MetaCommandContainer.h"
 #include "ScriptFunctionWrite.h"
 #include "ScriptFunctionErase.h"
 #include "ScriptFunctionLoop.h"
+#include "MetaCommandContainer.h"
 
 void MetaCommandContainer::loadMetaScript()
 {
@@ -257,7 +257,8 @@ void MetaCommandContainer::addPreDefinedScriptFunction(vector<shared_ptr<IComman
     shared_ptr<ICommand> readCommand = lookupCommand("read", supported);
     shared_ptr<ICommand> writeCommand = lookupCommand("write", supported);
     if (readCommand && writeCommand) {
-        shared_ptr<ScriptFunctionWrite> writeFunc = make_shared<ScriptFunctionWrite>(writeCommand, readCommand);
+        std::shared_ptr<ScriptFunctionWrite> writeFunc =
+          make_shared<ScriptFunctionWrite>(writeCommand, readCommand);
         scriptFunctions.emplace_back(writeFunc);
     }
     shared_ptr<ICommand> eraseCommand = lookupCommand("erase", supported);

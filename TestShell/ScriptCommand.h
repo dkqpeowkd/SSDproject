@@ -1,9 +1,6 @@
 #pragma once
-
+#include <memory>
 #include "ICommand.h"
-#include "TestShell.h"
-#include "PromptInput.h"
-
 
 using std::pair;
 //class ScriptCommand;
@@ -19,13 +16,13 @@ public:
     virtual const string& getDescription() override;
     virtual bool isValidArguments(const string& cmd, vector<string>& args) override;
     virtual bool Execute(const string& cmd, vector<string>& args) override;
-    void addExecution(shared_ptr<ICommand> command, vector<string> args);
+    void addExecution(std::shared_ptr<ICommand> command, vector<string> args);
 
     bool executeScript();
     class ScriptCommandBuilder {
     public:
         ScriptCommandBuilder(const string& command) {
-            instance = make_shared<ScriptCommand>(command);
+            instance = std::make_shared<ScriptCommand>(command);
         }
         ScriptCommandBuilder& setCommand(const string& command) {
             instance->scriptCommand = command;
@@ -39,26 +36,30 @@ public:
             instance->description = description;
             return *this;
         }
-        ScriptCommandBuilder& addExecutableScript(vector<pair<shared_ptr<ICommand>, vector<string>>> executableScript) {
+        ScriptCommandBuilder& addExecutableScript(vector<pair<std::shared_ptr<ICommand>, vector<string>>> executableScript) {
             for (auto e : executableScript) {
                 instance->addExecution(e.first, e.second);
             }
             return *this;
         }
-        shared_ptr<ScriptCommand> build() {
+        std::shared_ptr<ScriptCommand> build() {
             return instance;
         }
     private:
-        shared_ptr<ScriptCommand> instance;
+        std::shared_ptr<ScriptCommand> instance;
     };
 
     //static ScriptCommandBuilder& Builder() { return *(make_shared<ScriptCommandBuilder>()); }
-    static shared_ptr<ScriptCommandBuilder> Builder(const string& command) { return make_shared<ScriptCommandBuilder>(command); }
-protected:
+    static std::shared_ptr<ScriptCommandBuilder> Builder(
+        const string& command) {
+      return std::make_shared<ScriptCommandBuilder>(command);
+    }
+
+   protected:
     const string NOT_PROVIDED = "Not provided.\n";
     string scriptCommand = "";
     string usage = "";
     string description = "";
     vector<string> commandLines;
-    vector<pair<shared_ptr<ICommand>, vector<string>>> scripts = {};
+    vector<pair<std::shared_ptr<ICommand>, vector<string>>> scripts = {};
 };

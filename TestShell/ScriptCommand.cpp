@@ -43,15 +43,15 @@ bool ScriptCommand::Execute(const string& cmd, vector<string>& args)
     return executeScript();
 }
 
-void ScriptCommand::addExecution(shared_ptr<ICommand> command, vector<string> args)
-{
+void ScriptCommand::addExecution(std::shared_ptr<ICommand> command,
+                                 vector<string> args) {
     scripts.emplace_back(command, args);
 }
 
 bool ScriptCommand::executeScript()
 {
     for (auto cmd : scripts) {
-        shared_ptr<ICommand> command = cmd.first;
+        std::shared_ptr<ICommand> command = cmd.first;
         vector<string>& args = cmd.second;
         if (false == command->Execute(command->getCommandString(), args)) {
             //std::cout << "Failed to execute " << scriptCommand << "->" << command->getCommandString() << std::endl;

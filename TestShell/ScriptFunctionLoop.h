@@ -7,7 +7,7 @@ private:
     const string command = "Loop";
     const string __EMPTY = "";
 public:
-    shared_ptr<ScriptFunction> clone() const override { return nullptr; }
+    std::shared_ptr<ScriptFunction> clone() const override { return nullptr; }
     ScriptFunctionLoop() {}
     const string& getCommandString() override { return command; }
     bool isMatch(const string& command) override { return this->command == command; }

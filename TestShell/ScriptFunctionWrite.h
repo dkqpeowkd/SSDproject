@@ -6,16 +6,18 @@
 class ScriptFunctionWrite : public ScriptFunction {
 private:
     const string command = "WriteFunc";
-    shared_ptr<ICommand> writeCommand;
-    shared_ptr<ICommand> readCommand;
+    std::shared_ptr<ICommand> writeCommand;
+    std::shared_ptr<ICommand> readCommand;
     const string __EMPTY = "";
 
     bool isAutoIncrease = false;
     int LBAoffset = 0;
     vector<pair<string, string>> writeHistory = {};
 public:
-    shared_ptr<ScriptFunction> clone() const override { return nullptr; }
-    ScriptFunctionWrite(shared_ptr<ICommand> writeCommand, shared_ptr<ICommand> readCommand) : writeCommand{ writeCommand }, readCommand{ readCommand } {}
+    std::shared_ptr<ScriptFunction> clone() const override { return nullptr; }
+    ScriptFunctionWrite(std::shared_ptr<ICommand> writeCommand,
+                        std::shared_ptr<ICommand> readCommand)
+     : writeCommand{writeCommand}, readCommand{readCommand} {}
     const string& getCommandString() override { return command; }
     bool isMatch(const string& command) override { return this->command == command; }
     const string& getUsage() override { return __EMPTY; }
