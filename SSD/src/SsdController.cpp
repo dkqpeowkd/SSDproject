@@ -77,30 +77,9 @@ void SsdController::Erase(std::string lba, std::string scope) {
 
 void SsdController::Flush() { 
   std::vector<std::unique_ptr<ICommand>> commands = commandBuffer.GetCommandBuffer();
-  const int bufferItemCount = commands.size();
 
-  for (int bufferSlot = 0; bufferSlot < bufferItemCount; bufferSlot++) {
-    std::string command = commands[bufferSlot].get()->ToString();
-
-    std::istringstream issCommand(command);
-    std::string commandType;
-    issCommand >> commandType;
-
-    if (commandType == "W") {
-      std::string lba;
-      std::string dataPattern;
-      issCommand >> lba >> dataPattern;
-      processWriteCommand(lba, dataPattern);
-    } else if (commandType == "E") {
-      std::string lba;
-      std::string scope;
-      issCommand >> lba >> scope;
-      processEraseCommand(lba, scope);
-    } else {
-      validator->SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +
-                               commandType);
-      return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
-    }
+  for (const auto& cmd : commands) {
+    cmd->ExecuteNandStorage(*nandStorage, *recoder, *validator);
   }
 
   commandBuffer.ClearBuffer();

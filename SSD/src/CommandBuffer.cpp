@@ -115,7 +115,7 @@ std::map<int, std::string> CommandBuffer::UpdateCommandsAndBuildLbaToValueList()
   std::map<int, std::string> lbaMap;
 
   for (const auto& command : commands) {
-    command.get()->Apply(lbaMap);
+    command.get()->ApplyCommandBuffer(lbaMap);
   }
 
   return lbaMap;

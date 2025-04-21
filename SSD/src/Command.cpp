@@ -11,7 +11,7 @@
 WriteCommand::WriteCommand(int lba_, std::string value_)
     : lba(lba_), value(std::move(value_)) {}
 
-void WriteCommand::Apply(std::map<int, std::string>& lbaMap) const {
+void WriteCommand::ApplyCommandBuffer(std::map<int, std::string>& lbaMap) const {
   lbaMap[lba] = value;
 }
 
@@ -19,7 +19,7 @@ std::string WriteCommand::ToString() const {
   return "W " + std::to_string(lba) + " " + value;
 }
 
-void WriteCommand::Execute(NandStorage& nandStorage, Recoder& recoder,
+void WriteCommand::ExecuteNandStorage(NandStorage& nandStorage, Recoder& recoder,
                            Validator& validator) const {
   if (!nandStorage.Write(std::to_string(lba), value)) {
     validator.SetErrorReason(" ### Write Fail (about File) ### ");
@@ -27,10 +27,9 @@ void WriteCommand::Execute(NandStorage& nandStorage, Recoder& recoder,
   }
 }
 
-
 EraseCommand::EraseCommand(int lba_, int size_) : lba(lba_), size(size_) {}
 
-void EraseCommand::Apply(std::map<int, std::string>& lbaMap) const {
+void EraseCommand::ApplyCommandBuffer(std::map<int, std::string>& lbaMap) const {
   int start = std::min(lba, lba + size - 1);
   int end = std::max(lba, lba + size - 1);
   for (int i = start; i <= end; ++i) {
@@ -42,7 +41,7 @@ std::string EraseCommand::ToString() const {
   return "E " + std::to_string(lba) + " " + std::to_string(size);
 }
 
-void EraseCommand::Execute(NandStorage& nandStorage, Recoder& recoder,
+void EraseCommand::ExecuteNandStorage(NandStorage& nandStorage, Recoder& recoder,
                            Validator& validator) const {
   int start = std::min(lba, lba + size - 1);
   int end = std::max(lba, lba + size - 1);
