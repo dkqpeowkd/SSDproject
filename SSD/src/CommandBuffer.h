@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <map>
 
 class CommandBuffer {
  public:
@@ -33,4 +34,6 @@ class CommandBuffer {
   std::unordered_map<int, std::string> BuildLbaMapFromFilenames();
   void processWrite(const std::string& command);
   void processErase(const std::string& command);
+  std::vector<std::string> convertLbaMapToBuffers(
+      std::unordered_map<int, std::string> lbaMap);
 };
