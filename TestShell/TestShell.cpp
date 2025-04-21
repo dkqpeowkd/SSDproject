@@ -50,7 +50,7 @@ TestShell::TestShell()
 	MetaCommandContainer scriptsContainer;
 
 	scriptsContainer.loadMetaScript();
-	vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommands(commandList);
+	vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommandList(commandList);
 
 	for (auto scriptCmd : scriptCommands) {
 		addCommand(scriptCmd);

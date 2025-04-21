@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <set>
+#include <filesystem>
 #include "ICommand.h"
 #include "ScriptCommand.h"
 #include "ScriptFunction.h"
@@ -11,6 +13,7 @@
 
 using std::string;
 using std::vector;
+using std::set;
 using std::shared_ptr;
 using std::make_shared;
 
@@ -27,28 +30,27 @@ public:
 	MetaCommandContainer() {}
 	MetaCommandContainer(const string scriptPath) : metaScriptFolderPath{ scriptPath } {}
 	void loadMetaScript();
-	void loadMetaCommand(vector<shared_ptr<ICommand>> supported);
-	vector<string> getFileList(const string extension);
-	void loadMetaScriptDescription(const string& folderPath);
-	MetaCommandDescription getMetaDescription(const fs::directory_entry& entry);
-	string loadHelp(const string& scriptCommand);
-	unsigned long loadNumRepeats(const string& scriptCommand);
-	const vector<shared_ptr<ScriptCommand>>& getScriptCommands(vector<shared_ptr<ICommand>>& supportedCommand);
+
+	const vector<shared_ptr<ScriptCommand>>& getScriptCommandList(vector<shared_ptr<ICommand>> supported);
+
+
 private:
-	const string metaScriptFolderPath = "scripts";
 	const string executionFile = "execution";
-	const string descriptionFile = "description";
 	const string helpFile = "help";
+	const string descriptionFile = "description";
+	const string repeatFile = "repeat";
+	string metaScriptFolderPath = "scripts";
 
-	string loadFileContents(string fileName);
-	vector<string> loadCommandsFromScript(const string& scriptCommand);
+	void addPreDefinedScriptFunction(vector<shared_ptr<ICommand>> supported);
+	string loadFileContents(const fs::directory_entry& fileEntry);
 	shared_ptr<ICommand> lookupCommand(const string& command, vector<shared_ptr<ICommand>>& supported);
-	void addScriptFunctions(vector<shared_ptr<ICommand>>& supported);
-
-	vector<shared_ptr<ScriptCommand>> executableScripts;
-	vector<MetaCommandDescription> metaScriptDesc;
-
-	vector<shared_ptr<ScriptFunction>> scriptFunctions;
+	shared_ptr<ScriptFunction> lookupScriptPhrase(const string& command);
+	shared_ptr<ScriptFunction> lookupScriptFunction(const string& command);
+	vector<string> getLinesFromExecutions(const string&);
+private:
 	vector<shared_ptr<ScriptFunction>> scriptPhrase;
+	vector<shared_ptr<ScriptFunction>> scriptFunctions;
+	vector<shared_ptr<ScriptCommand>> scriptCommandList;
+	vector<MetaCommandDescription> metaScriptDesc;
+	vector<MetaCommandDescription> metaCommandDesc;
 };
-
