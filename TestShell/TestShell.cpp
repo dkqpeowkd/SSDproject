@@ -69,6 +69,7 @@ void TestShell::run()
 		ExcutePromptInput(promptInput);
 	}
 }
+
 void TestShell::displayPrompt()
 {
 	cout << "SSDTestShell:>";
@@ -123,18 +124,8 @@ shared_ptr<ICommand> TestShell::findCommand(const string& command)
 	if (commandList.empty()) return nullptr;
 
 	for (auto& supported : commandList) {
-		const string& fullCommand = supported->getCommandString();
-
-		// 정확히 일치하는 경우
-		if (command == fullCommand)
+		if (supported->isMatch(command))
 			return supported;
-
-		// 스크립트 전용: 정확히 "1_" 또는 "2_", "3_" 만 허용
-		if ((fullCommand == "1_FullWriteAndReadCompare" && command == "1_") ||
-			(fullCommand == "2_PartialLBAWrite" && command == "2_") ||
-			(fullCommand == "3_WriteReadAging" && command == "3_")) {
-			return supported;
-		}
 	}
 	return nullptr;
 }
