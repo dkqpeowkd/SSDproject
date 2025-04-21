@@ -18,10 +18,14 @@ class CommandBuffer {
 
   int GetValidBufferCount();
   void AddCommand(const std::string& command);
-  void ClearBuffer();
   std::string Read(std::string lba_);
-  std::vector<std::unique_ptr<ICommand>> GetCommandBuffer();
+
+  bool IsBufferFull() { return commands.size() == MAX_BUFFER_SIZE; }
+  void Flush(NandStorage& nandStorage, Recoder& recoder, Validator& validator);
+
+  void ClearBuffer();
   void DestroyBuffer();
+  std::vector<std::unique_ptr<ICommand>> GetCommandBuffer();
 
  private:
   void InitializeEmptyCommandBuffer();
