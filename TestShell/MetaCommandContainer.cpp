@@ -92,10 +92,78 @@ const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandL
     addPreDefinedScriptFunction(supported);
     for (const auto& metaScript : metaScriptDesc) {
         vector<pair<string, vector<string>>> executionCommands = getCommandsAndArgumentsFromExecutions(metaScript.executions);
-        // split command line to tokens, havin cmd and arguments.
+        vector<pair<shared_ptr<ICommand>, vector<string>>> executableScripts = getExecutableScripts(executionCommands, supported);
 
+        shared_ptr<ScriptCommand> newScriptCommand = ScriptCommand::Builder(metaScript.cmd)
+            ->setUsage(metaScript.usage)
+            .setDescription(metaScript.description)
+            .addExecutableScript(executableScripts)
+            .build();
+        scriptCommandList.emplace_back(newScriptCommand);
     }
     return scriptCommandList;
+}
+
+vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExecutableScripts(vector<pair<string, vector<string>>>& executionCommands, vector<shared_ptr<ICommand>>& supported)
+{
+    shared_ptr<ScriptCommand> parent = nullptr;
+    vector<pair<shared_ptr<ICommand>, vector<string>>> execScripts;
+
+    for (auto iter = executionCommands.begin(); iter != executionCommands.end(); ++iter)
+    {
+        auto execCmd = *iter;
+        string cmd = execCmd.first;
+        vector<string> args = execCmd.second;
+
+        shared_ptr<ICommand> foundCommand = lookupCommand(cmd, supported);
+        shared_ptr<ScriptFunction> foundFunc = lookupScriptFunction(cmd);
+        shared_ptr<ScriptFunction> foundScript = lookupScriptPhrase(cmd);
+        if (foundCommand == nullptr && foundFunc == nullptr && foundScript == nullptr)
+            continue;
+        if (foundCommand)
+            execScripts.emplace_back(pair{ foundCommand, args });
+        if (foundFunc)
+            execScripts.emplace_back(pair{ foundFunc, args });
+        if (foundScript) {
+            iter++;
+            if (parseScriptToExcutable(foundScript, iter, supported))
+                execScripts.emplace_back(pair{ foundScript, args });
+        }
+    }
+    return execScripts;
+}
+
+bool MetaCommandContainer::parseScriptToExcutable(
+    shared_ptr<ScriptFunction> parent, 
+    vector<pair<string, vector<string>>>::iterator& startIter,
+    vector<shared_ptr<ICommand>>& supported)
+{
+    string finishKey = parent->getFinishKeyword();
+    vector<pair<string, vector<string>>>::iterator& iter = startIter;
+    for (iter = startIter; iter->first != finishKey; iter++) {
+        auto execCmd = *iter;
+        string cmd = execCmd.first;
+        vector<string> args = execCmd.second;
+
+        shared_ptr<ICommand> foundCommand = lookupCommand(cmd, supported);
+        shared_ptr<ScriptFunction> foundFunc = lookupScriptFunction(cmd);
+        shared_ptr<ScriptFunction> foundScript = lookupScriptPhrase(cmd);
+        if (foundCommand == nullptr && foundFunc == nullptr && foundScript == nullptr)
+            continue;
+        if (foundCommand) {
+            parent->addExecution(foundCommand, args);
+        }
+        if (foundFunc)
+            parent->addExecution(foundFunc, args);
+        if (foundScript) {
+            iter++;
+            if (parseScriptToExcutable(foundScript, iter, supported))
+                parent->addExecution(foundScript, args);
+            else
+                return false;
+        }
+    }
+    return true;
 }
 
 vector<pair<string, vector<string>>> MetaCommandContainer::getCommandsAndArgumentsFromExecutions(const string& executions)
@@ -124,6 +192,8 @@ vector<pair<string, vector<string>>> MetaCommandContainer::extractMetaCommands(v
 
         metaCommands.emplace_back(pair{ cmd, tokens });
     }
+
+    return metaCommands;
 }
 
 
