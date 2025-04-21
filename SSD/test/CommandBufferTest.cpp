@@ -57,8 +57,8 @@ TEST_F(CommandBufferTest, AddCommandStoresCommandInFiles) {
   buffer.AddCommand("W 1 ABC");
   buffer.AddCommand("E 2 3");
 
-  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/1_W 1 ABC"));
-  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/2_E 2 3"));
+  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/1_E 2 3"));
+  ASSERT_TRUE(std::filesystem::exists(bufferDir + "/2_W 1 ABC"));
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/3_empty"));
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/4_empty"));
   ASSERT_TRUE(std::filesystem::exists(bufferDir + "/5_empty"));

@@ -23,14 +23,51 @@ void CommandBuffer::Init() {
 void CommandBuffer::AddCommand(const std::string& command) {
   if (!IsWriteOrEraseCommand(command)) return;
 
-  if (command[0] == 'W') {
-    processWrite(command);
-  } else if (command[0] == 'E') {
-    processErase(command);
-  }
+  commands.push_back(command);
+  SaveBuffer();
+
+  std::unordered_map<int, std::string> lbaMap = BuildLbaMapFromFilenames();
+  commands = convertLbaMapToBuffers(lbaMap);
 
   SaveBuffer();
 }
+
+std::vector<std::string> CommandBuffer::convertLbaMapToBuffers(
+    std::unordered_map<int, std::string> lbaMap) {
+  std::vector<std::string> commands;
+  std::map<int, std::string> sortedLbaMap(lbaMap.begin(), lbaMap.end());
+
+  auto it = sortedLbaMap.begin();
+  while (it != sortedLbaMap.end()) {
+    if (it->second == "0x00000000") {
+      int start = it->first;
+      int count = 1;
+
+      auto next = std::next(it);
+      while (next != sortedLbaMap.end() &&
+             next->first == it->first + 1) {  // 다음 key가 존재하기만 하면 OK
+        ++count;
+        ++it;
+        ++next;
+      }
+
+      commands.push_back("E " + std::to_string(start) + " " +
+                         std::to_string(count));
+      it = next;
+    } else {
+      ++it;
+    }
+  }
+
+  // Write 명령어 추가 (0x00000000 제외)
+  for (const auto& [lba, value] : sortedLbaMap) {
+    if (value != "0x00000000") {
+      commands.push_back("W " + std::to_string(lba) + " " + value);
+    }
+  }
+
+  return commands;
+  }
 
 void CommandBuffer::processWrite(const std::string& command) {
   std::istringstream iss(command);
@@ -57,12 +94,12 @@ void CommandBuffer::processWrite(const std::string& command) {
                                   int l;
                                   int scope;
                                   iss >> t >> l >> scope;
-                                  return t == "E" && l == lba && scope ==1;
+                                  return t == "E" && l == lba;
                                 }),
                  commands.end());
 
   
-  commands.push_back(command);
+  
 }
 
 void CommandBuffer::processErase(const std::string& command) {
