@@ -50,6 +50,17 @@ void CommandBuffer::processWrite(const std::string& command) {
                                 }),
                  commands.end());
 
+    commands.erase(std::remove_if(commands.begin(), commands.end(),
+                                [lba](const std::string& cmd) {
+                                  std::istringstream iss(cmd);
+                                  std::string t;
+                                  int l;
+                                  int scope;
+                                  iss >> t >> l >> scope;
+                                  return t == "E" && l == lba && scope ==1;
+                                }),
+                 commands.end());
+
   
   commands.push_back(command);
 }
