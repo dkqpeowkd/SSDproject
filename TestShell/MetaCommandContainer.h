@@ -26,7 +26,7 @@ class MetaCommandContainer {
 public:
 	MetaCommandContainer() {}
 	MetaCommandContainer(const string scriptPath) : metaScriptFolderPath{ scriptPath } {}
-	void loadMetaScript();
+	void loadMetaScript(vector<shared_ptr<ICommand>>& supported);
 	MetaCommandDescription getMetaCommandDescriptionFromFile(const fs::directory_entry& entry);
 	const vector<shared_ptr<ScriptCommand>>& getScriptCommandList(vector<shared_ptr<ICommand>> supported);
 	shared_ptr<ScriptCommand> MetaCommandContainer::createNewScriptCommandInstance(MetaCommandDescription& metaScript, vector<shared_ptr<ICommand>> supported);

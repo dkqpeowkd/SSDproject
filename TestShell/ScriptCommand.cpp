@@ -1,4 +1,5 @@
 #include "ScriptCommand.h"
+//#include "TestShell.h"
 
 bool ScriptCommand::isMatch(const string& cmd)
 {

@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 #include "ScriptFunctionErase.h"
 #include "ScriptFunctionLoop.h"
 
-void MetaCommandContainer::loadMetaScript()
+void MetaCommandContainer::loadMetaScript(vector<shared_ptr<ICommand>>& supported)
 {
     // Read the Folders in folderPath, each folder match the script command.
     try {
@@ -31,6 +31,8 @@ void MetaCommandContainer::loadMetaScript()
     catch (std::exception& e) {
         return;
     }
+
+    addPreDefinedScriptFunction(supported);
 }
 
 MetaCommandDescription MetaCommandContainer::getMetaCommandDescriptionFromFile(const fs::directory_entry& entry)
@@ -135,7 +137,7 @@ shared_ptr<ScriptCommand> MetaCommandContainer::createNewScriptCommandInstance(M
 shared_ptr<ScriptCommand> MetaCommandContainer::getScriptCommand(const string& cmd, vector<shared_ptr<ICommand>> supported)
 {
     for (auto& metaScript : metaScriptDesc) {
-        if (metaScript.cmd == cmd) {
+        if (metaScript.cmd == cmd || metaScript.cmd.substr(0, 2) == cmd) {
             return createNewScriptCommandInstance(metaScript, supported);
         }
     }

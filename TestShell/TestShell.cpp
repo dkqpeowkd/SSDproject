@@ -98,7 +98,16 @@ bool TestShell::ExcutePromptInput(PromptInput& promptInput)
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
 	if (foundCommand == nullptr) {
+		MetaCommandContainer scriptContainer;
+		scriptContainer.loadMetaScript(commandList);
+		shared_ptr<ICommand> scriptCommand = scriptContainer.getScriptCommand(promptInput.cmd, commandList);
 
+		if (scriptCommand == nullptr)
+			return false;
+
+		if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false)
+			return false;
+		return true;
 	}
 
 	if (false == isValidPromptInput(foundCommand, promptInput)) {

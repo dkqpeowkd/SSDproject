@@ -1,9 +1,10 @@
 #pragma once
-
+#include <memory>
+#include <string>
+#include <vector>
 #include "ICommand.h"
-#include "TestShell.h"
 #include "PromptInput.h"
-
+#include "TestShell.h"
 
 using std::pair;
 //class ScriptCommand;
