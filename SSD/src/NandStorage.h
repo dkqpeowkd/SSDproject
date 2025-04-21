@@ -11,5 +11,5 @@ class NandStorage {
  private:
   bool createNandFile();
   bool initializeNandFile();
-  unsigned int dataPatternToDigit(const std::string& dataPattern);
+  unsigned int hexStringToUnsignedInt(const std::string& dataPattern);
 };

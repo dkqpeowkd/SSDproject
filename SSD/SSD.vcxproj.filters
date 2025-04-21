@@ -27,7 +27,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="src\SsdInterface.cpp">
+    <ClCompile Include="src\SsdController.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="src\NandStorage.cpp">
@@ -50,7 +50,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\SsdInterface.h">
+    <ClInclude Include="src\SsdController.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="src\NandStorage.h">

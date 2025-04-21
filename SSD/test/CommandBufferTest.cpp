@@ -1,4 +1,4 @@
-#include "../src/SsdInterface.h"
+#include "../src/SsdController.h"
 #include "../src/CommandBuffer.h"
 #include "gtest/gtest.h"
 #include "../src/SsdType.h"
@@ -25,11 +25,11 @@ constexpr const char* INVALID_LBA = "100";
 
 class CommandBufferTest : public ::testing::Test {
  protected:
-  SsdInterface* ssdInterface;
+  SsdController* ssdInterface;
 
   void SetUp() override { 
       bufferDir = "buffer";
-      ssdInterface = new SsdInterface();
+      ssdInterface = new SsdController();
   }
 
   void TearDown() override {

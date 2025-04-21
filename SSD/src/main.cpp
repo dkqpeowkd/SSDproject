@@ -4,10 +4,10 @@
 #include <algorithm>
 
 #include "SsdType.h"
-#include "SsdInterface.h"
+#include "SsdController.h"
 
 int main(int argc, char* argv[]) {
-  SsdInterface ssdInterface;
+  SsdController ssdInterface;
 
   ssdInterface.ResetResult();
 

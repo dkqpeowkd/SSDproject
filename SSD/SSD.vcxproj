@@ -233,7 +233,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Test|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\NandStorage.cpp" />
-    <ClCompile Include="src\SsdInterface.cpp" />
+    <ClCompile Include="src\SsdController.cpp" />
     <ClCompile Include="test\CommandBufferTest.cpp" />
     <ClCompile Include="test\test_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
@@ -249,7 +249,7 @@
     <ClInclude Include="src\SsdType.h" />
     <ClInclude Include="src\Validator.h" />
     <ClInclude Include="src\NandStorage.h" />
-    <ClInclude Include="src\SsdInterface.h" />
+    <ClInclude Include="src\SsdController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
