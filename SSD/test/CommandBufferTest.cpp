@@ -134,6 +134,7 @@ TEST_F(CommandBufferTest, Write_Buffer) {
   ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdInterface->ClearCommandBuffer();
 }
 
 TEST_F(CommandBufferTest, Erase_Buffer) {
@@ -141,6 +142,7 @@ TEST_F(CommandBufferTest, Erase_Buffer) {
   ssdInterface->Erase(VALID_LBA_BEGIN, "1");
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdInterface->ClearCommandBuffer();
 }
 
 TEST_F(CommandBufferTest, Implicit_Flush_Buffer) {
@@ -154,6 +156,7 @@ TEST_F(CommandBufferTest, Implicit_Flush_Buffer) {
     ssdInterface->Read(lba);
     EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
   }
+  ssdInterface->ClearCommandBuffer();
 }
 
 TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
@@ -163,6 +166,18 @@ TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdInterface->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(VALID_VALUE_2, ssdInterface->GetResult());
+  buffer.DestroyBuffer();
+}
+
+TEST_F(CommandBufferTest, WtoW_Not_Flush_Buffer_with_ignored) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("W 0 0x12345678");
+  buffer.AddCommand("W 1 0x12345678");
+  buffer.AddCommand("W 2 0x12345678");
+  buffer.AddCommand("W 3 0x12345678");
+  buffer.AddCommand("W 4 0x12345678");
+  buffer.AddCommand("W 4 0x12345678");
+  EXPECT_EQ(5, buffer.GetValidBufferCount());
   buffer.DestroyBuffer();
 }
 
@@ -270,3 +285,12 @@ TEST_F(CommandBufferTest, EtoE_Merge_Multiple_Buffers_1) {
   EXPECT_EQ("E 0 7", commands[0]);
   buffer.DestroyBuffer();
 }
+
+TEST_F(CommandBufferTest, EtoW_Not_Ignore_Buffer) {
+  CommandBuffer buffer(bufferDir);
+  buffer.AddCommand("E 0 5");
+  buffer.AddCommand("W 2 0x12345678");
+  EXPECT_EQ(2, buffer.GetValidBufferCount());
+  buffer.DestroyBuffer();
+}
+

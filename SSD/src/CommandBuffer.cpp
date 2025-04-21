@@ -23,14 +23,16 @@ void CommandBuffer::Init() {
 void CommandBuffer::AddCommand(const std::string& command) {
   if (!IsWriteOrEraseCommand(command)) return;
 
-  if (GetValidBufferCount() >= MAX_BUFFER_SIZE) {
-    ClearBuffer();
-  }
-
   if (command[0] == 'W') {
     processWrite(command);
   } else if (command[0] == 'E') {
     processErase(command);
+  }
+
+  SaveBuffer();
+
+  if (GetValidBufferCount() >= MAX_BUFFER_SIZE) {
+    ClearBuffer();
   }
 
   commands.push_back(command);
@@ -38,7 +40,26 @@ void CommandBuffer::AddCommand(const std::string& command) {
   SaveBuffer();
 }
 
-void CommandBuffer::processWrite(const std::string& command) {}
+void CommandBuffer::processWrite(const std::string& command) {
+  std::istringstream iss(command);
+  std::string type;
+  int lba;
+  std::string value;
+
+  iss >> type >> lba >> value;
+
+  commands.erase(std::remove_if(commands.begin(), commands.end(),
+                                [lba](const std::string& cmd) {
+                                  std::istringstream iss(cmd);
+                                  std::string t;
+                                  int l;
+                                  iss >> t >> l;
+                                  return t == "W" && l == lba;
+                                }),
+                 commands.end());
+
+  
+}
 
 void CommandBuffer::processErase(const std::string& command) {}
 
