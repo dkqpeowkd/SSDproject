@@ -1,6 +1,6 @@
 #include "gmock/gmock.h"
 #include "../src/SsdType.h"
-#include "../src/SsdInterface.h"
+#include "../src/SsdController.h"
 
 #include <fstream>
 #include <iostream>
@@ -29,9 +29,9 @@ constexpr const char* INVALID_LBA = "100";
 
 class SSDTest : public ::testing::Test {
  protected:
-  SsdInterface* ssdInterface;
+  SsdController* ssdInterface;
 
-  void SetUp() override { ssdInterface = new SsdInterface(); }
+  void SetUp() override { ssdInterface = new SsdController(); }
 
   void TearDown() override {
     delete ssdInterface;

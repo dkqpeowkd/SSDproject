@@ -1,13 +1,12 @@
 #include "SsdType.h"
-#include "SsdInterface.h"
+#include "SsdController.h"
 
 #include <cctype>
 #include <sstream>
 #include <iomanip>
 
-void SsdInterface::Write(std::string lba, std::string dataPattern) {
-  if (validator.IsNumberWithinRange(lba, 0, MAX_LBA) == false ||
-      validator.IsValidDataPattern(dataPattern) == false) {
+void SsdController::Write(std::string lba, std::string dataPattern) {
+  if (isValidLba(lba) == false || isValidData(dataPattern) == false) {
     recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
     return;
   }
@@ -20,10 +19,10 @@ void SsdInterface::Write(std::string lba, std::string dataPattern) {
   commandBuffer.AddCommand(writeCommand);
 }
 
-void SsdInterface::ClearCommandBuffer() { commandBuffer.ClearBuffer(); }
+void SsdController::ClearCommandBuffer() { commandBuffer.ClearBuffer(); }
 
-void SsdInterface::Read(std::string lba) { 
-  if (validator.IsNumberWithinRange(lba, 0, MAX_LBA) == false) {
+void SsdController::Read(std::string lba) { 
+  if (isValidLba(lba) == false) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
@@ -46,8 +45,8 @@ void SsdInterface::Read(std::string lba) {
   return recoder.RecordSuccessPatternToOutputFile(stringReadData);
 }
 
-void SsdInterface::Erase(std::string lba, std::string scope) {
-  if (validator.IsNumberWithinRange(scope, 1, 10, true) == false) {
+void SsdController::Erase(std::string lba, std::string scope) {
+  if (isValidScope(scope) == false) {
     return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
   }
 
@@ -76,7 +75,7 @@ void SsdInterface::Erase(std::string lba, std::string scope) {
   commandBuffer.AddCommand(eraseCommand);
 }
 
-void SsdInterface::Flush() { 
+void SsdController::Flush() { 
   std::vector<std::string> commands = commandBuffer.GetCommandBuffer();
   const int bufferItemCount = commands.size();
 
@@ -91,17 +90,12 @@ void SsdInterface::Flush() {
       std::string lba;
       std::string dataPattern;
       issCommand >> lba >> dataPattern;
-
-      if (nandStorage.Write(lba, dataPattern) == false) {
-        validator.SetErrorReason(" ### Write Fail (about File) ### ");
-        recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
-      }
+      processWriteCommand(lba, dataPattern);
     } else if (commandType == "E") {
       std::string lba;
       std::string scope;
       issCommand >> lba >> scope;
-
-      processErase(lba, scope);
+      processEraseCommand(lba, scope);
     } else {
       validator.SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +
                                commandType);
@@ -112,7 +106,15 @@ void SsdInterface::Flush() {
   commandBuffer.ClearBuffer();
 }
 
-void SsdInterface::processErase(std::string lba, std::string scope) {
+void SsdController::processWriteCommand(const std::string& lba,
+                         const std::string& dataPattern) {
+  if (nandStorage.Write(lba, dataPattern) == false) {
+    validator.SetErrorReason(" ### Write Fail (about File) ### ");
+    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  }
+}
+
+void SsdController::processEraseCommand(std::string lba, std::string scope) {
   int writeCount = std::stoi(scope);
   int lastLba = std::stoi(lba) + writeCount;
   if (lastLba > MAX_LBA) {
@@ -130,14 +132,26 @@ void SsdInterface::processErase(std::string lba, std::string scope) {
   }
 }
 
-std::string SsdInterface::unsignedIntToPrefixedHexString(unsigned int readData) {
+std::string SsdController::unsignedIntToPrefixedHexString(unsigned int readData) {
   std::stringstream ss;
   ss << std::uppercase << std::hex << std::setw(8) << std::setfill('0')
      << readData;
   return "0x" + ss.str();
 }
 
-void SsdInterface::InvalidCommand(std::string errorMessage) {
+void SsdController::InvalidCommand(std::string errorMessage) {
   validator.SetErrorReason(errorMessage);
   recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+}
+
+bool SsdController::isValidLba(const std::string& lba) {
+  return validator.IsNumberWithinRange(lba, 0, MAX_LBA);
+}
+
+bool SsdController::isValidScope(const std::string& scope) {
+  return validator.IsNumberWithinRange(scope, 1, 10, true);
+}
+
+bool SsdController::isValidData(const std::string& dataPattern) {
+  return validator.IsValidDataPattern(dataPattern);
 }

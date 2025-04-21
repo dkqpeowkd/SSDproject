@@ -1,4 +1,6 @@
 #include "Validator.h"
+#include <algorithm>
+#include <cctype>
 
 bool Validator::IsNumberWithinRange(const std::string& str, const int minNum,
     const int maxNum, bool isScope) {
@@ -30,21 +32,12 @@ bool Validator::IsValidDataPattern(const std::string& dataPattern) {
     return false;
   }
 
-  for (size_t i = 2; i < dataPattern.length(); ++i) {
-    char c = dataPattern[i];
+  auto isHexDigit = [](char c) {
+    c = std::toupper(c);
+    return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
+  };
 
-    if (c >= '0' && c <= '9') {
-      continue;
-    }
-
-    if (c >= 'a' && c <= 'f') {
-      continue;
-    }
-
-    if (c >= 'A' && c <= 'F') {
-      continue;
-    }
-
+  if (std::all_of(dataPattern.begin() + 2, dataPattern.end(), isHexDigit) == false) {
     errorReason = "### DataPattern Is not Hex number ###";
     return false;
   }
