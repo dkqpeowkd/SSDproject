@@ -137,7 +137,6 @@ vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExec
             if (parseScriptToExcutable(foundScript, iter, supported))
                 execScripts.emplace_back(pair{ foundScript, args });
         }
-
     }
     return execScripts;
 }
