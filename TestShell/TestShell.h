@@ -13,7 +13,6 @@
 #include "EraseRangeCommand.h"
 #include "FlushCommand.h"
 #include "Log.h"
-#include "ICommand.h"
 //#include "MetaCommandContainer.h"
 
 using std::string;
@@ -25,7 +24,11 @@ class TestShell
 {
 public:
 	TestShell();
+	TestShell(bool EnableLog);
+
 	void run(); // main loop Ω√¿€
+    void TestShell::run(const std::string filename);
+
 	void displayPrompt(); // propmt display
 	PromptInput getPromptInput();
 	bool ExcutePromptInput(PromptInput& promptInput);

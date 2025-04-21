@@ -14,6 +14,7 @@
 #include "EraseRangeCommand.h"
 #include "FlushCommand.h"
 #include "MetaCommandContainer.h"
+#include <Windows.h>
 
 using std::cout;
 
@@ -25,7 +26,33 @@ std::vector<std::string> split(const std::string& line) {
 	while (iss >> token) tokens.push_back(token);
 	return tokens;
 }
+TestShell::TestShell(bool EnableLog) {
+  if (EnableLog == true) {
+    exitCommand = make_shared<ExitCommand>(&log);
+    helpCommand = make_shared<HelpCommand>(&log);
+    readCommand = make_shared<ReadCommand>(&log);
+    writeCommand = make_shared<WriteCommand>(&log);
+    fullReadCommand = make_shared<FullReadCommand>(&log);
+    fullWriteCommand = make_shared<FullWriteCommand>(&log);
+    eraseCommand = make_shared<EraseCommand>(&log);
+    eraseRangeCommand = make_shared<EraseRangeCommand>(&log);
+    flushCommand = make_shared<FlushCommand>(&log);
+  }
 
+  addCommand(exitCommand);
+  addCommand(helpCommand);
+  addCommand(readCommand);
+  addCommand(writeCommand);
+  addCommand(fullReadCommand);
+  addCommand(fullWriteCommand);
+  addCommand(eraseCommand);
+  addCommand(eraseRangeCommand);
+  addCommand(flushCommand);
+
+  
+
+  helpCommand->addSupportedCommand(commandList);
+}
 
 TestShell::TestShell()
 {
@@ -69,7 +96,79 @@ void TestShell::run()
 		ExcutePromptInput(promptInput);
 	}
 }
+std::filesystem::path getExecutableDir() {
+  char path[MAX_PATH];
+  GetModuleFileNameA(NULL, path, MAX_PATH);
+  return std::filesystem::path(path).parent_path();
+}
 
+void TestShell::run(const std::string filename) {
+  std::filesystem::path exeDir = getExecutableDir();
+  std::filesystem::path filePath = exeDir / filename;
+  std::ifstream infile(filePath);
+
+  std::string line;
+  if (std::getline(infile, line)) {
+    // BOM 제거
+    if (line.size() >= 3 && static_cast<unsigned char>(line[0]) == 0xEF &&
+        static_cast<unsigned char>(line[1]) == 0xBB &&
+        static_cast<unsigned char>(line[2]) == 0xBF) {
+      line = line.substr(3);
+    }
+    std::cout << line << "      ___   Run...";
+  }
+
+  shared_ptr<ICommand> foundCommand = findCommand(line);
+  PromptInput promptInput;
+  promptInput.cmd = line;
+
+  if (foundCommand == nullptr) {
+    MetaCommandContainer scriptContainer;
+    scriptContainer.loadMetaScript(commandList);
+    shared_ptr<ICommand> scriptCommand =
+        scriptContainer.getScriptCommand(promptInput.cmd, commandList);
+
+    if (scriptCommand == nullptr) {
+      std::cout << "Fail" << std::endl;
+      return;
+	}
+
+
+    if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
+          std::cout << "Fail" << std::endl;
+		return;
+
+        }
+  }
+
+    std::cout << "Pass" << std::endl;
+
+
+  while (std::getline(infile, line)) {
+    std::cout << line << "      ___   Run...";
+    foundCommand = findCommand(line);
+    promptInput.cmd = line;
+    if (foundCommand == nullptr) {
+      MetaCommandContainer scriptContainer;
+      scriptContainer.loadMetaScript(commandList);
+      shared_ptr<ICommand> scriptCommand =
+          scriptContainer.getScriptCommand(promptInput.cmd, commandList);
+
+      if (scriptCommand == nullptr) {
+        std::cout << "Fail" << std::endl;
+        return;
+      }
+
+      if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
+        std::cout << "Fail" << std::endl;
+        return;
+      }
+    }
+    std::cout << "Pass" << std::endl;
+  }
+
+  infile.close();  // 파일 닫기
+}
 void TestShell::displayPrompt()
 {
 	cout << "SSDTestShell:>";
