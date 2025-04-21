@@ -32,10 +32,6 @@ class SsdController {
   std::unique_ptr<Validator> validator;
   CommandBuffer commandBuffer;
 
-  void processWriteCommand(const std::string& lba,
-                           const std::string& dataPattern);
-  void processEraseCommand(std::string lba, std::string scope);
-
   std::string unsignedIntToPrefixedHexString(unsigned int readData);
 
   bool isBufferFull(){

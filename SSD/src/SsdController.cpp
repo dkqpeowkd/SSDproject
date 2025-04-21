@@ -85,32 +85,6 @@ void SsdController::Flush() {
   commandBuffer.ClearBuffer();
 }
 
-void SsdController::processWriteCommand(const std::string& lba,
-                         const std::string& dataPattern) {
-  if (nandStorage->Write(lba, dataPattern) == false) {
-    validator->SetErrorReason(" ### Write Fail (about File) ### ");
-    recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
-  }
-}
-
-void SsdController::processEraseCommand(std::string lba, std::string scope) {
-  int writeCount = std::stoi(scope);
-  int lastLba = std::stoi(lba) + writeCount;
-  if (lastLba > MAX_LBA) {
-    validator->SetErrorReason("### Last LBA is over Max LBA ###");
-    return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
-  }
-
-  for (int writeOffset = 0; writeOffset < writeCount; writeOffset++) {
-    std::string currentLba = std::to_string(std::stoi(lba) + writeOffset);
-
-    if (nandStorage->Write(currentLba, ZERO_PATTERN) == false) {
-      validator->SetErrorReason(" ### Write Fail (about File) ### ");
-      recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
-    }
-  }
-}
-
 std::string SsdController::unsignedIntToPrefixedHexString(unsigned int readData) {
   std::stringstream ss;
   ss << std::uppercase << std::hex << std::setw(8) << std::setfill('0')
