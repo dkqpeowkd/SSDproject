@@ -10,7 +10,6 @@ CommandBuffer::CommandBuffer(const std::string& bufferDir)
   } else {
     BuildLbaMapFromFilenames();
   }
-
 }
 
 void CommandBuffer::Init() {
@@ -67,74 +66,6 @@ std::vector<std::string> CommandBuffer::convertLbaMapToBuffers(
   }
 
   return commands;
-  }
-
-void CommandBuffer::processWrite(const std::string& command) {
-  std::istringstream iss(command);
-  std::string type;
-  int lba;
-  std::string value;
-
-  iss >> type >> lba >> value;
-
-  commands.erase(std::remove_if(commands.begin(), commands.end(),
-                                [lba](const std::string& cmd) {
-                                  std::istringstream iss(cmd);
-                                  std::string t;
-                                  int l;
-                                  iss >> t >> l;
-                                  return t == "W" && l == lba;
-                                }),
-                 commands.end());
-
-    commands.erase(std::remove_if(commands.begin(), commands.end(),
-                                [lba](const std::string& cmd) {
-                                  std::istringstream iss(cmd);
-                                  std::string t;
-                                  int l;
-                                  int scope;
-                                  iss >> t >> l >> scope;
-                                  return t == "E" && l == lba;
-                                }),
-                 commands.end());
-
-  
-  
-}
-
-void CommandBuffer::processErase(const std::string& command) {
-  const int bufferCount = commands.size();
-
-  std::istringstream issInputrCommand(command);
-  std::string inputCommandType;
-  int inputLba;
-  int inputScope;
-
-  issInputrCommand >> inputCommandType >> inputLba >> inputScope;
-  const int inputEndLba = inputLba + inputScope - 1;
-
-  for (int bufferSlot = bufferCount - 1; bufferSlot >= 0; bufferSlot--) {
-    std::string bufferCommand = commands[bufferSlot];
-
-    std::istringstream issBufferCommand(bufferCommand);
-    std::string commandType;
-    int bufferLba;
-
-    issBufferCommand >> commandType >> bufferLba;
-    if (commandType == "W") {
-      if (bufferLba >= inputLba && bufferLba <= inputEndLba) {
-        auto it = commands.begin() + bufferSlot;
-        commands.erase(it);
-      }
-    } else if (commandType == "E") {
-      int bufferEndLba;
-      issBufferCommand >> bufferEndLba;
-    } else {
-      return;
-    }
-  }
-
-  commands.push_back(command);
 }
 
 void CommandBuffer::SaveBuffer() {
@@ -164,8 +95,7 @@ void CommandBuffer::ClearBuffer() {
   Init();
 }
 
-void CommandBuffer::DestroyBuffer() {
-  
+void CommandBuffer::DestroyBuffer() {  
   if (std::filesystem::exists(bufferDirectory)) {
     std::filesystem::remove_all(bufferDirectory);
   }
@@ -180,7 +110,6 @@ std::unordered_map<int, std::string> CommandBuffer::BuildLbaMapFromFilenames() {
   std::unordered_map<int, std::string> lbaMap;
 
  for (const auto& command : commands) {
-
     std::istringstream iss(command);
     std::string cmd;
     int lba;
