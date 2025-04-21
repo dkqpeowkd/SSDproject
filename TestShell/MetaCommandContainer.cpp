@@ -12,6 +12,9 @@ using std::pair;
 namespace fs = std::filesystem;
 
 #include "MetaCommandContainer.h"
+#include "ScriptFunctionWrite.h"
+#include "ScriptFunctionErase.h"
+#include "ScriptFunctionLoop.h"
 
 void MetaCommandContainer::loadMetaScript()
 {
@@ -109,6 +112,35 @@ const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandL
         }
     }
     return scriptCommandList;
+}
+
+shared_ptr<ScriptCommand> MetaCommandContainer::createNewScriptCommandInstance(MetaCommandDescription& metaScript, vector<shared_ptr<ICommand>> supported)
+{
+    try {
+        vector<pair<string, vector<string>>> executionCommands = getCommandsAndArgumentsFromExecutions(metaScript.executions);
+        vector<pair<shared_ptr<ICommand>, vector<string>>> executableScripts = getExecutableScripts(executionCommands, supported);
+
+        shared_ptr<ScriptCommand> newScriptCommand = ScriptCommand::Builder(metaScript.cmd)
+            ->setUsage(metaScript.usage)
+            .setDescription(metaScript.description)
+            .addExecutableScript(executableScripts)
+            .build();
+        return newScriptCommand;
+    }
+    catch (std::exception& e) {
+        return nullptr;
+    }
+}
+
+shared_ptr<ScriptCommand> MetaCommandContainer::getScriptCommand(const string& cmd, vector<shared_ptr<ICommand>> supported)
+{
+    for (auto& metaScript : metaScriptDesc) {
+        if (metaScript.cmd == cmd) {
+            return createNewScriptCommandInstance(metaScript, supported);
+        }
+    }
+
+    return nullptr;
 }
 
 vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExecutableScripts(vector<pair<string, vector<string>>>& executionCommands, vector<shared_ptr<ICommand>>& supported)

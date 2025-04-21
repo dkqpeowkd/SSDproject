@@ -6,7 +6,7 @@
 
 
 using std::pair;
-class ScriptCommand;
+//class ScriptCommand;
 
 class ScriptCommand : public ICommand {
 private:

@@ -13,6 +13,8 @@
 #include "EraseRangeCommand.h"
 #include "FlushCommand.h"
 #include "Log.h"
+#include "ICommand.h"
+#include "MetaCommandContainer.h"
 
 using std::string;
 using std::vector;
@@ -33,6 +35,7 @@ public:
 
 private:
 	vector<shared_ptr<ICommand>> commandList;
+	//MetaCommandContainer scriptsContainer;
 	shared_ptr<ExitCommand> exitCommand;
 	shared_ptr<HelpCommand> helpCommand;
 	shared_ptr<ReadCommand> readCommand;

@@ -84,7 +84,7 @@ public:
         bool result = true;
         if (writeHistory.size() == 0)
             return false;
-        if (args.size() == 0) {
+        if (args.size() == 1) {
             for (const auto& writeEntry : writeHistory) {
                 vector<string> args{ writeEntry.first, writeEntry.second };
                 if (false == readCommand->Execute(readCommand->getCommandString(), args)) {

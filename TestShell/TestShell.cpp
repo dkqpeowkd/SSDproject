@@ -50,14 +50,14 @@ TestShell::TestShell()
 	addCommand(eraseRangeCommand);
 	addCommand(flushCommand);
 
-	MetaCommandContainer scriptsContainer;
+	
 
-	scriptsContainer.loadMetaScript();
-	vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommandList(commandList);
+	//scriptsContainer.loadMetaScript();
+	//vector<shared_ptr<ScriptCommand>> scriptCommands = scriptsContainer.getScriptCommandList(commandList);
 
-	for (auto scriptCmd : scriptCommands) {
-		addCommand(scriptCmd);
-	}
+	//for (auto scriptCmd : scriptCommands) {
+	//	addCommand(scriptCmd);
+	//}
 
 	helpCommand->addSupportedCommand(commandList);
 }
@@ -96,6 +96,10 @@ PromptInput TestShell::getPromptInput()
 bool TestShell::ExcutePromptInput(PromptInput& promptInput)
 {
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
+
+	if (foundCommand == nullptr) {
+
+	}
 
 	if (false == isValidPromptInput(foundCommand, promptInput)) {
 		std::cout << "INVALID COMMAND" << std::endl;
