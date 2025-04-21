@@ -59,7 +59,7 @@
 - 스크립트명 일부(예: 1_)만 입력해도 실행 가능
 - Test Script 종류 및 시나리오
 - 1_FullWriteAndReadCompare
-  LBA 0~99까지 구간별로 Write 후 ReadCompare 수행
+  LBA 0~99까지 구간별로 Write 후 ReadCompare 수행, 5개 단위로 수행.
 - 2_PartialLBAWrite
   30회 반복, LBA 4→0→3→1→2 순서로 Write 후 ReadCompare
 > (1) 4번 LBA에 값을 적는다.
