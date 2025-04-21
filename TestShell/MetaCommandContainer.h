@@ -30,12 +30,8 @@ public:
 	MetaCommandContainer() {}
 	MetaCommandContainer(const string scriptPath) : metaScriptFolderPath{ scriptPath } {}
 	void loadMetaScript();
+	MetaCommandDescription getMetaCommandDescriptionFromFile(const fs::directory_entry& entry);
 	const vector<shared_ptr<ScriptCommand>>& getScriptCommandList(vector<shared_ptr<ICommand>> supported);
-	vector<pair<shared_ptr<ICommand>, vector<string>>> getExecutableScripts(vector<pair<string, vector<string>>>& executionCommands, vector<shared_ptr<ICommand>>& supported);
-	bool parseScriptToExcutable(
-		shared_ptr<ScriptFunction> parent,
-		vector<pair<string, vector<string>>>::iterator& startIter,
-		vector<shared_ptr<ICommand>>& supported);
 private:
 	const string executionFile = "execution";
 	const string helpFile = "help";
@@ -51,6 +47,12 @@ private:
 	vector<string> getLinesFromExecutions(const string&);
 	vector<pair<string, vector<string>>> getCommandsAndArgumentsFromExecutions(const string& executions);
 	vector<pair<string, vector<string>>> extractMetaCommands(vector<string>& commandLines);
+	vector<pair<shared_ptr<ICommand>, vector<string>>> getExecutableScripts(vector<pair<string, vector<string>>>& executionCommands, vector<shared_ptr<ICommand>>& supported);
+	bool parseScriptToExcutable(
+		shared_ptr<ScriptFunction> parent,
+		vector<pair<string, vector<string>>>::iterator& startIter,
+		vector<shared_ptr<ICommand>>& supported);
+	bool parsePhraseInScript(shared_ptr<ScriptFunction> parent, vector<pair<string, vector<string>>>::iterator& startIter, vector<shared_ptr<ICommand>>& supported);
 private:
 	vector<shared_ptr<ScriptFunction>> scriptPhrase;
 	vector<shared_ptr<ScriptFunction>> scriptFunctions;

@@ -22,39 +22,41 @@ void MetaCommandContainer::loadMetaScript()
         //load cmd help and repeats from the directory object
         for (const auto& entry : directoryObject) {
             if (entry.is_directory() == false) continue;
-            //Read the files in the folder which is script command
-            //It means Reading and Parsing what command do.
-            string cmd = entry.path().stem().string();
-            string executions = "";
-            string help = "";
-            string description = "";
-            unsigned int repeat = 1;
-
-            fs::directory_iterator dirIterator = fs::directory_iterator(entry.path());
-
-            for (auto& cmdEntry : dirIterator) {
-                string entryFileName = cmdEntry.path().stem().string();
-                if (entryFileName == executionFile)
-                    executions = loadFileContents(cmdEntry);
-                if (entryFileName == helpFile)
-                    help = loadFileContents(cmdEntry);
-                if (entryFileName == descriptionFile)
-                    description = loadFileContents(cmdEntry);
-                if (entryFileName == repeatFile)
-                {
-                    string repeatStr = loadFileContents(cmdEntry);
-                    if (repeatStr.size() == 0)
-                        continue;
-                    repeat = std::stoi(repeatStr);
-                }
-            }
-
-            metaScriptDesc.emplace_back(MetaCommandDescription{ cmd, executions, description, help, repeat });
+            metaScriptDesc.emplace_back(getMetaCommandDescriptionFromFile(entry));
         }
     }
     catch (std::exception& e) {
         return;
     }
+}
+
+MetaCommandDescription MetaCommandContainer::getMetaCommandDescriptionFromFile(const fs::directory_entry& entry)
+{
+    string cmd = entry.path().stem().string();
+    string executions = "";
+    string help = "";
+    string description = "";
+    unsigned int repeat = 1;
+
+    fs::directory_iterator dirIterator = fs::directory_iterator(entry.path());
+
+    for (auto& cmdEntry : dirIterator) {
+        string entryFileName = cmdEntry.path().stem().string();
+        if (entryFileName == executionFile)
+            executions = loadFileContents(cmdEntry);
+        if (entryFileName == helpFile)
+            help = loadFileContents(cmdEntry);
+        if (entryFileName == descriptionFile)
+            description = loadFileContents(cmdEntry);
+        if (entryFileName == repeatFile)
+        {
+            string repeatStr = loadFileContents(cmdEntry);
+            if (repeatStr.size() == 0)
+                continue;
+            repeat = std::stoi(repeatStr);
+        }
+    }
+    return MetaCommandDescription{ cmd, executions, description, help, repeat };
 }
 
 shared_ptr<ICommand> MetaCommandContainer::lookupCommand(const string& command, vector<shared_ptr<ICommand>>& supported)
@@ -91,15 +93,20 @@ const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommandL
 {
     addPreDefinedScriptFunction(supported);
     for (const auto& metaScript : metaScriptDesc) {
-        vector<pair<string, vector<string>>> executionCommands = getCommandsAndArgumentsFromExecutions(metaScript.executions);
-        vector<pair<shared_ptr<ICommand>, vector<string>>> executableScripts = getExecutableScripts(executionCommands, supported);
+        try {
+            vector<pair<string, vector<string>>> executionCommands = getCommandsAndArgumentsFromExecutions(metaScript.executions);
+            vector<pair<shared_ptr<ICommand>, vector<string>>> executableScripts = getExecutableScripts(executionCommands, supported);
 
-        shared_ptr<ScriptCommand> newScriptCommand = ScriptCommand::Builder(metaScript.cmd)
-            ->setUsage(metaScript.usage)
-            .setDescription(metaScript.description)
-            .addExecutableScript(executableScripts)
-            .build();
-        scriptCommandList.emplace_back(newScriptCommand);
+            shared_ptr<ScriptCommand> newScriptCommand = ScriptCommand::Builder(metaScript.cmd)
+                ->setUsage(metaScript.usage)
+                .setDescription(metaScript.description)
+                .addExecutableScript(executableScripts)
+                .build();
+            scriptCommandList.emplace_back(newScriptCommand);
+        }
+        catch (std::exception& e) {
+            continue;
+        }
     }
     return scriptCommandList;
 }
@@ -111,6 +118,7 @@ vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExec
 
     for (auto iter = executionCommands.begin(); iter != executionCommands.end(); ++iter)
     {
+
         auto execCmd = *iter;
         string cmd = execCmd.first;
         vector<string> args = execCmd.second;
@@ -129,6 +137,7 @@ vector<pair<shared_ptr<ICommand>, vector<string>>> MetaCommandContainer::getExec
             if (parseScriptToExcutable(foundScript, iter, supported))
                 execScripts.emplace_back(pair{ foundScript, args });
         }
+
     }
     return execScripts;
 }
@@ -138,31 +147,46 @@ bool MetaCommandContainer::parseScriptToExcutable(
     vector<pair<string, vector<string>>>::iterator& startIter,
     vector<shared_ptr<ICommand>>& supported)
 {
-    string finishKey = parent->getFinishKeyword();
-    vector<pair<string, vector<string>>>::iterator& iter = startIter;
-    for (iter = startIter; iter->first != finishKey; iter++) {
-        auto execCmd = *iter;
-        string cmd = execCmd.first;
-        vector<string> args = execCmd.second;
-
-        shared_ptr<ICommand> foundCommand = lookupCommand(cmd, supported);
-        shared_ptr<ScriptFunction> foundFunc = lookupScriptFunction(cmd);
-        shared_ptr<ScriptFunction> foundScript = lookupScriptPhrase(cmd);
-        if (foundCommand == nullptr && foundFunc == nullptr && foundScript == nullptr)
-            continue;
-        if (foundCommand) {
-            parent->addExecution(foundCommand, args);
+    try {
+        string finishKey = parent->getFinishKeyword();
+        vector<pair<string, vector<string>>>::iterator& iter = startIter;
+        for (iter = startIter; iter->first != finishKey; iter++) {
+            if (parsePhraseInScript(parent, startIter, supported) == false) continue;
         }
-        if (foundFunc)
-            parent->addExecution(foundFunc, args);
-        if (foundScript) {
-            iter++;
-            if (parseScriptToExcutable(foundScript, iter, supported))
-                parent->addExecution(foundScript, args);
-            else
-                return false;
-        }
+        return true;
     }
+    catch (std::exception& e) {
+        return false;
+    }
+}
+
+bool MetaCommandContainer::parsePhraseInScript(
+    shared_ptr<ScriptFunction> parent,
+    vector<pair<string, vector<string>>>::iterator& startIter,
+    vector<shared_ptr<ICommand>>& supported)
+{
+    auto execCmd = *startIter;
+    string cmd = execCmd.first;
+    vector<string> args = execCmd.second;
+
+    shared_ptr<ICommand> foundCommand = lookupCommand(cmd, supported);
+    shared_ptr<ScriptFunction> foundFunc = lookupScriptFunction(cmd);
+    shared_ptr<ScriptFunction> foundScript = lookupScriptPhrase(cmd);
+    if (foundCommand == nullptr && foundFunc == nullptr && foundScript == nullptr)
+        return false;
+    if (foundCommand) {
+        parent->addExecution(foundCommand, args);
+    }
+    if (foundFunc)
+        parent->addExecution(foundFunc, args);
+    if (foundScript) {
+        startIter++;
+        if (parseScriptToExcutable(foundScript, startIter, supported))
+            parent->addExecution(foundScript, args);
+        else
+            return false;
+    }
+
     return true;
 }
 
