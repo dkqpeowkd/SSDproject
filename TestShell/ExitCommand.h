@@ -18,8 +18,16 @@ interface ExitCommand : public ICommand {
     }
     bool isSystemActive() { return isActive; }
     ExitCommand(Logger * logger) : log(logger) {}
-    void logMessage(const std::string& msg, const std::string& msg2) const {
-      if (log) log->log(msg, msg2);
+    void logMessage(const std::string& msg, const char* format, ...) const {
+      if (log) {
+        char buffer[1024];
+        va_list args;
+        va_start(args, format);
+        vsnprintf(buffer, sizeof(buffer), format, args);
+        va_end(args);
+
+        log->log(msg, "%s", buffer);
+      }
     }
 
    private:

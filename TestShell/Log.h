@@ -8,27 +8,15 @@
 #include <string>
 #include <vector>
 
+#include <cstdarg>
+#include <cstdio>
+
 namespace fs = std::filesystem;
 
 class Logger {
-public:
-	std::string currentTimestamp();
-	std::string formatLogMessage(const std::string& classname,const std::string& message);
-	void archiveOldestIfNecessary();
-	void log(const std::string& classname, const std::string& message);
-  };
-
-
-class LogBase  {
-    public:
-        LogBase() : log(nullptr) {}
-        LogBase(Logger* logger) : log(logger) {}
-
-    protected:
-        Logger* log;
-
-    void logMessage(const std::string& msg,const std::string& msg2) const {
-      if (log)
-        log->log(msg,msg2); 
-    }
-  };
+ public:
+  std::string currentTimestamp();
+  std::string Logger::formatLogMessage(const std::string& classname);
+  void archiveOldestIfNecessary();
+  void log(const std::string& prefix, const char* format, ...);
+};
