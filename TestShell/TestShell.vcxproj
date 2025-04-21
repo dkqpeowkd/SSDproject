@@ -223,6 +223,7 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
   <ItemGroup>
     <ClCompile Include="EraseRangeCommand.cpp" />
     <ClCompile Include="EraseCommand.cpp" />
+    <ClCompile Include="FlushCommand.cpp" />
     <ClCompile Include="FullReadCommand.cpp" />
     <ClCompile Include="FullWriteCommand.cpp" />
     <ClCompile Include="HelpCommand.cpp" />
@@ -245,6 +246,7 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     <ClInclude Include="EraseRangeCommand.h" />
     <ClInclude Include="EraseCommand.h" />
     <ClInclude Include="ExitCommand.h" />
+    <ClInclude Include="FlushCommand.h" />
     <ClInclude Include="FullReadCommand.h" />
     <ClInclude Include="FullWriteCommand.h" />
     <ClInclude Include="HelpCommand.h" />
