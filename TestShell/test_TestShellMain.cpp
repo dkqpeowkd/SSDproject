@@ -1,7 +1,6 @@
 #include "gmock/gmock.h"
 #include "ICommand.h"
 #include "TestShell.h"
-#include "Script3.h"
 
 using namespace ::testing;
 
@@ -12,6 +11,7 @@ public:
 	//MOCK_METHOD(const string&, getUsage, (), (override));
 
 	const string& getCommandString() { return cmd; }
+	bool isMatch(const string& cmd) { return this->cmd == cmd; }
 	const string& getUsage() { return usage; }
 	MOCK_METHOD(bool, isValidArguments, (const string& cmd, vector<string>& args), (override));
 	MOCK_METHOD(bool, Execute, (const string& cmd, vector<string>& args), (override));

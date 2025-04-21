@@ -228,9 +228,6 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     <ClCompile Include="HelpCommand.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="ReadCommand.cpp" />
-    <ClCompile Include="Script1.cpp" />
-    <ClCompile Include="Script2.cpp" />
-    <ClCompile Include="Script3.cpp" />
     <ClCompile Include="ScriptCommand.cpp" />
     <ClCompile Include="ScriptContainer.cpp" />
     <ClCompile Include="src\main.cpp">
@@ -254,9 +251,6 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     <ClInclude Include="ICommand.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="ReadCommand.h" />
-    <ClInclude Include="Script1.h" />
-    <ClInclude Include="Script2.h" />
-    <ClInclude Include="Script3.h" />
     <ClInclude Include="ScriptCommand.h" />
     <ClInclude Include="ScriptContainer.h" />
     <ClInclude Include="TestShell.h" />

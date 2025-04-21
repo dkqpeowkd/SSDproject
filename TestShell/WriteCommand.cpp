@@ -5,8 +5,12 @@
 #include <cstdlib>
 
 const std::string& WriteCommand::getCommandString() {
-    static std::string cmd = "write";
     return cmd;
+}
+
+bool WriteCommand::isMatch(const string& command)
+{
+    return cmd == command;
 }
 
 const std::string& WriteCommand::getUsage() {

@@ -5,8 +5,12 @@
 #include <cstdlib>
 
 const std::string& FullWriteCommand::getCommandString() {
-    static std::string cmd = "fullwrite";
     return cmd;
+}
+
+bool FullWriteCommand::isMatch(const string& command)
+{
+    return cmd == command;
 }
 
 const std::string& FullWriteCommand::getUsage() {

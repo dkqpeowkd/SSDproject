@@ -12,9 +12,6 @@
 #include "FullWriteCommand.h"
 #include "EraseCommand.h"
 #include "EraseRangeCommand.h"
-#include "Script1.h"
-#include "Script2.h"
-#include "Script3.h"
 #include "ScriptContainer.h"
 
 using std::cout;
@@ -39,9 +36,6 @@ TestShell::TestShell()
 	fullWriteCommand = make_shared<FullWriteCommand>();
 	eraseCommand = make_shared<EraseCommand>();
 	eraseRangeCommand = make_shared<EraseRangeCommand>();
-	scriptCommand1 = make_shared<Script1_FullWriteAndReadCompare>(writeCommand, readCommand);
-	scriptCommand2 = make_shared<Script2_PartialLBAWrite>(writeCommand, readCommand);
-	scriptCommand3 = make_shared<Script3_WriteReadAging>(writeCommand, readCommand);
 
 
 	addCommand(exitCommand);
@@ -52,9 +46,6 @@ TestShell::TestShell()
 	addCommand(fullWriteCommand);
 	addCommand(eraseCommand);
 	addCommand(eraseRangeCommand);
-	addCommand(scriptCommand1);
-	addCommand(scriptCommand2);
-	addCommand(scriptCommand3);
 
 	ScriptContainer scriptsContainer;
 

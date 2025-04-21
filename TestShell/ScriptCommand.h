@@ -12,6 +12,7 @@ class ScriptCommand : public ICommand {
 public:
     ScriptCommand(const string& command, const string& usage) : scriptCommand{command}, usage{usage} {}
     const string& getCommandString() override;
+    bool isMatch(const string& command) override;
     const string& getUsage() override;
     bool isValidArguments(const string& cmd, vector<string>& args) override;
     bool Execute(const string& cmd, vector<string>& args) override;

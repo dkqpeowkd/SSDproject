@@ -6,8 +6,12 @@
 #include <cmath>
 
 const std::string& EraseCommand::getCommandString() {
-    static std::string cmd = "erase";
     return cmd;
+}
+
+bool EraseCommand::isMatch(const string& command)
+{
+    return command == cmd;
 }
 
 const std::string& EraseCommand::getUsage() {
