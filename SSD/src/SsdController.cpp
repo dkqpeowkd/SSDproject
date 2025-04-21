@@ -56,7 +56,7 @@ void SsdController::Erase(std::string lba, std::string scope) {
 
   int numLba = stoi(lba);
   int numScope = stoi(scope);
-  std::string endLba = std::to_string(numLba + numScope);
+  std::string endLba = std::to_string(numLba + numScope - 1);
 
   if (validator->IsNumberWithinRange(endLba, 0, MAX_LBA) == false) {
     return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
