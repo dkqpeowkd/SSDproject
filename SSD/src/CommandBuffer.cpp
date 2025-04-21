@@ -30,14 +30,6 @@ void CommandBuffer::AddCommand(const std::string& command) {
   }
 
   SaveBuffer();
-
-  if (GetValidBufferCount() >= MAX_BUFFER_SIZE) {
-    ClearBuffer();
-  }
-
-  commands.push_back(command);
-
-  SaveBuffer();
 }
 
 void CommandBuffer::processWrite(const std::string& command) {
@@ -59,9 +51,43 @@ void CommandBuffer::processWrite(const std::string& command) {
                  commands.end());
 
   
+  commands.push_back(command);
 }
 
-void CommandBuffer::processErase(const std::string& command) {}
+void CommandBuffer::processErase(const std::string& command) {
+  const int bufferCount = commands.size();
+
+  std::istringstream issInputrCommand(command);
+  std::string inputCommandType;
+  int inputLba;
+  int inputScope;
+
+  issInputrCommand >> inputCommandType >> inputLba >> inputScope;
+  const int inputEndLba = inputLba + inputScope - 1;
+
+  for (int bufferSlot = bufferCount - 1; bufferSlot >= 0; bufferSlot--) {
+    std::string bufferCommand = commands[bufferSlot];
+
+    std::istringstream issBufferCommand(bufferCommand);
+    std::string commandType;
+    int bufferLba;
+
+    issBufferCommand >> commandType >> bufferLba;
+    if (commandType == "W") {
+      if (bufferLba >= inputLba && bufferLba <= inputEndLba) {
+        auto it = commands.begin() + bufferSlot;
+        commands.erase(it);
+      }
+    } else if (commandType == "E") {
+      int bufferEndLba;
+      issBufferCommand >> bufferEndLba;
+    } else {
+      return;
+    }
+  }
+
+  commands.push_back(command);
+}
 
 void CommandBuffer::SaveBuffer() {
   DestroyBuffer();
