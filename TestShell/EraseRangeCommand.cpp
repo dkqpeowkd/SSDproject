@@ -48,7 +48,7 @@ bool EraseRangeCommand::Execute(const std::string& cmd, std::vector<std::string>
         int result = callSystem(oss.str());
 
         if (result == 1) std::cout << "ERROR" << std::endl;
-        else std::cout << "DELETED" << std::endl;
+        else std::cout << "ERASE COMPLETED!" << std::endl;
     }
 
     return true;

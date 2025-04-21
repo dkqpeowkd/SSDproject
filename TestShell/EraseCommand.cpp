@@ -111,7 +111,7 @@ void EraseCommand::performEraseCalls(const std::vector<EraseCall>& calls) {
             std::cout << "ERROR" << std::endl;
         }
         else {
-            std::cout << "DELETED" << std::endl;
+            std::cout << "ERASE COMPLETED!" << std::endl;
         }
     }
 }
