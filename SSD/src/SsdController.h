@@ -6,7 +6,7 @@
 #include "Recoder.h"
 #include "CommandBuffer.h"
 
-class SsdInterface {
+class SsdController {
  public:
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
@@ -26,9 +26,17 @@ class SsdInterface {
   Recoder recoder;
   CommandBuffer commandBuffer;
 
-  void processErase(std::string lba, std::string scope);
+  void processWriteCommand(const std::string& lba,
+                           const std::string& dataPattern);
+  void processEraseCommand(std::string lba, std::string scope);
+
   std::string unsignedIntToPrefixedHexString(unsigned int readData);
+
   bool isBufferFull(){
     return (commandBuffer.GetValidBufferCount() == MAX_BUFFER_SIZE);
   };
+
+  bool isValidLba(const std::string& lba);
+  bool isValidScope(const std::string& scope);
+  bool isValidData(const std::string& dataPattern);
 };

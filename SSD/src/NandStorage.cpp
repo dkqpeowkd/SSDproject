@@ -1,4 +1,3 @@
-#pragma once
 #include <string>
 #include <fstream>
 #include "SsdType.h"
@@ -20,7 +19,7 @@ bool NandStorage::Write(const std::string& lba, const std::string& dataPattern) 
   }
 
   int offset = std::stoi(lba) * LBA_SIZE;
-  unsigned int numDataPattern = dataPatternToDigit(dataPattern);
+  unsigned int numDataPattern = hexStringToUnsignedInt(dataPattern);
 
   std::fstream nandFile(NAND_FILE_NAME,
                         std::ios::binary | std::ios::in | std::ios::out);
@@ -37,19 +36,22 @@ bool NandStorage::createNandFile() {
 }
 
 bool NandStorage::initializeNandFile() {
-  std::fstream nandFile(NAND_FILE_NAME,
-                        std::ios::binary | std::ios::in | std::ios::out);
-  const int nandOffset = MAX_LBA * LBA_SIZE;
-  nandFile.seekp(nandOffset, std::ios::beg);
-  if (nandFile.fail() == true) {
+  std::fstream nandFile(NAND_FILE_NAME, std::ios::binary | std::ios::out);
+  if (nandFile.is_open() == false) {
     return false;
   }
 
   constexpr int ZERO = 0;
-  nandFile.write(reinterpret_cast<const char*>(&ZERO), sizeof(ZERO));
-  if (nandFile.fail()) {
-    return false;
+  for (int i = 0; i < MAX_LBA; ++i) {
+    nandFile.seekp(i * LBA_SIZE, std::ios::beg);
+    nandFile.write(reinterpret_cast<const char*>(&ZERO), sizeof(ZERO));
+    if (nandFile.fail() == true) {
+      nandFile.close();
+      return false;
+    }
   }
+
+  nandFile.close();
 
   return true;
 }
@@ -77,7 +79,7 @@ unsigned int NandStorage::Read(const std::string& lba) {
   return value;
 }
 
-unsigned int NandStorage::dataPatternToDigit(const std::string& dataPattern) {
+unsigned int NandStorage::hexStringToUnsignedInt(const std::string& dataPattern) {
   std::string dataPatterWithout0x = dataPattern.substr(2);
 
   unsigned int numUint;
