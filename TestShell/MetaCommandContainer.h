@@ -5,6 +5,9 @@
 #include "ICommand.h"
 #include "ScriptCommand.h"
 #include "ScriptFunction.h"
+#include "ScriptFunctionWrite.h"
+#include "ScriptFunctionErase.h"
+#include "ScriptFunctionLoop.h"
 
 using std::string;
 using std::vector;
@@ -22,7 +25,7 @@ struct MetaCommandDescription {
 class MetaCommandContainer {
 public:
 	MetaCommandContainer() {}
-	MetaCommandContainer(const string scriptPath) : scriptFolderPath{ scriptPath } {}
+	MetaCommandContainer(const string scriptPath) : metaScriptFolderPath{ scriptPath } {}
 	void loadMetaScript();
 	void loadMetaCommand(vector<shared_ptr<ICommand>> supported);
 	vector<string> getFileList(const string extension);
@@ -32,7 +35,7 @@ public:
 	unsigned long loadNumRepeats(const string& scriptCommand);
 	const vector<shared_ptr<ScriptCommand>>& getScriptCommands(vector<shared_ptr<ICommand>>& supportedCommand);
 private:
-	const string scriptFolderPath = "scripts";
+	const string metaScriptFolderPath = "scripts";
 	const string executionFile = "execution";
 	const string descriptionFile = "description";
 	const string helpFile = "help";
@@ -45,7 +48,7 @@ private:
 	vector<shared_ptr<ScriptCommand>> executableScripts;
 	vector<MetaCommandDescription> metaScriptDesc;
 
-	//vector<ScriptFunction> scriptFunctions;
-	//vector<ScriptFunction> scriptPhrase;
+	vector<shared_ptr<ScriptFunction>> scriptFunctions;
+	vector<shared_ptr<ScriptFunction>> scriptPhrase;
 };
 

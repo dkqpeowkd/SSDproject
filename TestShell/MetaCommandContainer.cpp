@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 
 void MetaCommandContainer::loadMetaScript()
 {
-	loadMetaScriptDescription(scriptFolderPath);
+	loadMetaScriptDescription(metaScriptFolderPath);
 
     //load meta description
 	
@@ -40,13 +40,23 @@ void MetaCommandContainer::addScriptFunctions(vector<shared_ptr<ICommand>>& supp
     shared_ptr<ICommand> writeCommand = lookupCommand("write", supported);
     if (readCommand && writeCommand) {
         shared_ptr<ScriptFunctionWrite> writeFunc = make_shared<ScriptFunctionWrite>(writeCommand, readCommand);
-        //scriptFunctions.emplace_back(writeFunc);
+        scriptFunctions.emplace_back(writeFunc);
     }
+    
+    shared_ptr<ICommand> eraseCommand = lookupCommand("erase", supported);
+    shared_ptr<ICommand> eraseRangeCommand = lookupCommand("erase_range", supported);
+    if (eraseCommand && eraseRangeCommand) {
+        shared_ptr<ScriptFunctionErase> eraseFunc = make_shared<ScriptFunctionErase>(eraseCommand, eraseRangeCommand);
+        scriptFunctions.emplace_back(eraseFunc);
+    }
+
+    shared_ptr<ScriptFunctionLoop> functionLoop = make_shared<ScriptFunctionLoop>();
+    scriptPhrase.emplace_back(functionLoop);
 }
 
 vector<string> MetaCommandContainer::getFileList(const string extension)
 {
-	const string& folderPath = scriptFolderPath;
+	const string& folderPath = metaScriptFolderPath;
 	vector<string> fileList = {};
 
 	for (const auto& entry : fs::directory_iterator(folderPath)) {
@@ -88,7 +98,7 @@ MetaCommandDescription MetaCommandContainer::getMetaDescription(const fs::direct
     fs::directory_iterator dirIterator = fs::directory_iterator(entry.path());
     //vector<fs::directory_entry> sortedFiles = getSortedEntries(dirIterator, [](const fs::directory_entry a) {return a.is_regular_file(); });
 
-    for (auto& cmdEntry : dirIterator) {
+    for(auto& cmdEntry : dirIterator) {
         string entryFileName = cmdEntry.path().stem().string();
         if (entryFileName == executionFile)
             executions = "";
@@ -103,14 +113,14 @@ MetaCommandDescription MetaCommandContainer::getMetaDescription(const fs::direct
 
 string MetaCommandContainer::loadHelp(const string& scriptCommand)
 {
-	const string fileName = scriptFolderPath + string{ "\\" } + scriptCommand + ".help";
+	const string fileName = metaScriptFolderPath + string{ "\\" } + scriptCommand + ".help";
 
     return loadFileContents(fileName);
 }
 
 unsigned long MetaCommandContainer::loadNumRepeats(const string& scriptCommand)
 {
-    const string fileName = scriptFolderPath + string{ "\\" } + scriptCommand + ".repeats";
+    const string fileName = metaScriptFolderPath + string{ "\\" } + scriptCommand + ".repeats";
     try {
         return std::stoul(loadFileContents(fileName));
     }
@@ -153,7 +163,7 @@ string MetaCommandContainer::loadFileContents(string fileName)
 
 vector<string> MetaCommandContainer::loadCommandsFromScript(const string& scriptCommand)
 {
-    string fileName = scriptFolderPath + string{"\\"} + scriptCommand + ".cmd";
+    string fileName = metaScriptFolderPath + string{"\\"} + scriptCommand + ".cmd";
     string fileContents = loadFileContents(fileName);
 
     vector<string> lines;
