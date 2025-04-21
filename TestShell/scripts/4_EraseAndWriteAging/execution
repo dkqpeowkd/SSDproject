@@ -1,9 +1,12 @@
 erase 0 2
 WriteFunc SetLBA 2
-Loop 30
+EraseFunc SetLBA 2
 WriteFunc DisableAutoIncrease
+Loop 30
 WriteFunc Random 1
 WriteFunc Random 1
+EraseFunc 3
 WriteFunc IncreaseLBA
-EraseFunc
+WriteFunc IncreaseLBA
+EraseFunc DecreaseLBA
 EndLoop

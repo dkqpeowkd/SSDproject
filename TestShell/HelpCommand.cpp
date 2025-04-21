@@ -16,8 +16,12 @@ bool HelpCommand::isMatch(const string& command)
 
 const string& HelpCommand::getUsage()
 {
-    // TODO: 여기에 return 문을 삽입합니다.
     return usage;
+}
+
+const string& HelpCommand::getDescription()
+{
+    return description;
 }
 
 bool HelpCommand::isValidArguments(const string& cmd, vector<string>& args)
@@ -31,12 +35,18 @@ bool HelpCommand::Execute(const string& cmd, vector<string>& args)
 {
     std::cout << "Developed by: Team BestAttitude (Changwan.Ha, Hyunkoo.kim  Hyoeun.Park  Chanwook.Lee  Ted.Kim)\n\n";
     std::cout << "-- Command Help ---------------------------------------\n";
-    for (auto help : cmdHelp)
-        std::cout << help << "\n-----------------------\n";
+    for (auto& command : supportedCommand) {
+        std::cout << "[" << command->getCommandString() << "]\n";
+        std::cout << "Description:\n";
+        std::cout << "\t" << command->getDescription() << "\n";
+        std::cout << "Usage:\n";
+        std::cout << "\t" << command->getUsage() << "\n";
+        std::cout << "\n\n";
+    }
     return true;
 }
 
-void HelpCommand::addHelp(string help)
+void HelpCommand::addSupportedCommand(vector<shared_ptr<ICommand>> supported)
 {
-    cmdHelp.emplace_back(help);
+    supportedCommand = supported;
 }

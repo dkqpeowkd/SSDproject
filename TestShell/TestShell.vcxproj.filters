@@ -42,7 +42,7 @@
     <ClCompile Include="ScriptCommand.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptContainer.cpp">
+    <ClCompile Include="MetaCommandContainer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,7 +83,19 @@
     <ClInclude Include="ScriptCommand.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptContainer.h">
+    <ClInclude Include="MetaCommandContainer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptFunction.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptFunctionWrite.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptFunctionErase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptFunctionLoop.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
