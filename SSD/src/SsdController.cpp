@@ -7,7 +7,7 @@
 
 void SsdController::Write(std::string lba, std::string dataPattern) {
   if (isValidLba(lba) == false || isValidData(dataPattern) == false) {
-    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
     return;
   }
 
@@ -23,7 +23,7 @@ void SsdController::ClearCommandBuffer() { commandBuffer.ClearBuffer(); }
 
 void SsdController::Read(std::string lba) { 
   if (isValidLba(lba) == false) {
-    return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
   }
 
   std::string stringReadData = FAIL_BUFFER_READ_MESSAGE;
@@ -33,33 +33,33 @@ void SsdController::Read(std::string lba) {
 
   if (stringReadData == FAIL_BUFFER_READ_MESSAGE) {
     std::ifstream nandFile(NAND_FILE_NAME, std::ios::binary);
-    if (nandStorage.IsExistNand() == false) {
-      recoder.RecordZeroPatternToOutputFile();
+    if (nandStorage->IsExistNand() == false) {
+      recoder->RecordZeroPatternToOutputFile();
       return;
     }  
 
-    unsigned int readData = nandStorage.Read(lba);
+    unsigned int readData = nandStorage->Read(lba);
     stringReadData = unsignedIntToPrefixedHexString(readData);
   }
 
-  return recoder.RecordSuccessPatternToOutputFile(stringReadData);
+  return recoder->RecordSuccessPatternToOutputFile(stringReadData);
 }
 
 void SsdController::Erase(std::string lba, std::string scope) {
   if (isValidScope(scope) == false) {
-    return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
   }
 
-  if (validator.IsNumberWithinRange(lba, 0, MAX_LBA) == false) {
-    return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  if (validator->IsNumberWithinRange(lba, 0, MAX_LBA) == false) {
+    return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
   }
 
   int numLba = stoi(lba);
   int numScope = stoi(scope);
   std::string endLba = std::to_string(numLba + numScope);
 
-  if (validator.IsNumberWithinRange(endLba, 0, MAX_LBA) == false) {
-    return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  if (validator->IsNumberWithinRange(endLba, 0, MAX_LBA) == false) {
+    return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
   }
 
   if (numScope < 0) {
@@ -97,9 +97,9 @@ void SsdController::Flush() {
       issCommand >> lba >> scope;
       processEraseCommand(lba, scope);
     } else {
-      validator.SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +
+      validator->SetErrorReason(" ### Buffer Is Brocken ### (commandType: " +
                                commandType);
-      return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+      return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
     }
   }
 
@@ -108,9 +108,9 @@ void SsdController::Flush() {
 
 void SsdController::processWriteCommand(const std::string& lba,
                          const std::string& dataPattern) {
-  if (nandStorage.Write(lba, dataPattern) == false) {
-    validator.SetErrorReason(" ### Write Fail (about File) ### ");
-    recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  if (nandStorage->Write(lba, dataPattern) == false) {
+    validator->SetErrorReason(" ### Write Fail (about File) ### ");
+    recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
   }
 }
 
@@ -118,16 +118,16 @@ void SsdController::processEraseCommand(std::string lba, std::string scope) {
   int writeCount = std::stoi(scope);
   int lastLba = std::stoi(lba) + writeCount;
   if (lastLba > MAX_LBA) {
-    validator.SetErrorReason("### Last LBA is over Max LBA ###");
-    return recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    validator->SetErrorReason("### Last LBA is over Max LBA ###");
+    return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
   }
 
   for (int writeOffset = 0; writeOffset < writeCount; writeOffset++) {
     std::string currentLba = std::to_string(std::stoi(lba) + writeOffset);
 
-    if (nandStorage.Write(currentLba, ZERO_PATTERN) == false) {
-      validator.SetErrorReason(" ### Write Fail (about File) ### ");
-      recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+    if (nandStorage->Write(currentLba, ZERO_PATTERN) == false) {
+      validator->SetErrorReason(" ### Write Fail (about File) ### ");
+      recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
     }
   }
 }
@@ -140,18 +140,18 @@ std::string SsdController::unsignedIntToPrefixedHexString(unsigned int readData)
 }
 
 void SsdController::InvalidCommand(std::string errorMessage) {
-  validator.SetErrorReason(errorMessage);
-  recoder.RecordErrorPatternToOutputFile(validator.GetErrorReason());
+  validator->SetErrorReason(errorMessage);
+  recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
 }
 
 bool SsdController::isValidLba(const std::string& lba) {
-  return validator.IsNumberWithinRange(lba, 0, MAX_LBA);
+  return validator->IsNumberWithinRange(lba, 0, MAX_LBA);
 }
 
 bool SsdController::isValidScope(const std::string& scope) {
-  return validator.IsNumberWithinRange(scope, 1, 10, true);
+  return validator->IsNumberWithinRange(scope, 1, 10, true);
 }
 
 bool SsdController::isValidData(const std::string& dataPattern) {
-  return validator.IsValidDataPattern(dataPattern);
+  return validator->IsValidDataPattern(dataPattern);
 }

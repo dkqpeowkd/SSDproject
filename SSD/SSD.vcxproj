@@ -249,11 +249,14 @@
     <ClInclude Include="src\Command.h" />
     <ClInclude Include="src\CommandBuffer.h" />
     <ClInclude Include="src\CommandFactory.h" />
+    <ClInclude Include="src\RealSsdComponentFactory.h" />
     <ClInclude Include="src\Recoder.h" />
+    <ClInclude Include="src\SsdComponentFactory.h" />
     <ClInclude Include="src\SsdType.h" />
     <ClInclude Include="src\Validator.h" />
     <ClInclude Include="src\NandStorage.h" />
     <ClInclude Include="src\SsdController.h" />
+    <ClInclude Include="test\TestSsdComponentFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

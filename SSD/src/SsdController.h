@@ -3,11 +3,17 @@
 #include <fstream>
 #include "NandStorage.h"
 #include "validator.h"
-#include "Recoder.h"
+#include "recoder.h"
 #include "CommandBuffer.h"
+#include "SsdComponentFactory.h"
 
 class SsdController {
  public:
+  SsdController(std::unique_ptr<SsdComponentFactory> factory)
+      : nandStorage(factory->createNandStorage()),
+        recoder(factory->createRecoder()),
+        validator(factory->createValidator()){};
+
   void Write(std::string lba, std::string dataPattern);
   void Read(std::string lba);
   void Erase(std::string lba, std::string scope);
@@ -16,14 +22,14 @@ class SsdController {
 
   void InvalidCommand(std::string errorMessage);
 
-  void ResetResult() { recoder.ResetResult(); };
+  void ResetResult() { recoder->ResetResult(); };
   void ClearCommandBuffer();
-  std::string GetResult() { return recoder.GetResult(); };
+  std::string GetResult() { return recoder->GetResult(); };
 
  private:
-  NandStorage nandStorage;
-  Validator validator;
-  Recoder recoder;
+  std::unique_ptr<NandStorage> nandStorage;
+  std::unique_ptr<Recoder> recoder;
+  std::unique_ptr<Validator> validator;
   CommandBuffer commandBuffer;
 
   void processWriteCommand(const std::string& lba,
