@@ -26,9 +26,21 @@ void CommandBuffer::AddCommand(const std::string& command) {
   if (GetValidBufferCount() >= MAX_BUFFER_SIZE) {
     ClearBuffer();
   }
+
+  if (command[0] == 'W') {
+    processWrite(command);
+  } else if (command[0] == 'E') {
+    processErase(command);
+  }
+
   commands.push_back(command);
+
   SaveBuffer();
 }
+
+void CommandBuffer::processWrite(const std::string& command) {}
+
+void CommandBuffer::processErase(const std::string& command) {}
 
 void CommandBuffer::SaveBuffer() {
   DestroyBuffer();
