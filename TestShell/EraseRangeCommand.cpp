@@ -6,8 +6,12 @@
 #include <cmath>
 
 const std::string& EraseRangeCommand::getCommandString() {
-    static std::string cmd = "erase_range";
     return cmd;
+}
+
+bool EraseRangeCommand::isMatch(const string& command)
+{
+    return cmd == command;
 }
 
 const std::string& EraseRangeCommand::getUsage() {

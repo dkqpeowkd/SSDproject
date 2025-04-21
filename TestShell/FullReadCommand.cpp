@@ -5,8 +5,12 @@
 #include <string>
 
 const std::string& FullReadCommand::getCommandString() {
-    static std::string cmd = "fullread";
     return cmd;
+}
+
+bool FullReadCommand::isMatch(const string& command)
+{
+    return cmd == command;
 }
 
 const std::string& FullReadCommand::getUsage() {

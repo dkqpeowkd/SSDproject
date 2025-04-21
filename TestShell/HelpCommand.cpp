@@ -9,6 +9,11 @@ const string& HelpCommand::getCommandString()
     return command;
 }
 
+bool HelpCommand::isMatch(const string& command)
+{
+    return this->command == command;
+}
+
 const string& HelpCommand::getUsage()
 {
     // TODO: 여기에 return 문을 삽입합니다.

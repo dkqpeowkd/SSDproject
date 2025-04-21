@@ -6,6 +6,7 @@
 interface ExitCommand : public ICommand {
     ExitCommand() = default;
     const string& getCommandString() { return command;}
+    bool isMatch(const string& command) override { return this->command == command; }
     const string& getUsage() { return usage; }
     bool isValidArguments(const string& cmd, vector<string>& args) { return args.size() == 0; }
     bool Execute(const string& cmd, vector<string>& args) {

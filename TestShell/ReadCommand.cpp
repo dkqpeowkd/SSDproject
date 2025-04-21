@@ -2,8 +2,12 @@
 #include <cstdlib>
 
 const std::string& ReadCommand::getCommandString() {
-    static std::string cmd = "read";
     return cmd;
+}
+
+bool ReadCommand::isMatch(const string& command)
+{
+    return cmd == command;
 }
 
 const std::string& ReadCommand::getUsage() {
