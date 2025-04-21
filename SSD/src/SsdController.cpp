@@ -75,14 +75,8 @@ void SsdController::Erase(std::string lba, std::string scope) {
   commandBuffer.AddCommand(eraseCommand);
 }
 
-void SsdController::Flush() { 
-  std::vector<std::unique_ptr<ICommand>> commands = commandBuffer.GetCommandBuffer();
-
-  for (const auto& cmd : commands) {
-    cmd->ExecuteNandStorage(*nandStorage, *recoder, *validator);
-  }
-
-  commandBuffer.ClearBuffer();
+void SsdController::Flush() {
+  commandBuffer.Flush(*nandStorage, *recoder, *validator);
 }
 
 std::string SsdController::unsignedIntToPrefixedHexString(unsigned int readData) {
