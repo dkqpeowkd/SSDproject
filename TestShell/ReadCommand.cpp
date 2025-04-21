@@ -15,22 +15,39 @@ const std::string& ReadCommand::getUsage() {
     return usage;
 }
 
-bool ReadCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
-    return args.size() == 1;
+bool ReadCommand::isValidArguments(const std::string& cmd,
+                                   std::vector<std::string>& args) {
+  return args.size() == 2;
 }
 
-bool ReadCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
-    std::string command = "ssd.exe R " + args[0];
-    int result = callSystem(command);
+bool ReadCommand::Execute(const std::string& cmd,
+                          std::vector<std::string>& args) {
+  std::string command = "ssd.exe R " + args[0];
+  int result = callSystem(command);
 
-    std::string output = readOutput();
-    std::cout << output << std::endl;
+  std::string output = readOutput();
+  std::cout << output << std::endl;
 
-    if (output == "ERROR") {
-        return false;
+  if (output == "ERROR") {
+    return false;
+  }
+
+  if (args.size() >= 2) {
+    // 사용자로부터 전달받은 패턴을 16진수로 변환
+    uint32_t expected = std::stoul(args[1], nullptr, 16);
+    // 출력 결과를 16진수로 변환
+    uint32_t actual = std::stoul(output, nullptr, 16);
+
+    // 비교 결과 출력
+    if (expected != actual) {
+      logMessage("ReadCommand::Execute", "불일치: 기대값 0x%x 실제값 0x%x",
+                 expected, actual);
+      return false;
     }
-    return true;
+  }
+  return true;
 }
+
 
 int ReadCommand::callSystem(const std::string& cmd) {
     return system(cmd.c_str());
