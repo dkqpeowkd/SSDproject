@@ -27,11 +27,13 @@ public:
 	TestShell(bool EnableLog);
 
 	void run(); // main loop Ω√¿€
-    void TestShell::run(const std::string filename);
+    void run(const std::string filename);
 
 	void displayPrompt(); // propmt display
 	PromptInput getPromptInput();
 	bool ExcutePromptInput(PromptInput& promptInput);
+	bool TryInternalCommand(PromptInput& promptInput);
+	bool TryScriptCommand(const string& cmd, vector<string>& args);
 	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, PromptInput& promptInput);
 	shared_ptr<ICommand> findCommand(const string& command);
 	void addCommand(shared_ptr<ICommand> newCommand);

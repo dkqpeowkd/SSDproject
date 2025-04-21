@@ -167,49 +167,65 @@ void TestShell::displayPrompt()
 
 PromptInput TestShell::getPromptInput()
 {
-	PromptInput promptInput;
-	string input;
-	std::getline(std::cin, input);
-	if (input.empty()) 
+	try {
+		PromptInput promptInput;
+		string input;
+		std::getline(std::cin, input);
+		if (input.empty())
+			return promptInput;
+
+		auto tokens = split(input);
+		std::string cmd = tokens[0];
+		tokens.erase(tokens.begin());
+
+		promptInput.cmd = cmd;
+		promptInput.args = tokens;
+
 		return promptInput;
-
-	auto tokens = split(input);
-	std::string cmd = tokens[0];
-	tokens.erase(tokens.begin());
-
-	promptInput.cmd = cmd;
-	promptInput.args = tokens;
-
-	return promptInput;
+	}
+	catch (std::exception& e) {
+		return PromptInput{};
+	}
 }
 
 bool TestShell::ExcutePromptInput(PromptInput& promptInput)
 {
+	if (TryInternalCommand(promptInput) == false) {
+		if (TryScriptCommand(promptInput.cmd, promptInput.args) == false) {
+			std::cout << "INVALID COMMAND" << std::endl;
+			return false;
+		}
+	}
+	return true;
+}
+
+bool TestShell::TryInternalCommand(PromptInput& promptInput)
+{
 	shared_ptr<ICommand> foundCommand = findCommand(promptInput.cmd);
 
-	if (foundCommand == nullptr) {
-		MetaCommandContainer scriptContainer;
-		scriptContainer.loadMetaScript(commandList);
-		shared_ptr<ICommand> scriptCommand = scriptContainer.getScriptCommand(promptInput.cmd, commandList);
-
-		if (scriptCommand == nullptr)
-			return false;
-
-		if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false)
-			return false;
-		return true;
-	}
-
-	if (false == isValidPromptInput(foundCommand, promptInput)) {
-		std::cout << "INVALID COMMAND" << std::endl;
+	if (foundCommand == nullptr)
 		return false;
-	}
 
-	bool executed = foundCommand->Execute(promptInput.cmd, promptInput.args);
-	if (!executed) {
+	if (false == isValidPromptInput(foundCommand, promptInput))
 		return false;
-	}
 
+	if (false ==foundCommand->Execute(promptInput.cmd, promptInput.args))
+		return false;
+
+	return true;
+}
+
+bool TestShell::TryScriptCommand(const string& cmd, vector<string>& args)
+{
+	MetaCommandContainer scriptContainer;
+	scriptContainer.loadMetaScript(commandList);
+	shared_ptr<ICommand> scriptCommand = scriptContainer.getScriptCommand(cmd, commandList);
+
+	if (scriptCommand == nullptr)
+		return false;
+
+	if (scriptCommand->Execute(cmd, args) == false)
+		return false;
 	return true;
 }
 
@@ -237,5 +253,4 @@ void TestShell::addCommand(shared_ptr<ICommand> newCommand)
 {
 	commandList.emplace_back(newCommand);
 	//helpCommand->addHelp(newCommand->getUsage());
-
 }

@@ -15,8 +15,14 @@ bool EraseRangeCommand::isMatch(const string& command)
 }
 
 const std::string& EraseRangeCommand::getUsage() {
-    static std::string usage = "erase_range <START_LBA> <END_LBA> : 주어진 범위를 삭제";
+    static std::string usage = "erase_range <START_LBA> <END_LBA>";
     return usage;
+}
+
+const std::string& EraseRangeCommand::getDescription()
+{
+    static std::string description = "주어진 범위를 삭제";
+    return description;
 }
 
 bool EraseRangeCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {

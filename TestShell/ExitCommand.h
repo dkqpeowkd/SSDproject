@@ -32,8 +32,8 @@ interface ExitCommand : public ICommand {
 
    private:
     const string command = "exit";
-    const string usage = "Prompt>exit\n";
-    const string description = "Exit the program\n";
+    const string usage = "exit\n";
+    const string description = "프로그램 종료\n";
     bool isActive = true;
-    Logger* log;
+    Logger* log = nullptr;
 };

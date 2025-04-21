@@ -10,6 +10,7 @@ public:
 
     const std::string& getCommandString() override;
     const std::string& getUsage() override;
+    const std::string& getDescription() override;
     bool isMatch(const std::string& command) override;
     bool isValidArguments(const std::string& cmd, std::vector<std::string>& args) override;
     bool Execute(const std::string& cmd, std::vector<std::string>& args) override;

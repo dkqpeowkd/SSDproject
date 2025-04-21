@@ -11,8 +11,14 @@ bool ReadCommand::isMatch(const string& command)
 }
 
 const std::string& ReadCommand::getUsage() {
-    static std::string usage = "read <LBA> : 지정된 LBA 영역의 데이터를 읽습니다.";
+    static std::string usage = "read <LBA>";
     return usage;
+}
+
+const std::string& ReadCommand::getDescription()
+{
+    static std::string description = "지정된 LBA 영역의 데이터를 읽습니다.";
+    return description;
 }
 
 bool ReadCommand::isValidArguments(const std::string& cmd,
