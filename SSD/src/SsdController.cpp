@@ -76,11 +76,11 @@ void SsdController::Erase(std::string lba, std::string scope) {
 }
 
 void SsdController::Flush() { 
-  std::vector<std::string> commands = commandBuffer.GetCommandBuffer();
+  std::vector<std::unique_ptr<ICommand>> commands = commandBuffer.GetCommandBuffer();
   const int bufferItemCount = commands.size();
 
   for (int bufferSlot = 0; bufferSlot < bufferItemCount; bufferSlot++) {
-    std::string command = commands[bufferSlot];
+    std::string command = commands[bufferSlot].get()->ToString();
 
     std::istringstream issCommand(command);
     std::string commandType;
