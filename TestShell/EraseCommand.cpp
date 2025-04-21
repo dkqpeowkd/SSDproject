@@ -6,20 +6,12 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include <map>
-
-// 구조체: Erase 호출 단위를 나타냄
-struct EraseCall {
-    int lba;
-    int size;
-};
 
 const std::string& EraseCommand::getCommandString() {
     return cmd;
 }
 
-bool EraseCommand::isMatch(const string& command)
-{
+bool EraseCommand::isMatch(const std::string& command) {
     return cmd == command;
 }
 
@@ -28,7 +20,6 @@ const std::string& EraseCommand::getUsage() {
     return usage;
 }
 
-// 명령어 인자 수 검증 (입력값 유효성은 SSD가 판단)
 bool EraseCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {
     return args.size() == 2;
 }
@@ -45,126 +36,84 @@ bool EraseCommand::Execute(const std::string& cmd, std::vector<std::string>& arg
         size = std::abs(size);
     }
 
-    // 10칸 단위로 분할
-    std::vector<EraseCall> chunks;
-    for (int i = 0; i < size; i += 10) {
-        int chunkSize = std::min(10, size - i);
-        chunks.push_back({ lba + i, chunkSize });
+    // 10칸 단위로 나눠서 모든 LBA 수집
+    std::vector<EraseCall> calls;
+    for (int i = 0; i < size; ++i) {
+        calls.push_back({ lba + i, 1 });
     }
 
-    std::vector<EraseCall> validCalls;
-    std::vector<EraseCall> invalidCalls;
-
-    // 각 청크 내에서 유효 / 무효 LBA를 1칸씩 분할
-    for (const auto& chunk : chunks) {
-        for (int i = 0; i < chunk.size; ++i) {
-            int curr = chunk.lba + i;
-            if (curr >= 0 && curr < 100) {
-                validCalls.push_back({ curr, 1 });
-            }
-            else {
-                invalidCalls.push_back({ curr, 1 });
-            }
-        }
+    // 유효 / 무효 LBA 구분
+    std::vector<EraseCall> valid, invalid;
+    for (const auto& call : calls) {
+        if (call.lba >= 0 && call.lba < 100)
+            valid.push_back(call);
+        else
+            invalid.push_back(call);
     }
 
-    // 유효 LBA 정렬 및 연속된 LBA 그룹핑
-    std::sort(validCalls.begin(), validCalls.end(), [](const EraseCall& a, const EraseCall& b) {
-        return a.lba < b.lba;
-        });
+    // 그룹핑 + 10단위 쪼개기
+    auto chunkedValid = groupAndChunk(valid);
+    auto chunkedInvalid = groupAndChunk(invalid);
 
-    std::vector<EraseCall> grouped;
-    for (const auto& call : validCalls) {
-        if (grouped.empty()) {
-            grouped.push_back(call);
-        }
-        else {
-            EraseCall& last = grouped.back();
-            if (last.lba + last.size == call.lba) {
-                last.size++;
-            }
-            else {
-                grouped.push_back(call);
-            }
-        }
-    }
-
-    // 그룹핑된 유효 LBA를 다시 10칸 단위로 쪼갬
-    std::vector<EraseCall> chunkedValidCalls;
-    for (const auto& group : grouped) {
-        int start = group.lba;
-        int remaining = group.size;
-        while (remaining > 0) {
-            int chunkSize = std::min(10, remaining);
-            chunkedValidCalls.push_back({ start, chunkSize });
-            start += chunkSize;
-            remaining -= chunkSize;
-        }
-    }
-
-    // 무효 LBA도 정렬 + 그룹핑
-    std::sort(invalidCalls.begin(), invalidCalls.end(), [](const EraseCall& a, const EraseCall& b) {
-        return a.lba < b.lba;
-        });
-
-    std::vector<EraseCall> groupedInvalid;
-    for (const auto& call : invalidCalls) {
-        if (groupedInvalid.empty()) {
-            groupedInvalid.push_back(call);
-        }
-        else {
-            EraseCall& last = groupedInvalid.back();
-            if (last.lba + last.size == call.lba) {
-                last.size++;
-            }
-            else {
-                groupedInvalid.push_back(call);
-            }
-        }
-    }
-
-    std::vector<EraseCall> chunkedInvalidCalls;
-    for (const auto& group : groupedInvalid) {
-        int start = group.lba;
-        int remaining = group.size;
-        while (remaining > 0) {
-            int chunkSize = std::min(10, remaining);
-            chunkedInvalidCalls.push_back({ start, chunkSize });
-            start += chunkSize;
-            remaining -= chunkSize;
-        }
-    }
-
-    // 유효 LBA system call 수행
-    for (const auto& call : chunkedValidCalls) {
-        std::ostringstream oss;
-        oss << "ssd.exe E " << call.lba << " " << call.size;
-        std::cout << "[ERASE] " << oss.str() << std::endl;
-        int result = callSystem(oss.str());
-
-        if (result == 1) {
-            std::cout << "ERROR" << std::endl;
-        }
-        else {
-            std::cout << "DELETED" << std::endl;
-        }
-    }
-
-    // 무효 LBA도 그대로 system call
-    for (const auto& call : chunkedInvalidCalls) {
-        std::ostringstream oss;
-        oss << "ssd.exe E " << call.lba << " " << call.size;
-        std::cout << "[ERASE] " << oss.str() << std::endl;
-        int result = callSystem(oss.str());
-        if (result == 1) {
-            std::cout << "ERROR" << std::endl;
-        }
-        else {
-            std::cout << "DELETED" << std::endl;
-        }
-    }
+    // system call
+    performEraseCalls(chunkedValid);
+    performEraseCalls(chunkedInvalid);
 
     return true;
+}
+
+std::vector<EraseCommand::EraseCall> EraseCommand::groupAndChunk(const std::vector<EraseCall>& calls) {
+    std::vector<EraseCall> result;
+    if (calls.empty()) return result;
+
+    // 정렬
+    std::vector<EraseCall> sorted = calls;
+    std::sort(sorted.begin(), sorted.end(), [](const EraseCall& a, const EraseCall& b) {
+        return a.lba < b.lba;
+        });
+
+    // 연속된 LBA 그룹핑
+    std::vector<EraseCall> grouped;
+    grouped.push_back(sorted[0]);
+    for (size_t i = 1; i < sorted.size(); ++i) {
+        EraseCall& last = grouped.back();
+        if (last.lba + last.size == sorted[i].lba) {
+            last.size++;
+        }
+        else {
+            grouped.push_back(sorted[i]);
+        }
+    }
+
+    // 그룹을 10칸 단위로 나눔
+    for (const auto& group : grouped) {
+        int start = group.lba;
+        int remain = group.size;
+        while (remain > 0) {
+            int chunkSize = std::min(10, remain);
+            result.push_back({ start, chunkSize });
+            start += chunkSize;
+            remain -= chunkSize;
+        }
+    }
+
+    return result;
+}
+
+void EraseCommand::performEraseCalls(const std::vector<EraseCall>& calls) {
+    for (const auto& call : calls) {
+        std::ostringstream oss;
+        oss << "ssd.exe E " << call.lba << " " << call.size;
+        std::cout << "[ERASE] " << oss.str() << std::endl;
+
+        int result = callSystem(oss.str());
+        if (result == 1) {
+            std::cout << "ERROR" << std::endl;
+        }
+        else {
+            std::cout << "DELETED" << std::endl;
+        }
+    }
 }
 
 int EraseCommand::callSystem(const std::string& cmd) {
