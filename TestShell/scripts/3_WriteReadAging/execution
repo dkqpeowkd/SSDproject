@@ -1,0 +1,8 @@
+WriteFunc DisableAutoIncrease
+Loop 200
+WriteFunc SetLBA 0
+WriteFunc Random 1
+WriteFunc SetLBA 99
+WriteFunc Random 1
+WriteFunc ReadCompare
+EndLoop
