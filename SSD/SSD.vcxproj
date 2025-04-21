@@ -226,14 +226,16 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Command.cpp" />
     <ClCompile Include="src\CommandBuffer.cpp" />
+    <ClCompile Include="src\CommandFactory.cpp" />
     <ClCompile Include="src\Recoder.cpp" />
     <ClCompile Include="src\Validator.cpp" />
     <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Test|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\NandStorage.cpp" />
-    <ClCompile Include="src\SsdInterface.cpp" />
+    <ClCompile Include="src\SsdController.cpp" />
     <ClCompile Include="test\CommandBufferTest.cpp" />
     <ClCompile Include="test\test_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SSD_Release|x64'">true</ExcludedFromBuild>
@@ -244,12 +246,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Command.h" />
     <ClInclude Include="src\CommandBuffer.h" />
+    <ClInclude Include="src\CommandFactory.h" />
+    <ClInclude Include="src\RealSsdComponentFactory.h" />
     <ClInclude Include="src\Recoder.h" />
+    <ClInclude Include="src\SsdComponentFactory.h" />
     <ClInclude Include="src\SsdType.h" />
     <ClInclude Include="src\Validator.h" />
     <ClInclude Include="src\NandStorage.h" />
-    <ClInclude Include="src\SsdInterface.h" />
+    <ClInclude Include="src\SsdController.h" />
+    <ClInclude Include="test\TestSsdComponentFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

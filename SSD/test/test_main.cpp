@@ -1,6 +1,7 @@
 #include "gmock/gmock.h"
 #include "../src/SsdType.h"
-#include "../src/SsdInterface.h"
+#include "../src/SsdController.h"
+#include "TestSsdComponentFactory.h"
 
 #include <fstream>
 #include <iostream>
@@ -29,12 +30,16 @@ constexpr const char* INVALID_LBA = "100";
 
 class SSDTest : public ::testing::Test {
  protected:
-  SsdInterface* ssdInterface;
+  SsdController* ssdControllerWithTest;
 
-  void SetUp() override { ssdInterface = new SsdInterface(); }
+  void SetUp() override {
+    std::unique_ptr<SsdComponentFactory> testFactory =
+        std::make_unique<TestSsdComponentFactory>();
+    ssdControllerWithTest = new SsdController(std::move(testFactory));
+  }
 
   void TearDown() override {
-    delete ssdInterface;
+    delete ssdControllerWithTest;
     if (fs::exists(OUTPUT_FILE_NAME)) fs::remove(OUTPUT_FILE_NAME);
     if (fs::exists(NAND_FILE_NAME)) fs::remove(NAND_FILE_NAME);
     if (fs::exists(COMMAND_BUFFER_FOLDER_NAME))
@@ -44,138 +49,138 @@ class SSDTest : public ::testing::Test {
 
 TEST_F(SSDTest, ErasePassLBA0To1) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
+    ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);
   }
-  ssdInterface->Erase(VALID_LBA_BEGIN, VALID_ERASE_SCOPE_1);
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(VALID_LBA_BEGIN, VALID_ERASE_SCOPE_1);
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, ErasePassLBA0To10) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
+    ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);
   }
-  ssdInterface->Erase(VALID_LBA_BEGIN, VALID_ERASE_SCOPE_10);
+  ssdControllerWithTest->Erase(VALID_LBA_BEGIN, VALID_ERASE_SCOPE_10);
   for (int i = 0; i < 10; i++) {
-    ssdInterface->Read(std::to_string(i));
-    EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+    ssdControllerWithTest->Read(std::to_string(i));
+    EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
   }
 }
 
 TEST_F(SSDTest, EraseErrorLBA0To11) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
+    ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);
   }
-  ssdInterface->Erase(VALID_LBA_BEGIN, INVALID_ERASE_SCOPE_11);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(VALID_LBA_BEGIN, INVALID_ERASE_SCOPE_11);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, EraseErrorLBA95To6) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
+    ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);
   }
-  ssdInterface->Erase(VALID_LBA_95, VALID_ERASE_SCOPE_6);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(VALID_LBA_95, VALID_ERASE_SCOPE_6);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, EraseErrorInvalidLBA) {
   for (int i = 0; i < 100; i++) {
-    ssdInterface->Write(std::to_string(i), VALID_VALUE_1);
+    ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);
   }
-  ssdInterface->Erase(INVALID_LBA, VALID_ERASE_SCOPE_10);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(INVALID_LBA, VALID_ERASE_SCOPE_10);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Write_Pass_0) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
+  EXPECT_NE(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Write_Pass_1) {
-  ssdInterface->Write(VALID_LBA_END, VALID_VALUE_1);
-  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Write(VALID_LBA_END, VALID_VALUE_1);
+  EXPECT_NE(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Read_Mapped_0) {
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Read_Mapped_1) {
-  ssdInterface->Write(VALID_LBA_END, VALID_VALUE_1);
-  ssdInterface->Read(VALID_LBA_END);
-  EXPECT_EQ(VALID_VALUE_1, ssdInterface->GetResult());
+  ssdControllerWithTest->Write(VALID_LBA_END, VALID_VALUE_1);
+  ssdControllerWithTest->Read(VALID_LBA_END);
+  EXPECT_EQ(VALID_VALUE_1, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Read_Unmapped) {
-  ssdInterface->Read(VALID_LBA_BEGIN);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, CreateOutputFileIfNotExists) {
   ASSERT_FALSE(fs::exists(OUTPUT_FILE_NAME));
-  ssdInterface->Read(VALID_LBA_BEGIN);
+  ssdControllerWithTest->Read(VALID_LBA_BEGIN);
   ASSERT_TRUE(fs::exists(OUTPUT_FILE_NAME));
 }
 
 TEST_F(SSDTest, Write_Pass_After_Read) {
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Write_Fail_OutOfRange) {
-  ssdInterface->Write(INVALID_LBA, VALID_VALUE_1);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Write(INVALID_LBA, VALID_VALUE_1);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Write_Fail_InvalidPattern_0) {
-  ssdInterface->Write(VALID_LBA_BEGIN, INVALID_VALUE_1);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, INVALID_VALUE_1);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Write_Fail_InvalidPattern_1) {
-  ssdInterface->ClearCommandBuffer();
-  ssdInterface->Write(VALID_LBA_BEGIN, INVALID_VALUE_2);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->ClearCommandBuffer();
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, INVALID_VALUE_2);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Read_Unmapped_After_Write_1) {
-  ssdInterface->ClearCommandBuffer();
-  ssdInterface->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
-  ssdInterface->Read(VALID_LBA_END);
-  EXPECT_EQ(ZERO_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->ClearCommandBuffer();
+  ssdControllerWithTest->Write(VALID_LBA_BEGIN, VALID_VALUE_1);
+  ssdControllerWithTest->Read(VALID_LBA_END);
+  EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Read_Fail_OutOfRange) {
-  ssdInterface->Read(INVALID_LBA);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Read(INVALID_LBA);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Erase_Pass_MinusSize) {
   std::string minusSize = "-5";
-  ssdInterface->Erase(VALID_LBA_END, minusSize);
-  EXPECT_NE(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(VALID_LBA_END, minusSize);
+  EXPECT_NE(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Erase_Fail_MinusLba) {
   std::string minusLba = "-3";
-  ssdInterface->Erase(minusLba, VALID_ERASE_SCOPE_1);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(minusLba, VALID_ERASE_SCOPE_1);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Erase_Fail_MinusSize) {
   std::string minusSize = "-5";
-  ssdInterface->Erase(VALID_LBA_BEGIN, minusSize);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(VALID_LBA_BEGIN, minusSize);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 TEST_F(SSDTest, Erase_Fail_MinusLbaAndSize) {
   std::string minusLba = "-3";
   std::string minusSize = "-5";
-  ssdInterface->Erase(minusLba, minusSize);
-  EXPECT_EQ(ERROR_PATTERN, ssdInterface->GetResult());
+  ssdControllerWithTest->Erase(minusLba, minusSize);
+  EXPECT_EQ(ERROR_PATTERN, ssdControllerWithTest->GetResult());
 }
 
 int main() { 

@@ -13,5 +13,4 @@ class Validator {
 
   private:
   std::string errorReason;
-
 };
