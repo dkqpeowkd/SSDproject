@@ -12,40 +12,17 @@ using std::vector;
 using std::pair;
 namespace fs = std::filesystem;
 
-void MetaCommandContainer::loadScript(vector<shared_ptr<ICommand>> supported)
+void MetaCommandContainer::loadMetaScript()
 {
-	vector<string> scriptCommandList = loadScriptCommandList();
+	loadMetaScriptDescription(scriptFolderPath);
 
-    for (auto scriptCommand : scriptCommandList) {
-        string help = loadHelp(scriptCommand);
-        unsigned int numloop = loadNumRepeats(scriptCommand);
-
-        vector<string>lines = loadCommandsFromScript(scriptCommand);
-        if (lines.size() == 0)
-            continue;
-
-        shared_ptr<ScriptCommand> exScript = make_shared<ScriptCommand>(scriptCommand, help);
-        for (auto line : lines) {
-            std::istringstream iss(line);
-            std::vector<std::string> tokens;
-            std::string token;
-
-            while (iss >> token) {
-                tokens.push_back(token);
-            }
-            
-            string cmd = tokens[0];
-            tokens.erase(tokens.begin());
-            
-            for (auto command : supported) {
-                if (command->getCommandString() == cmd) {
-                    exScript->addExecution(command, tokens);
-                }
-            }
-        }
-        executableScripts.emplace_back(exScript);
-    }
+    //load meta description
 	
+}
+
+void MetaCommandContainer::loadMetaCommand(vector<shared_ptr<ICommand>> supported)
+{
+    //load meta command
 }
 
 shared_ptr<ICommand> MetaCommandContainer::lookupCommand(const string& command, vector<shared_ptr<ICommand>>& supported)
@@ -55,6 +32,16 @@ shared_ptr<ICommand> MetaCommandContainer::lookupCommand(const string& command, 
             return supportedCommand;
     }
     return nullptr;
+}
+
+void MetaCommandContainer::addScriptFunctions(vector<shared_ptr<ICommand>>& supported)
+{
+    shared_ptr<ICommand> readCommand = lookupCommand("read", supported);
+    shared_ptr<ICommand> writeCommand = lookupCommand("write", supported);
+    if (readCommand && writeCommand) {
+        shared_ptr<ScriptFunctionWrite> writeFunc = make_shared<ScriptFunctionWrite>(writeCommand, readCommand);
+        //scriptFunctions.emplace_back(writeFunc);
+    }
 }
 
 vector<string> MetaCommandContainer::getFileList(const string extension)
@@ -71,9 +58,47 @@ vector<string> MetaCommandContainer::getFileList(const string extension)
 	return fileList;
 }
 
-vector<string> MetaCommandContainer::loadScriptCommandList()
+void MetaCommandContainer::loadMetaScriptDescription(const string& folderPath)
 {
-	return getFileList(".cmd");
+    // Read the Folders in folderPath, each folder match the script command.
+    try {
+        fs::directory_iterator directoryObject = fs::directory_iterator(folderPath);
+
+        //load cmd help and repeats from the directory object
+        for (const auto& entry : directoryObject) {
+            if (entry.is_directory() == false) continue;
+            metaScriptDesc.emplace_back(getMetaDescription(entry));
+        }
+    }
+    catch (std::exception& e) {
+        return;
+    }
+}
+
+MetaCommandDescription MetaCommandContainer::getMetaDescription(const fs::directory_entry& entry)
+{
+    //Read the files in the folder which is script command
+    //It means Reading and Parsing what command do.
+    string cmd = entry.path().stem().string();
+    string executions = "";
+    string help = "";
+    string description = "";
+    unsigned int repeat = 1;
+
+    fs::directory_iterator dirIterator = fs::directory_iterator(entry.path());
+    //vector<fs::directory_entry> sortedFiles = getSortedEntries(dirIterator, [](const fs::directory_entry a) {return a.is_regular_file(); });
+
+    for (auto& cmdEntry : dirIterator) {
+        string entryFileName = cmdEntry.path().stem().string();
+        if (entryFileName == executionFile)
+            executions = "";
+        if (entryFileName == helpFile)
+            help = "";
+        if (entryFileName == descriptionFile)
+            description = "";
+    }
+
+    return MetaCommandDescription{ cmd, executions, description, help, repeat };
 }
 
 string MetaCommandContainer::loadHelp(const string& scriptCommand)
@@ -94,9 +119,9 @@ unsigned long MetaCommandContainer::loadNumRepeats(const string& scriptCommand)
     }
 }
 
-const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommands()
+const vector<shared_ptr<ScriptCommand>>& MetaCommandContainer::getScriptCommands(vector<shared_ptr<ICommand>>& supportedCommand)
 {
-    // TODO: 여기에 return 문을 삽입합니다.
+    addScriptFunctions(supportedCommand);
     return executableScripts;
 }
 

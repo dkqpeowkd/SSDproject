@@ -253,6 +253,7 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     <ClInclude Include="ReadCommand.h" />
     <ClInclude Include="ScriptCommand.h" />
     <ClInclude Include="MetaCommandContainer.h" />
+    <ClInclude Include="ScriptFunction.h" />
     <ClInclude Include="TestShell.h" />
     <ClInclude Include="WriteCommand.h" />
   </ItemGroup>

@@ -1,36 +1,43 @@
 #include "ScriptCommand.h"
 
-const string& ScriptCommand::getCommandString()
+bool ScriptCommand::isMatch(const string& cmd)
 {
-    // TODO: 여기에 return 문을 삽입합니다.
-    return scriptCommand;
+    if (cmd == scriptCommand)
+        return true;
+    if (scriptCommand.substr(0, 2) == cmd)
+        return true;
+    return false;
 }
 
-bool ScriptCommand::isMatch(const string& command)
+const string& ScriptCommand::getCommandString()
 {
-    return command == scriptCommand;
+    return scriptCommand;
 }
 
 const string& ScriptCommand::getUsage()
 {
-    // TODO: 여기에 return 문을 삽입합니다.
+    if (usage.length() == 0)
+        return NOT_PROVIDED;
     return usage;
+}
+
+const std::string& ScriptCommand::getDescription()
+{
+    if (description.length() == 0)
+        return NOT_PROVIDED;
+    return description;
 }
 
 bool ScriptCommand::isValidArguments(const string& cmd, vector<string>& args)
 {
-    if (cmd != scriptCommand)
-        return false;
-    if (args.size() != numArgs)
+    if (isMatch(cmd) == false)
         return false;
     return true;
 }
 
 bool ScriptCommand::Execute(const string& cmd, vector<string>& args)
 {
-    if (cmd != scriptCommand)
-        return false;
-    if (args.size() != 0)
+    if (isValidArguments(cmd, args) == false)
         return false;
 
     return executeScript();
@@ -46,9 +53,10 @@ bool ScriptCommand::executeScript()
     for (auto cmd : scripts) {
         shared_ptr<ICommand> command = cmd.first;
         vector<string>& args = cmd.second;
-        command->Execute(command->getCommandString(), args);
+        if (false == command->Execute(command->getCommandString(), args)) {
+            //std::cout << "Failed to execute " << scriptCommand << "->" << command->getCommandString() << std::endl;
+            return false;
+        }
     }
-    return false;
+    return true;
 }
-
-
