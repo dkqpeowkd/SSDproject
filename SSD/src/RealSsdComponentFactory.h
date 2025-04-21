@@ -1,4 +1,8 @@
 #pragma once
+
+#include "NandStorage.h"
+#include "Recoder.h"
+#include "Validator.h"
 #include "SsdComponentFactory.h"
 
 class RealSsdComponentFactory : public SsdComponentFactory {
