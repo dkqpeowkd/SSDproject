@@ -12,6 +12,7 @@
 #include "FullWriteCommand.h"
 #include "EraseCommand.h"
 #include "EraseRangeCommand.h"
+#include "FlushCommand.h"
 #include "MetaCommandContainer.h"
 
 using std::cout;
@@ -36,6 +37,7 @@ TestShell::TestShell()
 	fullWriteCommand = make_shared<FullWriteCommand>();
 	eraseCommand = make_shared<EraseCommand>();
 	eraseRangeCommand = make_shared<EraseRangeCommand>();
+	flushCommand = make_shared<FlushCommand>();
 
 
 	addCommand(exitCommand);
@@ -46,6 +48,7 @@ TestShell::TestShell()
 	addCommand(fullWriteCommand);
 	addCommand(eraseCommand);
 	addCommand(eraseRangeCommand);
+	addCommand(flushCommand);
 
 	MetaCommandContainer scriptsContainer;
 
@@ -100,7 +103,6 @@ bool TestShell::ExcutePromptInput(PromptInput& promptInput)
 
 	bool executed = foundCommand->Execute(promptInput.cmd, promptInput.args);
 	if (!executed) {
-		std::cout << "FAILED" << std::endl;
 		return false;
 	}
 

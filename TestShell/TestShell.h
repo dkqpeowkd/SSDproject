@@ -11,6 +11,7 @@
 #include "FullWriteCommand.h"
 #include "EraseCommand.h"
 #include "EraseRangeCommand.h"
+#include "FlushCommand.h"
 #include "Log.h"
 
 using std::string;
@@ -40,6 +41,7 @@ private:
 	shared_ptr<FullWriteCommand> fullWriteCommand;
 	shared_ptr<EraseCommand> eraseCommand;
 	shared_ptr<EraseRangeCommand> eraseRangeCommand;
+	shared_ptr<FlushCommand> flushCommand;
     Logger log;
 };
 

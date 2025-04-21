@@ -17,20 +17,23 @@ const std::string& ReadCommand::getUsage() {
 
 bool ReadCommand::isValidArguments(const std::string& cmd,
                                    std::vector<std::string>& args) {
-  return args.size() == 2;
+  return args.size() == 1;
 }
 
 bool ReadCommand::Execute(const std::string& cmd,
                           std::vector<std::string>& args) {
   std::string command = "ssd.exe R " + args[0];
+  std::cout << "[READ] " << command << std::endl;
+
   int result = callSystem(command);
 
-  std::string output = readOutput();
-  std::cout << output << std::endl;
-
-  if (output == "ERROR") {
-    return false;
+  if (result == 1) {
+      std::cout << "ERROR" << std::endl;
+      return false;
   }
+
+   std::string output = readOutput();
+   std::cout << output << std::endl;
 
   if (args.size() >= 2) {
     // 사용자로부터 전달받은 패턴을 16진수로 변환
