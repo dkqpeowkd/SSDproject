@@ -139,16 +139,29 @@ bool EraseCommand::Execute(const std::string& cmd, std::vector<std::string>& arg
     for (const auto& call : chunkedValidCalls) {
         std::ostringstream oss;
         oss << "ssd.exe E " << call.lba << " " << call.size;
-        std::cout << "[CALL] " << oss.str() << std::endl;
-        //callSystem(oss.str());
+        std::cout << "[ERASE] " << oss.str() << std::endl;
+        int result = callSystem(oss.str());
+
+        if (result == 1) {
+            std::cout << "DELETED" << std::endl;
+        }
+        else {
+            std::cout << "ERROR" << std::endl;
+        }
     }
 
     // 무효 LBA도 그대로 system call
     for (const auto& call : chunkedInvalidCalls) {
         std::ostringstream oss;
         oss << "ssd.exe E " << call.lba << " " << call.size;
-        std::cout << "[CALL] " << oss.str() << std::endl;
-        //callSystem(oss.str());
+        std::cout << "[ERASE] " << oss.str() << std::endl;
+        int result = callSystem(oss.str());
+        if (result == 1) {
+            std::cout << "DELETED" << std::endl;
+        }
+        else {
+            std::cout << "ERROR" << std::endl;
+        }
     }
 
     return true;
