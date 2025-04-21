@@ -43,7 +43,6 @@ class CommandBufferTest : public ::testing::Test {
 
 TEST_F(CommandBufferTest, InitCreatesBufferFiles) {
   CommandBuffer buffer(bufferDir);
-  buffer.Init();
 
   for (int i = 1; i <= 5; ++i) {
     std::string filePath = bufferDir + "/" + std::to_string(i) + "_empty";

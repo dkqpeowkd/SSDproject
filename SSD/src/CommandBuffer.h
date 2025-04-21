@@ -8,30 +8,32 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <map>
 
 class CommandBuffer {
  public:
   CommandBuffer(const std::string& bufferDir = "buffer");
 
-  void Init();
-  void AddCommand(const std::string& command);
   int GetValidBufferCount();
-  void SaveBuffer();
-  void DestroyBuffer();
+  void AddCommand(const std::string& command);
+  void ClearBuffer();
   std::string Read(std::string lba_);
   std::vector<std::string> GetCommandBuffer();
+  void DestroyBuffer();
 
-  void ClearBuffer();
-
+ private:
+  void InitializeEmptyCommandBuffer();
+  void SaveBuffer();
+  std::vector<std::string> MakeCommandBufferFromIndexedCommands(
+      const std::vector<std::pair<int, std::string>>& indexedCommands);
+  std::vector<std::pair<int, std::string>> MakeCommandsWithIndexFromFIleNames();
+  bool IsWriteOrEraseCommand(const std::string& command) const;
+  std::map<int, std::string> UpdateCommandsAndBuildLbaToValueList();
+  std::map<int, std::string> MakeLbaToValueListFromFileNames();
+  std::vector<std::string> convertLbaMapToBuffers(
+      std::map<int, std::string> lbaMap);
 
  private:
   std::string bufferDirectory;
   std::vector<std::string> commands;
-
-  bool IsWriteOrEraseCommand(const std::string& command) const;
-  std::unordered_map<int, std::string> BuildLbaMapFromFilenames();
-  std::vector<std::string> convertLbaMapToBuffers(
-      std::unordered_map<int, std::string> lbaMap);
 };

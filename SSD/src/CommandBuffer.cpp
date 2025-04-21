@@ -5,14 +5,17 @@
 
 CommandBuffer::CommandBuffer(const std::string& bufferDir)
     : bufferDirectory(bufferDir) {
-  if (!std::filesystem::exists(bufferDirectory)) {
-    Init();
-  } else {
-    BuildLbaMapFromFilenames();
-  }
+  const bool bufferExists = std::filesystem::exists(bufferDirectory);
+
+  if (bufferExists) {
+    UpdateCommandsAndBuildLbaToValueList();
+    return;
+  } 
+   
+  InitializeEmptyCommandBuffer();
 }
 
-void CommandBuffer::Init() {
+void CommandBuffer::InitializeEmptyCommandBuffer() {
   std::filesystem::create_directory(bufferDirectory);
   for (int i = 1; i <= MAX_BUFFER_SIZE; ++i) {
     std::ofstream file(bufferDirectory + "/" + std::to_string(i) + "_empty");
@@ -25,25 +28,24 @@ void CommandBuffer::AddCommand(const std::string& command) {
   commands.push_back(command);
   SaveBuffer();
 
-  std::unordered_map<int, std::string> lbaMap = BuildLbaMapFromFilenames();
+  std::map<int, std::string> lbaMap = UpdateCommandsAndBuildLbaToValueList();
   commands = convertLbaMapToBuffers(lbaMap);
 
   SaveBuffer();
 }
 
 std::vector<std::string> CommandBuffer::convertLbaMapToBuffers(
-    std::unordered_map<int, std::string> lbaMap) {
+    std::map<int, std::string> lbaMap) {
   std::vector<std::string> commands;
-  std::map<int, std::string> sortedLbaMap(lbaMap.begin(), lbaMap.end());
 
-  auto it = sortedLbaMap.begin();
-  while (it != sortedLbaMap.end()) {
+  auto it =lbaMap.begin();
+  while (it != lbaMap.end()) {
     if (it->second == "0x00000000") {
       int start = it->first;
       int count = 1;
 
       auto next = std::next(it);
-      while (next != sortedLbaMap.end() &&
+      while (next != lbaMap.end() &&
              next->first == it->first + 1) {  // 다음 key가 존재하기만 하면 OK
         ++count;
         ++it;
@@ -59,7 +61,7 @@ std::vector<std::string> CommandBuffer::convertLbaMapToBuffers(
   }
 
   // Write 명령어 추가 (0x00000000 제외)
-  for (const auto& [lba, value] : sortedLbaMap) {
+  for (const auto& [lba, value] : lbaMap) {
     if (value != "0x00000000") {
       commands.push_back("W " + std::to_string(lba) + " " + value);
     }
@@ -92,7 +94,7 @@ void CommandBuffer::SaveBuffer() {
 void CommandBuffer::ClearBuffer() { 
   commands.clear();
   DestroyBuffer();
-  Init();
+  InitializeEmptyCommandBuffer();
 }
 
 void CommandBuffer::DestroyBuffer() {  
@@ -105,17 +107,21 @@ bool CommandBuffer::IsWriteOrEraseCommand(const std::string& command) const {
   return !command.empty() && (command[0] == 'W' || command[0] == 'E');
 }
 
-std::unordered_map<int, std::string> CommandBuffer::BuildLbaMapFromFilenames() {
+std::map<int, std::string> CommandBuffer::UpdateCommandsAndBuildLbaToValueList() {
   commands = GetCommandBuffer();
-  std::unordered_map<int, std::string> lbaMap;
+  return MakeLbaToValueListFromFileNames();
+}
 
- for (const auto& command : commands) {
+ std::map<int, std::string> CommandBuffer::MakeLbaToValueListFromFileNames() {
+  std::map<int, std::string> lbaMap;
+
+  for (const auto& command : commands) {
     std::istringstream iss(command);
     std::string cmd;
     int lba;
 
     iss >> cmd >> lba;
-    if (lba < 0 || lba > 99) continue;
+    if (lba < MIN_LBA || lba > MAX_LBA) continue;
 
     if (cmd == "W") {
       std::string value;
@@ -131,26 +137,43 @@ std::unordered_map<int, std::string> CommandBuffer::BuildLbaMapFromFilenames() {
       if (scope < 0) std::swap(start, end);
 
       for (int i = start; i <= end; ++i) {
-        if (i >= 0 && i <= 99) {
-          lbaMap[i] = "0x00000000";
+        if (i >= MIN_LBA && i <= MAX_LBA) {
+          lbaMap[i] = ZERO_PATTERN;
         }
       }
     }
   }
 
   return lbaMap;
-}
+ }
 
 std::string CommandBuffer::Read(std::string lba_) {
   int lba = std::stoi(lba_);
-  std::unordered_map<int, std::string> lbaMap = BuildLbaMapFromFilenames();
+  std::map<int, std::string> lbaMap = UpdateCommandsAndBuildLbaToValueList();
   auto it = lbaMap.find(lba);
   return it != lbaMap.end() ? it->second : FAIL_BUFFER_READ_MESSAGE;
 }
 
 std::vector<std::string> CommandBuffer::GetCommandBuffer() {
-  std::vector<std::pair<int, std::string>> indexedCommands;
+  auto indexedCommands = MakeCommandsWithIndexFromFIleNames();
+  return MakeCommandBufferFromIndexedCommands(indexedCommands);
+}
 
+std::vector<std::string> CommandBuffer::MakeCommandBufferFromIndexedCommands(
+  const std::vector<std::pair<int, std::string>>& indexedCommands) {
+  std::vector<std::string> commandBuffer;
+  for (const auto& [_, cmd] : indexedCommands) {
+    if (cmd.find("empty") == std::string::npos) {
+      commandBuffer.push_back(cmd);
+    }
+  }
+
+  return commandBuffer;
+}
+
+std::vector<std::pair<int, std::string>>
+CommandBuffer::MakeCommandsWithIndexFromFIleNames() {
+  std::vector<std::pair<int, std::string>> indexedCommands;
   for (const auto& entry :
        std::filesystem::directory_iterator(bufferDirectory)) {
     if (!entry.is_regular_file()) continue;
@@ -168,32 +191,25 @@ std::vector<std::string> CommandBuffer::GetCommandBuffer() {
     indexedCommands.emplace_back(index, commandStr);
   }
 
-  // 인덱스 기준 오름차순 정렬
   std::sort(indexedCommands.begin(), indexedCommands.end());
 
-  // 정리된 커맨드만 추출
-  std::vector<std::string> result;
-  for (const auto& [_, cmd] : indexedCommands) {
-    if (cmd.find("empty") == std::string::npos) {
-    result.push_back(cmd);
-    }
-  }
-
-  return result;
-}
+  return indexedCommands;
+ }
 
 int CommandBuffer::GetValidBufferCount() {
   int count = 0;
+  const bool bufferExists = std::filesystem::exists(bufferDirectory);
 
-    if (!std::filesystem::exists(bufferDirectory)) {
+  if (bufferExists==false) {
     std::filesystem::create_directories(bufferDirectory);
+    return 0;
   }
 
-  for (const auto& entry :
+  for (const auto& file :
        std::filesystem::directory_iterator(bufferDirectory)) {
-    if (!entry.is_regular_file()) continue;
+    if (file.is_regular_file()==false) continue;
 
-    std::string filename = entry.path().filename().string();
+    std::string filename = file.path().filename().string();
     if (filename.find("_empty") == std::string::npos) {
       ++count;
     }
