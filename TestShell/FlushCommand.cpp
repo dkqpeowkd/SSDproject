@@ -25,18 +25,19 @@ bool FlushCommand::isValidArguments(const std::string& cmd, std::vector<std::str
 }
 
 bool FlushCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
+
     std::string command = "ssd.exe F";
-    std::cout << "[FLUSH] " << command << std::endl;
+    logMessage("FlushCommand.Execute()", "[FLUSH] %s", command.c_str());
 
     int result = callSystem(command);
-
     if (result == 1) {
-        std::cout << "ERROR" << std::endl;
+        logMessage("FlushCommand.Execute()", "[FLUSH] ERROR");
         return false;
     }
 
-    std::cout << "FLUSH COMPLETED!" << std::endl;
+    logMessage("FlushCommand.Execute()", "[FLUSH] COMPLETED!");
     return true;
+
 }
 
 int FlushCommand::callSystem(const std::string& cmd) {

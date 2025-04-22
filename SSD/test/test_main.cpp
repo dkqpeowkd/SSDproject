@@ -67,6 +67,17 @@ TEST_F(SSDTest, ErasePassLBA0To10) {
   }
 }
 
+TEST_F(SSDTest, ErasePassLBA95To99) {
+  for (int i = 0; i < 100; i++) {
+    ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);
+  }
+  ssdControllerWithTest->Erase(VALID_LBA_95, "5");
+  for (int i = 95; i < 100; i++) {
+    ssdControllerWithTest->Read(std::to_string(i));
+    EXPECT_EQ(ZERO_PATTERN, ssdControllerWithTest->GetResult());
+  }
+}
+
 TEST_F(SSDTest, EraseErrorLBA0To11) {
   for (int i = 0; i < 100; i++) {
     ssdControllerWithTest->Write(std::to_string(i), VALID_VALUE_1);

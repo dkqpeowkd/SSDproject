@@ -69,6 +69,15 @@ std::vector<std::unique_ptr<ICommand>> CommandBuffer::ConvertLbaMapToBuffers(
   return commands;
 }
 
+void CommandBuffer::Flush(NandStorage& nandStorage, Recoder& recoder,
+                          Validator& validator) {
+  for (const auto& cmd : commands) {
+    cmd->ExecuteNandStorage(nandStorage, recoder, validator);
+  }
+
+  ClearBuffer();
+}
+
 void CommandBuffer::SaveBuffer() {
   DestroyBuffer();
 

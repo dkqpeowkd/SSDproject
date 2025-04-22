@@ -34,9 +34,7 @@ class SsdController {
 
   std::string unsignedIntToPrefixedHexString(unsigned int readData);
 
-  bool isBufferFull(){
-    return (commandBuffer.GetValidBufferCount() == MAX_BUFFER_SIZE);
-  };
+  bool isBufferFull(){ return commandBuffer.IsBufferFull(); };
 
   bool isValidLba(const std::string& lba);
   bool isValidScope(const std::string& scope);

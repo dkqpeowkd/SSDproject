@@ -8,7 +8,6 @@
 
 class FlushCommand : public ICommand {
 public:
-    FlushCommand() = default;
     FlushCommand(Logger* logger) : log(logger) {}
 
     const std::string& getCommandString() override;

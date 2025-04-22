@@ -30,16 +30,21 @@ bool FullReadCommand::isValidArguments(const std::string& cmd, std::vector<std::
 
 bool FullReadCommand::Execute(const std::string& cmd, std::vector<std::string>& args) {
     for (int i = 0; i < 100; ++i) {
-        std::string command = "ssd.exe R " + std::to_string(i);
-        int result = callSystem(command);
+        std::ostringstream oss;
+        oss << "ssd.exe R " << i;
+        logMessage("FullReadCommand.Execute()", "[FULLREAD] %s", oss.str().c_str());
+
+        int result = callSystem(oss.str());
+
+        if (result == 1) {
+            logMessage("FullReadCommand.Execute()", "[FULLREAD] ERROR");
+            continue;
+        }
 
         std::string output = readOutput();
-        std::cout << "LBA " << i << ": " << output << std::endl;
-
-        if (output == "ERROR") {
-            return false;
-        }
+        logMessage("FullReadCommand.Execute()", "[FULLREAD] %s", output.c_str());
     }
+
     return true;
 }
 
