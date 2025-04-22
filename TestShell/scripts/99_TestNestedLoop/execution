@@ -1,0 +1,15 @@
+erase 0 2
+WriteFunc SetLBA 2
+EraseFunc SetLBA 2
+WriteFunc DisableAutoIncrease
+Loop 2
+WriteFunc Random 2
+EraseFunc 3
+WriteFunc IncreaseLBA
+WriteFunc IncreaseLBA
+EraseFunc DecreaseLBA
+Loop 2
+read 0
+read 1
+EndLoop
+EndLoop
