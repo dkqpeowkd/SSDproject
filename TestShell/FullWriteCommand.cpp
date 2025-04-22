@@ -14,8 +14,14 @@ bool FullWriteCommand::isMatch(const string& command)
 }
 
 const std::string& FullWriteCommand::getUsage() {
-    static std::string usage = "fullwrite <PATTERN> : 전체 LBA 영역에 주어진 패턴을 저장합니다.";
+    static std::string usage = "fullwrite <PATTERN>";
     return usage;
+}
+
+const std::string& FullWriteCommand::getDescription()
+{
+    static std::string description = "전체 LBA 영역에 주어진 패턴을 저장합니다.";
+    return description;
 }
 
 bool FullWriteCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {

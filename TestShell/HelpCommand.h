@@ -30,7 +30,7 @@ public:
 
 private:
     const string command = "help";
-    const string usage = "Prompt>help\n";
+    const string usage = "help\n";
     const string description = "Display Help for commands\n";
     string result = "";
     vector<shared_ptr<ICommand>> supportedCommand = {};

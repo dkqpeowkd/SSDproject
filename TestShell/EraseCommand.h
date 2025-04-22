@@ -10,9 +10,11 @@ public:
     EraseCommand(Logger* logger) : log(logger) {}
     const std::string& getCommandString() override;
     const std::string& getUsage() override;
+    const std::string& getDescription() override;
     bool isMatch(const std::string& command) override;
     bool isValidArguments(const std::string& cmd, std::vector<std::string>& args) override;
     bool Execute(const std::string& cmd, std::vector<std::string>& args) override;
+
     void logMessage(const std::string& msg, const char* format, ...) const {
         if (log) {
             char buffer[1024];
@@ -25,12 +27,12 @@ public:
         }
     };
 
-protected:
+   protected:
     virtual int callSystem(const std::string& cmd);
     virtual std::string readOutput();
     Logger* log;
 
-private:
+   private:
     const std::string cmd = "erase";
 
     struct EraseCall {

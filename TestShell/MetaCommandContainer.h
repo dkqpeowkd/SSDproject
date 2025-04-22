@@ -7,9 +7,6 @@
 #include "ICommand.h"
 #include "ScriptCommand.h"
 #include "ScriptFunction.h"
-#include "ScriptFunctionWrite.h"
-#include "ScriptFunctionErase.h"
-#include "ScriptFunctionLoop.h"
 
 using std::string;
 using std::vector;
@@ -29,9 +26,11 @@ class MetaCommandContainer {
 public:
 	MetaCommandContainer() {}
 	MetaCommandContainer(const string scriptPath) : metaScriptFolderPath{ scriptPath } {}
-	void loadMetaScript();
+	void loadMetaScript(vector<shared_ptr<ICommand>>& supported);
 	MetaCommandDescription getMetaCommandDescriptionFromFile(const fs::directory_entry& entry);
-	const vector<shared_ptr<ScriptCommand>>& getScriptCommandList(vector<shared_ptr<ICommand>> supported);
+	void createScriptCommands(vector<shared_ptr<ICommand>> supported);
+	shared_ptr<ScriptCommand> MetaCommandContainer::createNewScriptCommandInstance(MetaCommandDescription& metaScript, vector<shared_ptr<ICommand>> supported);
+	shared_ptr<ScriptCommand> getScriptCommand(const string& cmd, vector<shared_ptr<ICommand>> supported);
 private:
 	const string executionFile = "execution";
 	const string helpFile = "help";

@@ -15,8 +15,15 @@ namespace fs = std::filesystem;
 
 class Logger {
  public:
-  std::string currentTimestamp();
-  std::string Logger::formatLogMessage(const std::string& classname);
-  void archiveOldestIfNecessary();
-  void log(const std::string& prefix, const char* format, ...);
+	static const bool ENABLE_LOG = true;
+	static const bool DISABLE_LOG = true;
+
+	Logger() {}
+	Logger(bool isLogEnable) : isLogEnable{ isLogEnable } {}
+	std::string currentTimestamp();
+	std::string Logger::formatLogMessage(const std::string& classname);
+	void archiveOldestIfNecessary();
+	void log(const std::string& prefix, const char* format, ...);
+private:
+	bool isLogEnable = false;
 };

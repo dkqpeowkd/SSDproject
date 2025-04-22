@@ -16,8 +16,14 @@ bool EraseCommand::isMatch(const std::string& command) {
 }
 
 const std::string& EraseCommand::getUsage() {
-    static std::string usage = "erase <LBA> <SIZE> : 지정된 영역을 삭제합니다 (최대 10칸 단위로 분할 전송)";
+    static std::string usage = "erase <LBA> <SIZE>";
     return usage;
+}
+
+const std::string& EraseCommand::getDescription()
+{
+    static std::string description = "지정된 영역을 삭제합니다 (최대 10칸 단위로 분할 전송)";
+    return description;
 }
 
 bool EraseCommand::isValidArguments(const std::string& cmd, std::vector<std::string>& args) {

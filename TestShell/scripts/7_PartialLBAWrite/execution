@@ -1,4 +1,4 @@
-Loop 30
+Loop 2
 write 4 0xDAEF0001
 write 0 0xDAEF0001
 write 3 0xDAEF0001

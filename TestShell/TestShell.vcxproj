@@ -201,7 +201,7 @@ xcopy "$(ProjectDir)scripts" "$(OutDir)scripts" /E /Y /I</Command>
     </Link>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <PostBuildEvent>
       <Command>rmdir /S /Q "$(OutDir)scripts"

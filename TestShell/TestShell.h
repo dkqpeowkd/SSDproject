@@ -13,6 +13,7 @@
 #include "EraseRangeCommand.h"
 #include "FlushCommand.h"
 #include "Log.h"
+//#include "MetaCommandContainer.h"
 
 using std::string;
 using std::vector;
@@ -23,16 +24,23 @@ class TestShell
 {
 public:
 	TestShell();
+	TestShell(bool EnableLog);
+
 	void run(); // main loop Ω√¿€
+    void run(const std::string filename);
+
 	void displayPrompt(); // propmt display
 	PromptInput getPromptInput();
 	bool ExcutePromptInput(PromptInput& promptInput);
+	bool TryInternalCommand(PromptInput& promptInput);
+	bool TryScriptCommand(const string& cmd, vector<string>& args);
 	bool isValidPromptInput(std::shared_ptr<ICommand>& foundCommand, PromptInput& promptInput);
 	shared_ptr<ICommand> findCommand(const string& command);
 	void addCommand(shared_ptr<ICommand> newCommand);
 
 private:
 	vector<shared_ptr<ICommand>> commandList;
+	//MetaCommandContainer scriptsContainer;
 	shared_ptr<ExitCommand> exitCommand;
 	shared_ptr<HelpCommand> helpCommand;
 	shared_ptr<ReadCommand> readCommand;
