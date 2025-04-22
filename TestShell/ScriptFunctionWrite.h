@@ -50,6 +50,25 @@ public:
                 try { return ReadCompare(cmd, args); }
                 catch (std::exception& e) { return false; }
             }
+            {
+                try {
+                    int numLBA = std::stoi(args[0]);
+                    string lbaStr = std::to_string(LBAoffset);
+                    string randomValue = getRandomHexValue();
+                    vector<string> args{ lbaStr, randomValue };
+                    for (int i = 0; i < numLBA; ++i) {
+                        if (writeCommand->Execute(writeCommand->getCommandString(), args) == false)
+                            return false;
+                        else
+                            writeHistory.emplace_back(pair{ lbaStr, randomValue });
+                        LBAoffset = (isAutoIncrease) ? LBAoffset + 1 : LBAoffset;
+                    }
+                    return true;
+                }
+                catch (std::exception& e) {
+                    return false;
+                }
+            }
             break;
         case 2:
 

@@ -1,0 +1,12 @@
+Loop 2
+write 4 0xDAEF0001
+write 0 0xDAEF0001
+write 3 0xDAEF0001
+write 1 0xDAEF0001
+writeddd 2 0xDAEF0001
+read 4 0xDAEF0001
+read 0 0xDAEF0001
+read 3 0xDAEF0001
+read 1 0xDAEF0001
+read 2 0xDAEF0001
+EndLoop
