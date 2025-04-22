@@ -1,8 +1,8 @@
 erase 0 2
-WriteFunc SetLBA 2
-EraseFunc SetLBA 2
 WriteFunc DisableAutoIncrease
 Loop 30
+WriteFunc SetLBA 2
+EraseFunc SetLBA 2
 Loop 3
 WriteFunc Random 1
 WriteFunc Random 1
