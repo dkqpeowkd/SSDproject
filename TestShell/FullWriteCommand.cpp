@@ -41,7 +41,6 @@ bool FullWriteCommand::Execute(const std::string& cmd, std::vector<std::string>&
         }
         std::string output = readOutput();
         logMessage("WriteCommand.Execute()", "[WRITE] COMPLETED!");
-        return true;
     }
     return true;
 }
