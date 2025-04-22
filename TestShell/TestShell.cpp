@@ -115,6 +115,8 @@ void TestShell::run(const std::string filename) {
 			return;
 	}
 
+	cout << "PASS\n";
+
   infile.close();  // ÆÄÀÏ ´Ý±â
 }
 
@@ -128,7 +130,7 @@ bool TestShell::ExecuteScriptFromFileLine(string& line)
 	shared_ptr<ICommand> scriptCommand = scriptContainer.getScriptCommand(promptInput.cmd, commandList);
 
 	if (scriptCommand == nullptr) {
-		std::cout << "Fail" << std::endl;
+		std::cout << "Fail : "<< promptInput.cmd << " does not exist" << std::endl;
 		return false;
 	}
 

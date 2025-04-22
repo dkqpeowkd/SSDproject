@@ -56,9 +56,9 @@ bool ScriptCommand::executeScript()
         shared_ptr<ICommand> command = cmd.first;
         vector<string>& args = cmd.second;
         if (false == command->Execute(command->getCommandString(), args)) {
-            std::cout << "Failed to execute " << scriptCommand << "->" << command->getCommandString() << std::endl;
-            for (auto arg : args)
-                std::cout << "arg = " << arg << "\n";
+            //std::cout << "Failed to execute " << scriptCommand << "->" << command->getCommandString() << std::endl;
+            //for (auto arg : args)
+            //    std::cout << "arg = " << arg << "\n";
             return false;
         }
     }

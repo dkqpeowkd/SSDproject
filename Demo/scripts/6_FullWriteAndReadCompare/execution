@@ -1,5 +1,5 @@
 WriteFunc EnableAutoIncrease
 Loop 2
-WriteFunc Random 5
+WriteFunc 5
 WriteFunc ReadCompare
 EndLoop
