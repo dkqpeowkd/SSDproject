@@ -56,7 +56,7 @@ void SsdController::Erase(std::string lba, std::string scope) {
 
   int numLba = stoi(lba);
   int numScope = stoi(scope);
-  std::string endLba = std::to_string(numLba + numScope);
+  std::string endLba = std::to_string(numLba + numScope - 1);
 
   if (validator->IsNumberWithinRange(endLba, 0, MAX_LBA) == false) {
     return recoder->RecordErrorPatternToOutputFile(validator->GetErrorReason());
@@ -75,14 +75,8 @@ void SsdController::Erase(std::string lba, std::string scope) {
   commandBuffer.AddCommand(eraseCommand);
 }
 
-void SsdController::Flush() { 
-  std::vector<std::unique_ptr<ICommand>> commands = commandBuffer.GetCommandBuffer();
-
-  for (const auto& cmd : commands) {
-    cmd->ExecuteNandStorage(*nandStorage, *recoder, *validator);
-  }
-
-  commandBuffer.ClearBuffer();
+void SsdController::Flush() {
+  commandBuffer.Flush(*nandStorage, *recoder, *validator);
 }
 
 std::string SsdController::unsignedIntToPrefixedHexString(unsigned int readData) {
