@@ -53,10 +53,11 @@ public:
             {
                 try {
                     int numLBA = std::stoi(args[0]);
-                    string lbaStr = std::to_string(LBAoffset);
                     string randomValue = getRandomHexValue();
-                    vector<string> args{ lbaStr, randomValue };
+                    
                     for (int i = 0; i < numLBA; ++i) {
+                        string lbaStr = std::to_string(LBAoffset);
+                        vector<string> args{ lbaStr, randomValue };
                         if (writeCommand->Execute(writeCommand->getCommandString(), args) == false)
                             return false;
                         else
