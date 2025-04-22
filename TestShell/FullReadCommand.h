@@ -8,7 +8,7 @@
 
 class FullReadCommand : public ICommand {
 public:
-    FullReadCommand() = default;
+    FullReadCommand(Logger* logger) : log(logger) {}
 
     const std::string& getCommandString() override;
     bool isMatch(const string& command) override;
@@ -16,7 +16,6 @@ public:
     const std::string& getDescription() override;
     bool isValidArguments(const std::string& cmd, std::vector<std::string>& args) override;
     bool Execute(const std::string& cmd, std::vector<std::string>& args) override;
-    FullReadCommand(Logger* logger) : log(logger) {}
     void logMessage(const std::string& msg, const char* format, ...) const {
       if (log) {
         char buffer[1024];

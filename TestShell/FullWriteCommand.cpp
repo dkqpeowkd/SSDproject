@@ -32,12 +32,16 @@ bool FullWriteCommand::Execute(const std::string& cmd, std::vector<std::string>&
     for (int i = 0; i < 100; ++i) {
         std::ostringstream oss;
         oss << "ssd.exe W " << i << " " << args[0];
-        int result = callSystem(oss.str());
+        logMessage("FullWriteCommand.Execute()", "[FULLWRITE] %s", oss.str().c_str());
 
-        std::string output = readOutput();
-        if (output == "ERROR") {
-            return false;
+        int result = callSystem(oss.str());
+        if (result == 1) {
+            logMessage("FullWriteCommand.Execute()", "[FULLWRITE] ERROR");
+            continue;
         }
+        std::string output = readOutput();
+        logMessage("WriteCommand.Execute()", "[WRITE] COMPLETED!");
+        return true;
     }
     return true;
 }

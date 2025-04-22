@@ -56,15 +56,16 @@ TestShell::TestShell(bool EnableLog) {
 
 TestShell::TestShell()
 {
+	Logger logger;
 	exitCommand = make_shared<ExitCommand>();
 	helpCommand = make_shared<HelpCommand>();
-	readCommand = make_shared<ReadCommand>();
-	writeCommand = make_shared<WriteCommand>();
-	fullReadCommand = make_shared<FullReadCommand>();
-	fullWriteCommand = make_shared<FullWriteCommand>();
-	eraseCommand = make_shared<EraseCommand>();
-	eraseRangeCommand = make_shared<EraseRangeCommand>();
-	flushCommand = make_shared<FlushCommand>();
+	readCommand = make_shared<ReadCommand>(&logger);
+	writeCommand = make_shared<WriteCommand>(&logger);
+	fullReadCommand = make_shared<FullReadCommand>(&logger);
+	fullWriteCommand = make_shared<FullWriteCommand>(&logger);
+	eraseCommand = make_shared<EraseCommand>(&logger);
+	eraseRangeCommand = make_shared<EraseRangeCommand>(&logger);
+	flushCommand = make_shared<FlushCommand>(&logger);
 
 
 	addCommand(exitCommand);

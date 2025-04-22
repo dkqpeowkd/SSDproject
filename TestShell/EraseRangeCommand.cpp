@@ -49,12 +49,16 @@ bool EraseRangeCommand::Execute(const std::string& cmd, std::vector<std::string>
 
         std::ostringstream oss;
         oss << "ssd.exe E " << lba << " " << chunkSize;
-        std::cout << "[ERASE] " << oss.str() << std::endl;
+        logMessage("EraseRangeCommand.Execute()", "[ERASE] %s", oss.str().c_str());
 
         int result = callSystem(oss.str());
 
-        if (result == 1) std::cout << "ERROR" << std::endl;
-        else std::cout << "ERASE COMPLETED!" << std::endl;
+        if (result == 1) {
+            logMessage("EraseRangeCommand.Execute()", "[ERASE] ERROR");
+        }
+        else {
+            logMessage("EraseRangeCommand.Execute()", "[ERASE] COMPLETED!");
+        }
     }
 
     return true;
