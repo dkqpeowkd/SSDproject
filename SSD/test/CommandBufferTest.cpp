@@ -8,7 +8,7 @@
 namespace fs = std::filesystem;
 
 constexpr const char* VALID_VALUE_1 = "0x12345678";
-constexpr const char* VALID_VALUE_2 = "0xabcdef01";
+constexpr const char* VALID_VALUE_2 = "0xABCDEF01";
 constexpr const char* INVALID_VALUE_1 = "0x1";
 constexpr const char* INVALID_VALUE_2 = "1234567890";
 
@@ -151,7 +151,7 @@ TEST_F(CommandBufferTest, Implicit_Flush_Buffer) {
 TEST_F(CommandBufferTest, WtoW_Ignore_Buffer) {
   CommandBuffer buffer(bufferDir);
   buffer.AddCommand("W 0 0x12345678");
-  buffer.AddCommand("W 0 0xabcdef01");
+  buffer.AddCommand("W 0 0xABCDEF01");
   EXPECT_EQ(1, buffer.GetValidBufferCount());
   ssdControllerWithTest->Read(VALID_LBA_BEGIN);
   EXPECT_EQ(VALID_VALUE_2, ssdControllerWithTest->GetResult());

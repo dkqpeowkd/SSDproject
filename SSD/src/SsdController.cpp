@@ -40,9 +40,25 @@ void SsdController::Read(std::string lba) {
 
     unsigned int readData = nandStorage->Read(lba);
     stringReadData = unsignedIntToPrefixedHexString(readData);
+  } else {
+    stringReadData = uppercaseSubstringFromOffset(stringReadData);
   }
 
   return recoder->RecordSuccessPatternToOutputFile(stringReadData);
+}
+
+std::string SsdController::uppercaseSubstringFromOffset(const std::string& original_string) {
+  std::string modified_string = original_string;
+
+  if (2 >= modified_string.length()) {
+    return original_string;
+  }
+
+  for (size_t i = 2; i < modified_string.length(); ++i) {
+    modified_string[i] = static_cast<char>(std::toupper(modified_string[i]));
+  }
+
+  return modified_string;
 }
 
 void SsdController::Erase(std::string lba, std::string scope) {

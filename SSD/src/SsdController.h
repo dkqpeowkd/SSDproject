@@ -33,6 +33,7 @@ class SsdController {
   CommandBuffer commandBuffer;
 
   std::string unsignedIntToPrefixedHexString(unsigned int readData);
+  std::string uppercaseSubstringFromOffset(const std::string& original_string);
 
   bool isBufferFull(){ return commandBuffer.IsBufferFull(); };
 
