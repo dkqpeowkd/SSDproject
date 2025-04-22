@@ -12,3 +12,9 @@ WriteFunc IncreaseLBA
 EraseFunc DecreaseLBA
 EndLoop
 EndLoop
+WriteFunc Random 1
+WriteFunc Random 1
+EraseFunc 2
+WriteFunc IncreaseLBA
+WriteFunc IncreaseLBA
+EraseFunc DecreaseLBA
