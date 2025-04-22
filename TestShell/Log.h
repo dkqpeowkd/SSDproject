@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 class Logger {
  public:
 	static const bool ENABLE_LOG = true;
-	static const bool DISABLE_LOG = true;
+	static const bool DISABLE_LOG = false;
 
 	Logger() {}
 	Logger(bool isLogEnable) : isLogEnable{ isLogEnable } {}

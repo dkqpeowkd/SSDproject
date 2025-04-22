@@ -29,6 +29,8 @@ public:
 	void run(); // main loop Ω√¿€
     void run(const std::string filename);
 
+	void ExecuteScriptFromFileLine(string& line);
+
 	void displayPrompt(); // propmt display
 	PromptInput getPromptInput();
 	bool ExcutePromptInput(PromptInput& promptInput);
@@ -50,6 +52,7 @@ private:
 	shared_ptr<EraseCommand> eraseCommand;
 	shared_ptr<EraseRangeCommand> eraseRangeCommand;
 	shared_ptr<FlushCommand> flushCommand;
-    Logger log;
+	Logger loggerEnable{ Logger::ENABLE_LOG };
+	Logger loggerDisable{ Logger::DISABLE_LOG };
 };
 
