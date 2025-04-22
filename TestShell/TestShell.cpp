@@ -107,16 +107,18 @@ void TestShell::run(const std::string filename) {
 		}
 	}
 
-	ExecuteScriptFromFileLine(line);
+	if(false == ExecuteScriptFromFileLine(line))
+		return;
 
 	while (std::getline(infile, line)) {
-		ExecuteScriptFromFileLine(line);
+		if(false == ExecuteScriptFromFileLine(line))
+			return;
 	}
 
   infile.close();  // ÆÄÀÏ ´Ý±â
 }
 
-void TestShell::ExecuteScriptFromFileLine(string& line)
+bool TestShell::ExecuteScriptFromFileLine(string& line)
 {
 	PromptInput promptInput;
 	promptInput.cmd = line;
@@ -127,15 +129,16 @@ void TestShell::ExecuteScriptFromFileLine(string& line)
 
 	if (scriptCommand == nullptr) {
 		std::cout << "Fail" << std::endl;
-		return;
+		return false;
 	}
 
 	std::cout << line << "      ___   Run...";
 	if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
 		std::cout << "Fail" << std::endl;
-		return;
+		return false;
 	}
 	std::cout << "Pass" << std::endl;
+	return true;
 }
 
 void TestShell::displayPrompt()
