@@ -78,7 +78,7 @@ shared_ptr<ScriptFunction> MetaCommandContainer::lookupScriptPhrase(const string
 {
     for (auto preScriptCommand : scriptPhrase) {
         if (preScriptCommand->isMatch(command))
-            return preScriptCommand;
+            return preScriptCommand->cloneInstance();
     }
 
     return nullptr;
