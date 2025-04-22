@@ -29,6 +29,8 @@ public:
 	void run(); // main loop Ω√¿€
     void run(const std::string filename);
 
+	void ExecuteScriptFromFileLine(string& line);
+
 	void displayPrompt(); // propmt display
 	PromptInput getPromptInput();
 	bool ExcutePromptInput(PromptInput& promptInput);

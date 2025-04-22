@@ -92,72 +92,52 @@ std::filesystem::path getExecutableDir() {
 }
 
 void TestShell::run(const std::string filename) {
-  std::filesystem::path exeDir = getExecutableDir();
-  std::filesystem::path filePath = exeDir / filename;
-  std::ifstream infile(filePath);
+	//std::filesystem::path exeDir = getExecutableDir();
+	//std::filesystem::path filePath = exeDir / filename;
+	//std::ifstream infile(filePath);
+	std::ifstream infile(filename);
 
-  std::string line;
-  if (std::getline(infile, line)) {
-    // BOM 제거
-    if (line.size() >= 3 && static_cast<unsigned char>(line[0]) == 0xEF &&
-        static_cast<unsigned char>(line[1]) == 0xBB &&
-        static_cast<unsigned char>(line[2]) == 0xBF) {
-      line = line.substr(3);
-    }
-    std::cout << line << "      ___   Run...";
-  }
-
-  shared_ptr<ICommand> foundCommand = findCommand(line);
-  PromptInput promptInput;
-  promptInput.cmd = line;
-
-  if (foundCommand == nullptr) {
-    MetaCommandContainer scriptContainer;
-    scriptContainer.loadMetaScript(commandList);
-    shared_ptr<ICommand> scriptCommand =
-        scriptContainer.getScriptCommand(promptInput.cmd, commandList);
-
-    if (scriptCommand == nullptr) {
-      std::cout << "Fail" << std::endl;
-      return;
+	std::string line;
+	if (std::getline(infile, line)) {
+		// BOM 제거
+		if (line.size() >= 3 && static_cast<unsigned char>(line[0]) == 0xEF &&
+			static_cast<unsigned char>(line[1]) == 0xBB &&
+			static_cast<unsigned char>(line[2]) == 0xBF) {
+			line = line.substr(3);
+		}
 	}
 
+	ExecuteScriptFromFileLine(line);
 
-    if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
-          std::cout << "Fail" << std::endl;
-		return;
-
-        }
-  }
-
-    std::cout << "Pass" << std::endl;
-
-
-  while (std::getline(infile, line)) {
-    std::cout << line << "      ___   Run...";
-    foundCommand = findCommand(line);
-    promptInput.cmd = line;
-    if (foundCommand == nullptr) {
-      MetaCommandContainer scriptContainer;
-      scriptContainer.loadMetaScript(commandList);
-      shared_ptr<ICommand> scriptCommand =
-          scriptContainer.getScriptCommand(promptInput.cmd, commandList);
-
-      if (scriptCommand == nullptr) {
-        std::cout << "Fail" << std::endl;
-        return;
-      }
-
-      if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
-        std::cout << "Fail" << std::endl;
-        return;
-      }
-    }
-    std::cout << "Pass" << std::endl;
-  }
+	while (std::getline(infile, line)) {
+		ExecuteScriptFromFileLine(line);
+	}
 
   infile.close();  // 파일 닫기
 }
+
+void TestShell::ExecuteScriptFromFileLine(string& line)
+{
+	PromptInput promptInput;
+	promptInput.cmd = line;
+
+	MetaCommandContainer scriptContainer;
+	scriptContainer.loadMetaScript(commandList);
+	shared_ptr<ICommand> scriptCommand = scriptContainer.getScriptCommand(promptInput.cmd, commandList);
+
+	if (scriptCommand == nullptr) {
+		std::cout << "Fail" << std::endl;
+		return;
+	}
+
+	std::cout << line << "      ___   Run...";
+	if (scriptCommand->Execute(promptInput.cmd, promptInput.args) == false) {
+		std::cout << "Fail" << std::endl;
+		return;
+	}
+	std::cout << "Pass" << std::endl;
+}
+
 void TestShell::displayPrompt()
 {
 	cout << "Shell> ";
