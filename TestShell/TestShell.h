@@ -50,6 +50,7 @@ private:
 	shared_ptr<EraseCommand> eraseCommand;
 	shared_ptr<EraseRangeCommand> eraseRangeCommand;
 	shared_ptr<FlushCommand> flushCommand;
-    Logger log;
+	Logger loggerEnable{ Logger::ENABLE_LOG };
+	Logger loggerDisable{ Logger::DISABLE_LOG };
 };
 

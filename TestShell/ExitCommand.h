@@ -17,7 +17,7 @@ interface ExitCommand : public ICommand {
         return true;
     }
     bool isSystemActive() { return isActive; }
-    ExitCommand(Logger * logger) : log(logger) {}
+    ExitCommand(Logger* logger) : log(logger) {}
     void logMessage(const std::string& msg, const char* format, ...) const {
       if (log) {
         char buffer[1024];

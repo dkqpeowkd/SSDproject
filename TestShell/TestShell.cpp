@@ -27,31 +27,28 @@ std::vector<std::string> split(const std::string& line) {
 	return tokens;
 }
 TestShell::TestShell(bool EnableLog) {
-  if (EnableLog == true) {
-    exitCommand = make_shared<ExitCommand>(&log);
-    helpCommand = make_shared<HelpCommand>(&log);
-    readCommand = make_shared<ReadCommand>(&log);
-    writeCommand = make_shared<WriteCommand>(&log);
-    fullReadCommand = make_shared<FullReadCommand>(&log);
-    fullWriteCommand = make_shared<FullWriteCommand>(&log);
-    eraseCommand = make_shared<EraseCommand>(&log);
-    eraseRangeCommand = make_shared<EraseRangeCommand>(&log);
-    flushCommand = make_shared<FlushCommand>(&log);
-  }
+	Logger* logger = (EnableLog) ? &loggerEnable : &loggerDisable;
+	exitCommand = make_shared<ExitCommand>(logger);
+	helpCommand = make_shared<HelpCommand>(logger);
+	readCommand = make_shared<ReadCommand>(logger);
+	writeCommand = make_shared<WriteCommand>(logger);
+	fullReadCommand = make_shared<FullReadCommand>(logger);
+	fullWriteCommand = make_shared<FullWriteCommand>(logger);
+	eraseCommand = make_shared<EraseCommand>(logger);
+	eraseRangeCommand = make_shared<EraseRangeCommand>(logger);
+	flushCommand = make_shared<FlushCommand>(logger);
 
-  addCommand(exitCommand);
-  addCommand(helpCommand);
-  addCommand(readCommand);
-  addCommand(writeCommand);
-  addCommand(fullReadCommand);
-  addCommand(fullWriteCommand);
-  addCommand(eraseCommand);
-  addCommand(eraseRangeCommand);
-  addCommand(flushCommand);
+	addCommand(exitCommand);
+	addCommand(helpCommand);
+	addCommand(readCommand);
+	addCommand(writeCommand);
+	addCommand(fullReadCommand);
+	addCommand(fullWriteCommand);
+	addCommand(eraseCommand);
+	addCommand(eraseRangeCommand);
+	addCommand(flushCommand);
 
-  
-
-  helpCommand->addSupportedCommand(commandList);
+	helpCommand->addSupportedCommand(commandList);
 }
 
 TestShell::TestShell()
@@ -162,7 +159,7 @@ void TestShell::run(const std::string filename) {
 }
 void TestShell::displayPrompt()
 {
-	cout << "SSDTestShell:>";
+	cout << "Shell> ";
 }
 
 PromptInput TestShell::getPromptInput()
