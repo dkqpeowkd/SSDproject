@@ -8,7 +8,6 @@
 
 class EraseRangeCommand : public ICommand {
 public:
-    explicit EraseRangeCommand(Logger* logger) : log(logger) {}
 
     const std::string& getCommandString() override;
     bool isMatch(const std::string& command) override;
@@ -27,18 +26,6 @@ public:
 
         log->log(msg, "%s", buffer);
       }
-    }
-
-    void logMessage(const std::string& msg, const char* format, ...) const {
-        if (log) {
-            char buffer[1024];
-            va_list args;
-            va_start(args, format);
-            vsnprintf(buffer, sizeof(buffer), format, args);
-            va_end(args);
-
-            log->log(msg, "%s", buffer);
-        }
     };
 
 protected:
